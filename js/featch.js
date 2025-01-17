@@ -1,4 +1,4 @@
-const BASE_URL = '';
+const BASE_URL = 'https://nlp-demo.szmckj.cn';
 const wzyc = 'https://wzyc-demo.szmckj.cn'
 
 
@@ -7,6 +7,7 @@ const idA = null;
 const tts_message = null;
 const if_kb = false
 const chat_id = null
+const user_id = 'nlp-demo.szmckj.cn'
 
 // 获取随机题目接口
 function fetchRandomQuestion() {
@@ -212,7 +213,7 @@ function selectMessage(message) {
 
 // 获取chat_id的接口
 function getChatId() {
-    axios.get(`${BASE_URL}/api/chatid`)
+    axios.get(`${BASE_URL}/api/chatid?user_id=nlp-demo.szmckj.cn`)
         .then(function (response) {
             // console.log(response.data)
             this.chat_id = response.data.chat_id
