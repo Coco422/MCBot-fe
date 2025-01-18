@@ -295,10 +295,22 @@ async function sendMessage() {
                                 // 使用 marked.js 将 Markdown 转换为 HTML
                                 const htmlContent = marked.parse(accumulatedMessage);
                                 // 更新机器人消息内容
-                                setTimeout(() => {
-                                    messageTextContainer.innerHTML = htmlContent;
-                                    playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
-                                }, 100);
+                                // Create typing effect using requestAnimationFrame
+                                let charIndex = 0;
+                                const typeNextChar = () => {
+                                    if (charIndex < htmlContent.length) {
+                                        messageTextContainer.innerHTML = htmlContent.substring(0, charIndex + 1);
+                                        charIndex++;
+                                        requestAnimationFrame(typeNextChar);
+                                    } else {
+                                        // Update play button after typing completes
+                                        playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
+                                        playButton.style.display = 'block';
+                                    }
+                                };
+                                
+                                // Start typing effect
+                                requestAnimationFrame(typeNextChar);
                                 // 滚动到底部
                                 const chatMessages = document.getElementById('chat-messages');
                                 chatMessages.scrollTop = chatMessages.scrollHeight;
