@@ -9130,24 +9130,33 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
   }
   
   .bot-message .message-content {
-	background-color: #ffffff;
+	background-color: #fbfbfb;
 	border-radius: 12px 12px 12px 0;
 	padding: 10px;
 	margin-left: 10px;
   }
   
-  /* 用户消息 */
-  .user-message {
-	align-self: flex-end;
-  }
-  
-  .user-message .message-content {
-	background-color: #007bff;
-	color: white;
-	border-radius: 12px 12px 0 12px;
-	padding: 10px;
-	margin-right: 10px;
-  }
+	/* 用户消息 */
+	.user-message {
+		align-self: flex-end;
+		max-width: 70%; /* 限制用户消息的最大宽度 */
+	}
+
+	.user-message .message-content {
+		background-color: #007bff;
+		color: white;
+		border-radius: 12px 12px 0 12px;
+		padding: 10px;
+		margin-right: 10px;
+		max-width: 100%; /* 确保内容不会超出消息框 */
+		word-wrap: break-word; /* 允许长单词换行 */
+		word-break: break-word; /* 允许在单词内换行 */
+	}
+
+	.user-message .message-text {
+		white-space: pre-wrap; /* 保留空白符，但允许换行 */
+		overflow-wrap: break-word; /* 允许在单词内换行 */
+	}
   
   /* 头像 */
   .avatar {
@@ -9392,3 +9401,174 @@ h5 {
     border-color: #307bd1; /* 绿色边框 */
     color: white; /* 白色文字 */
 }
+
+.message-text table {
+	width: 100%;
+	border-collapse: collapse; /* 合并边框 */
+}
+.message-text  th, td {
+	border: 1px solid #000; /* 添加边框 */
+	padding: 8px; /* 添加内边距 */
+	text-align: left; /* 文本对齐方式 */
+}
+.message-text  th {
+	background-color: #f2f2f2; /* 表头背景色 */
+}
+
+
+
+.chat-container1 {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+	display: block;
+	height: 500px; 
+    /* 启用垂直滚动 */
+    overflow-y: auto;
+    /* 确保内容不会超出容器宽度 */
+    /* overflow-x: hidden; */
+}
+
+.chat-messages1 {
+    flex: 3;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    height: 77%;
+    flex-direction: column;
+    gap: 10px;
+}
+/* 消息通用样式 */
+.message1 {
+    display: flex;
+    align-items: flex-start;
+    max-width: 70%; /* 限制消息框的最大宽度 */
+    word-wrap: break-word; /* 允许长单词换行 */
+    word-break: break-word; /* 允许在单词内换行 */
+}
+
+/* 机器人消息 */
+.bot-message1 .message-content1 {
+    background-color: #ffffff;
+    border-radius: 12px 12px 12px 0;
+    padding: 10px;
+    margin-left: 10px;
+    max-width: 100%; /* 确保内容不会超出消息框 */
+}
+	/* 用户消息 */
+	.user-message1 {
+		align-self: flex-end;
+		max-width: 70%; /* 限制用户消息的最大宽度 */
+	}
+
+	.user-message1 .message-content1 {
+		background-color: #007bff;
+		color: white;
+		border-radius: 12px 12px 0 12px;
+		padding: 10px;
+		margin-right: 10px;
+		max-width: 100%; /* 确保内容不会超出消息框 */
+		word-wrap: break-word; /* 允许长单词换行 */
+		word-break: break-word; /* 允许在单词内换行 */
+	}
+
+	.user-message1 .message-text1 {
+		white-space: pre-wrap; /* 保留空白符，但允许换行 */
+		overflow-wrap: break-word; /* 允许在单词内换行 */
+	}
+
+	.message-text1 table {
+		width: 100%;
+		border-collapse: collapse; /* 合并边框 */
+	}
+	.message-text1  th, td {
+		border: 1px solid #000; /* 添加边框 */
+		padding: 8px; /* 添加内边距 */
+		text-align: left; /* 文本对齐方式 */
+	}
+	.message-text1  th {
+		background-color: #f2f2f2; /* 表头背景色 */
+	}
+
+
+
+	.chat-container1 {
+		margin-bottom: 10px;
+		padding: 10px;
+		border: 1px solid #ccc;
+		cursor: pointer;
+		display: block;
+		height: 500px; 
+		overflow-y: auto;
+	}
+	
+	.chat-messages1 {
+		flex: 3;
+		padding: 10px;
+		overflow-y: auto;
+		display: flex;
+		height: 77%;
+		flex-direction: column;
+		gap: 10px;
+	}
+	
+	.message1 {
+		display: flex;
+		align-items: flex-start;
+		max-width: 70%;
+		word-wrap: break-word;
+		word-break: break-word;
+	}
+	
+	.bot-message1 .message-content1 {
+		background-color: #d8d5d5;
+		border-radius: 12px 12px 12px 0;
+		padding: 10px;
+		margin-left: 10px;
+		max-width: 100%;
+	}
+	
+	.user-message1 {
+		align-self: flex-end;
+		max-width: 70%;
+	}
+	
+	.user-message1 .message-content1 {
+		background-color: #007bff;
+		color: white;
+		border-radius: 12px 12px 0 12px;
+		padding: 10px;
+		margin-right: 10px;
+		max-width: 100%;
+		word-wrap: break-word;
+		word-break: break-word;
+	}
+	
+	.user-message1 .message-text1 {
+		white-space: pre-wrap;
+		overflow-wrap: break-word;
+	}
+	
+	.step-title {
+		font-weight: bold;
+		margin-top: 10px;
+		margin-bottom: 5px;
+	}
+	
+	.update-content {
+		margin-left: 20px;
+		margin-bottom: 10px;
+	}
+
+	.loading-indicator {
+		color: #888; /* 灰色文字 */
+		font-style: italic; /* 斜体 */
+		animation: blink 1s infinite; /* 闪烁动画 */
+	}
+	
+	@keyframes blink {
+		0% { opacity: 1; }
+		50% { opacity: 0.5; }
+		100% { opacity: 1; }
+	}
