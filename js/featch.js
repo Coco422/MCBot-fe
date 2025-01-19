@@ -8,6 +8,7 @@ const tts_message = null;
 const if_kb = false
 const chat_id = null
 const user_id = 'nlp-demo.szmckj.cn'
+const md = null
 
 // 获取随机题目接口
 function fetchRandomQuestion() {
@@ -179,14 +180,17 @@ function fetchLegalAnalysis() {
     document.getElementById('text-display').style.display = 'none';
     document.getElementById('analysis-container').style.display = 'block';
     // 发送Axios请求获取法理分析内容
-    axios.get(`${BASE_URL}/api/analysis?questionid=${this.id}`)
-        .then(function (response) {
-            const analysisData = JSON.parse(response.data.analysis);
-            const analysisText = analysisData.Analysis;
-            displayTypingEffect(analysisText);
-        }).catch(function (err) {
-            console.log(err);
-        });
+    if (this.id != null) {
+        axios.get(`${BASE_URL}/api/analysis?questionid=${this.id}`)
+            .then(function (response) {
+                const analysisData = JSON.parse(response.data.analysis);
+                const analysisText = analysisData.Analysis;
+                displayTypingEffect(analysisText);
+            }).catch(function (err) {
+                console.log(err);
+            });
+
+    }
 }
 
 // 打字机效果函数
@@ -208,7 +212,7 @@ function displayTypingEffect(text) {
 
 // 语音助手的开始页面初始化的三条信息
 function selectMessage(message) {
-    document.getElementById('chat-input').value = message;
+    document.getElementById('chat-input').innerHTML = message;
 }
 
 // 获取chat_id的接口
@@ -222,10 +226,32 @@ function getChatId() {
         });
 }
 
+
+// // 检测是否为 Markdown 语法
+// function isMarkdown(text) {
+//     // 检测常见的 Markdown 语法
+//     const markdownPatterns = [
+//         /^#+\s/, // 标题
+//         /\*\*.*\*\*/, // 加粗
+//         /\*.*\*/, // 斜体
+//         /\[.*\]\(.*\)/, // 链接
+//         /^- /, // 无序列表
+//         /^\d+\. /, // 有序列表
+//         /`{1,3}.*`{1,3}/, // 代码
+//         /!\[.*\]\(.*\)/, // 图片
+//         />\s/, // 引用
+//     ];
+
+//     // 如果匹配到任意一个 Markdown 语法，返回 true
+//     return markdownPatterns.some(pattern => pattern.test(text));
+// }
+
 // 学习对话接口
 async function sendMessage() {
     const input = document.getElementById('chat-input');
-    const messageText = input.value.trim();
+    const messageText = input.innerHTML;
+    // const rendermessage = this.md.render(messageText);
+    console.log(messageText)
     if (messageText) {
         // 添加用户消息
         const userMessage = document.createElement('div');
@@ -238,7 +264,7 @@ async function sendMessage() {
         `;
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
-        input.value = '';
+        input.innerHTML = '';
         try {
             // 发送POST请求
             const response = await fetch(`${BASE_URL}/api/chat/train`, {
@@ -287,30 +313,18 @@ async function sendMessage() {
                     if (line.startsWith('event: Update')) {
                         // 找到对应的data行
                         const dataLine = lines[i + 1]?.trim();
-                        if (dataLine && dataLine.startsWith('data:')) {
+                        if (dataLine && dataLine.startsWith('data: ')) {
                             const data = dataLine.slice(5).trim();
                             if (data) {
                                 // 累积AI消息
                                 accumulatedMessage += data;
                                 // 使用 marked.js 将 Markdown 转换为 HTML
-                                const htmlContent = marked.parse(accumulatedMessage);
+                                const htmlContent = this.md.render(accumulatedMessage);
                                 // 更新机器人消息内容
-                                // Create typing effect using requestAnimationFrame
-                                let charIndex = 0;
-                                const typeNextChar = () => {
-                                    if (charIndex < htmlContent.length) {
-                                        messageTextContainer.innerHTML = htmlContent.substring(0, charIndex + 1);
-                                        charIndex++;
-                                        requestAnimationFrame(typeNextChar);
-                                    } else {
-                                        // Update play button after typing completes
-                                        playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
-                                        playButton.style.display = 'block';
-                                    }
-                                };
-                                
-                                // Start typing effect
-                                requestAnimationFrame(typeNextChar);
+                                // setTimeout(() => {
+                                messageTextContainer.innerHTML = htmlContent;
+                                playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
+                                // }, 200);
                                 // 滚动到底部
                                 const chatMessages = document.getElementById('chat-messages');
                                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -318,6 +332,127 @@ async function sendMessage() {
                         }
                     }
                 }
+                await read();
+            }
+            await read();
+        } catch (error) {
+            console.error('Fetch failed:', error);
+        }
+    }
+}
+
+// 学习对话接口 ----- demo
+async function sendMessagedemo() {
+    const input = document.getElementById('chat-input');
+    const messageText = input.innerHTML;
+    if (messageText) {
+        // 添加用户消息
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user-message';
+        userMessage.innerHTML = `
+            <div class="message-content">
+                <div class="message-text">${messageText}</div>
+            </div>
+            <img src="images/user.png" alt="User Avatar" class="avatar">
+        `;
+        document.getElementById('chat-messages').appendChild(userMessage);
+        // 清空输入框
+        input.innerHTML = '';
+        try {
+            // 发送POST请求
+            const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id })
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedMessage = '';
+            // 创建机器人消息容器
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot-message';
+            const uniqueId = `audio-${Date.now()}`;
+            botMessage.innerHTML = `
+                <img src="images/robot.png" alt="Bot Avatar" class="avatar">
+                <div class="message-content">
+                    <div class="message-text">
+                        <div class="loading-indicator">正在生成...</div> <!-- 添加“生成中”效果 -->
+                    </div>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
+                    <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+                    <audio id="${uniqueId}" style="display:none"></audio>
+                </div>
+            `;
+            document.getElementById('chat-messages').appendChild(botMessage);
+            // 获取消息文本容器
+            const messageTextContainer = botMessage.querySelector('.message-text');
+            const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+            const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+
+            // 用于存储当前事件的容器
+            let currentStepContainer = null;
+            let currentUpdateContainer = null;
+
+            async function read() {
+                const { done, value } = await reader.read();
+                if (done) {
+                    playButton.style.display = 'block';
+                    return;
+                }
+                const responseText = decoder.decode(value);
+                // 解析 SSE 格式的数据
+                const lines = responseText.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('event:')) {
+                        const eventName = line.split(':')[1].trim();
+                        if (eventName.startsWith('step')) {
+                            // 处理 step 事件
+                            currentStepContainer = document.createElement('div');
+                            currentStepContainer.className = 'step-container';
+                            messageTextContainer.appendChild(currentStepContainer);
+
+                            const stepTitle = document.createElement('div');
+                            stepTitle.className = 'step-title';
+                            stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
+                            currentStepContainer.appendChild(stepTitle);
+
+                            // 清空 update 容器
+                            currentUpdateContainer = null;
+                        } else if (eventName === 'Update' || eventName === 'update') {
+                            // 处理 update 事件
+                            if (!currentUpdateContainer) {
+                                currentUpdateContainer = document.createElement('div');
+                                currentUpdateContainer.className = 'update-container';
+                                messageTextContainer.appendChild(currentUpdateContainer);
+
+                                // 移除“生成中”效果
+                                const loadingIndicator = messageTextContainer.querySelector('.loading-indicator');
+                                if (loadingIndicator) {
+                                    loadingIndicator.remove();
+                                }
+                            }
+                        }
+                    } else if (line.startsWith('data:')) {
+                        const data = line.split(':')[1].trim();
+                        if (currentStepContainer && !currentUpdateContainer) {
+                            // 将数据追加到 step 容器
+                            const stepTitle = currentStepContainer.querySelector('.step-title');
+                            stepTitle.innerHTML += ` ${data}`;
+                        } else if (currentUpdateContainer) {
+                            // 将数据追加到 update 容器
+                            currentUpdateContainer.innerHTML += data;
+                        }
+                    }
+                }
+                // 滚动到底部
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 await read();
             }
             await read();
@@ -450,6 +585,8 @@ function handleButtonClick(button) {
 
 // 需要初始化的api
 window.onload = function () {
+    this.md = new markdownit()
+    // console.log("onload", this.md)
     getChatId()
     fetchRandomQuestion();
     fetchRandomQuestionA();
