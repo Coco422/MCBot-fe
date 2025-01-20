@@ -373,6 +373,7 @@ async function sendMessagedemo() {
             }
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
+
             let accumulatedMessage = ''; // 用于存储累积的消息内容
             // 创建机器人消息容器
             const botMessage = document.createElement('div');
@@ -416,6 +417,7 @@ async function sendMessagedemo() {
                         isStep3Active = false; // 重置标记
                     }
                     playButton.style.display = 'block'; // 显示播放按钮
+
                     return;
                 }
                 const responseText = decoder.decode(value);
@@ -431,6 +433,7 @@ async function sendMessagedemo() {
                             currentStepContainer = document.createElement('div');
                             currentStepContainer.className = 'step-container';
                             messageTextContainer.appendChild(currentStepContainer);
+
                             const stepTitle = document.createElement('div');
                             stepTitle.className = 'step-title';
                             stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
@@ -450,12 +453,14 @@ async function sendMessagedemo() {
                                 currentUpdateContainer = document.createElement('div');
                                 currentUpdateContainer.className = 'update-container';
                                 messageTextContainer.appendChild(currentUpdateContainer);
+
                                 // 移除“生成中”效果
                                 const loadingIndicator = messageTextContainer.querySelector('.loading-indicator');
                                 if (loadingIndicator) {
                                     loadingIndicator.remove();
                                 }
                             }
+
                         } else if (eventName === 'Done') {
                             // 如果是 step3 的 Done 事件，统一渲染 Markdown
                             if (isStep3Active) {
@@ -482,6 +487,7 @@ async function sendMessagedemo() {
                             const stepTitle = currentStepContainer.querySelector('.step-title');
                             stepTitle.innerHTML += ` ${data}`;
                         } else if (currentUpdateContainer) {
+
                             if (isStep3Active) {
                                 // 如果是 step3，将数据追加到缓存
                                 step3Buffer += data;
@@ -492,6 +498,7 @@ async function sendMessagedemo() {
                                 currentUpdateContainer.innerHTML += data;
                             }
                             accumulatedMessage += data; // 更新 accumulatedMessage
+
                         }
                     }
                 }
@@ -506,6 +513,7 @@ async function sendMessagedemo() {
         }
     }
 }
+
 // 是否开启知识库搜素
 function handleCheckboxChange(checkbox) {
     if (checkbox.checked) {
