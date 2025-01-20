@@ -341,6 +341,7 @@ async function sendMessage() {
     }
 }
 
+
 // 学习对话接口 ----- demo
 async function sendMessagedemo() {
     const input = document.getElementById('chat-input');
@@ -372,7 +373,8 @@ async function sendMessagedemo() {
             }
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
-            let accumulatedMessage = '';
+
+            let accumulatedMessage = ''; // 用于存储累积的消息内容
             // 创建机器人消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
@@ -393,20 +395,35 @@ async function sendMessagedemo() {
             const messageTextContainer = botMessage.querySelector('.message-text');
             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
-
             // 用于存储当前事件的容器
             let currentStepContainer = null;
             let currentUpdateContainer = null;
+            let step3Buffer = ''; // 用于存储 step3 的 Markdown 内容
+            let isStep3Active = false; // 标记当前是否在处理 step3
 
             async function read() {
                 const { done, value } = await reader.read();
                 if (done) {
-                    playButton.style.display = 'block';
+                    // 数据全部接收完毕，统一替换为 Markdown 渲染结果
+                    if (isStep3Active) {
+                        //                         // 追加 Markdown 表格
+                        //                         step3Buffer += `
+                        // | Column 1 | Column 2 |
+                        // |----------|----------|
+                        // | Data 1   | Data 2   |
+                        //                         `;
+                        //                         console.log('Step3 Buffer:', step3Buffer); // 调试：打印 step3Buffer
+                        currentUpdateContainer.innerHTML = marked.parse(step3Buffer); // 渲染 Markdown
+                        isStep3Active = false; // 重置标记
+                    }
+                    playButton.style.display = 'block'; // 显示播放按钮
+
                     return;
                 }
                 const responseText = decoder.decode(value);
                 // 解析 SSE 格式的数据
                 const lines = responseText.split('\n');
+                console.log('Received response:', lines);
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (line.startsWith('event:')) {
@@ -421,9 +438,15 @@ async function sendMessagedemo() {
                             stepTitle.className = 'step-title';
                             stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
                             currentStepContainer.appendChild(stepTitle);
-
                             // 清空 update 容器
                             currentUpdateContainer = null;
+                            // 如果是 step3，标记为 active
+                            if (eventName === 'step3') {
+                                isStep3Active = true;
+                                step3Buffer = ''; // 清空 step3 的缓存
+                            } else {
+                                isStep3Active = false;
+                            }
                         } else if (eventName === 'Update' || eventName === 'update') {
                             // 处理 update 事件
                             if (!currentUpdateContainer) {
@@ -437,6 +460,25 @@ async function sendMessagedemo() {
                                     loadingIndicator.remove();
                                 }
                             }
+
+                        } else if (eventName === 'Done') {
+                            // 如果是 step3 的 Done 事件，统一渲染 Markdown
+                            if (isStep3Active) {
+                                //                                 // 追加 Markdown 表格
+                                //                                 step3Buffer += `
+                                // | Column 1 | Column 2 |
+                                // |----------|----------|
+                                // | Data 1   | Data 2   |
+                                //                                 `;
+                                //                                 console.log('Step3 Buffer:', step3Buffer); // 调试：打印 step3Buffer
+                                currentUpdateContainer.innerHTML = marked.parse(step3Buffer); // 渲染 Markdown
+                                isStep3Active = false; // 重置标记
+                            }
+                            // 忽略 Done 事件，并跳过后续的 data 行
+                            while (i + 1 < lines.length && lines[i + 1].trim().startsWith('data:')) {
+                                i++; // 跳过 data 行
+                            }
+                            continue;
                         }
                     } else if (line.startsWith('data:')) {
                         const data = line.split(':')[1].trim();
@@ -445,8 +487,18 @@ async function sendMessagedemo() {
                             const stepTitle = currentStepContainer.querySelector('.step-title');
                             stepTitle.innerHTML += ` ${data}`;
                         } else if (currentUpdateContainer) {
-                            // 将数据追加到 update 容器
-                            currentUpdateContainer.innerHTML += data;
+
+                            if (isStep3Active) {
+                                // 如果是 step3，将数据追加到缓存
+                                step3Buffer += data;
+                                // 流式显示原始内容
+                                currentUpdateContainer.innerHTML += data;
+                            } else {
+                                // 其他步骤直接渲染
+                                currentUpdateContainer.innerHTML += data;
+                            }
+                            accumulatedMessage += data; // 更新 accumulatedMessage
+
                         }
                     }
                 }

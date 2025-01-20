@@ -84,7 +84,7 @@
                       </li>
                       <li class="rd-nav-item">
                         <a class="rd-nav-link" href="services.html">服务</a>
-                        <ul class="rd-menu rd-navbar-dropdown">
+                        <!-- <ul class="rd-menu rd-navbar-dropdown">
                           <li class="rd-dropdown-item">
                             <a
                               class="rd-dropdown-link"
@@ -92,7 +92,7 @@
                               >Single Service</a
                             >
                           </li>
-                        </ul>
+                        </ul> -->
                       </li>
                       <!-- <li class="rd-nav-item">
                         <a class="rd-nav-link" href="#">Pages</a>
@@ -333,7 +333,18 @@
             
                     <!-- 输入框和按钮 -->
                     <div class="input-button-container">
-                        <input id="chat-input" type="text" placeholder="输入消息...">
+                      <div
+                      id="chat-input"
+                      contenteditable="true"
+                      placeholder="输入消息..."
+                      style="
+                        width: 200px;
+                        border: 1px solid #ccc;
+                        padding: 5px;
+                        white-space: pre-wrap;
+                        overflow-wrap: break-word;
+                      "
+                    ></div>
                         <button id="send-button" onclick="sendMessage()">发送</button>
                     </div>
                 </div>
@@ -1266,7 +1277,8 @@
     <script src="js/script.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/featch.js"></script>
-    <script src="js/marked.js"></script>
+    <!-- <script src="js/marked.js"></script> -->
+    <script src="js/markdown-it.js"></script>
     <!-- <script src="js/video.js"></script> -->
     <script
     async

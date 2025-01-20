@@ -9435,7 +9435,7 @@ h5 {
     padding: 10px;
     overflow-y: auto;
     display: flex;
-    height: 77%;
+    height: 89%;
     flex-direction: column;
     gap: 10px;
 }
@@ -9508,7 +9508,7 @@ h5 {
 		padding: 10px;
 		overflow-y: auto;
 		display: flex;
-		height: 77%;
+		height: 89%;
 		flex-direction: column;
 		gap: 10px;
 	}
