@@ -167,12 +167,12 @@
             <!-- 聊天输入区域 -->
             <div class="chat-input">
               <!-- 复选框和标签 -->
-              <div class="checkbox-container">
+              <!-- <div class="checkbox-container">
                 <label>
                   <input type="checkbox" id="custom-checkbox" name="custom-checkbox" onchange="handleCheckboxChange(this)">
                   是否开启知识库搜索
                 </label>
-              </div>
+              </div> -->
       
               <!-- 输入框和按钮 -->
               <div class="input-button-container">
@@ -189,6 +189,7 @@
                     cursor: text;
                   "
                 ></div>
+                <button id="record_button">录</button>
                 <button id="send-button" onclick="sendMessagedemo()">发送</button>
               </div>
             </div>
@@ -307,6 +308,7 @@
     <script src="js/script.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/featch.js"></script>
-    <script src="js/markdown-it.js"></script>
+    <script src="js/record.js"></script>
+    <script src="js/marked.js"></script>
   </body>
 </html>
