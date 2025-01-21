@@ -226,26 +226,6 @@ function getChatId() {
         });
 }
 
-
-// // 检测是否为 Markdown 语法
-// function isMarkdown(text) {
-//     // 检测常见的 Markdown 语法
-//     const markdownPatterns = [
-//         /^#+\s/, // 标题
-//         /\*\*.*\*\*/, // 加粗
-//         /\*.*\*/, // 斜体
-//         /\[.*\]\(.*\)/, // 链接
-//         /^- /, // 无序列表
-//         /^\d+\. /, // 有序列表
-//         /`{1,3}.*`{1,3}/, // 代码
-//         /!\[.*\]\(.*\)/, // 图片
-//         />\s/, // 引用
-//     ];
-
-//     // 如果匹配到任意一个 Markdown 语法，返回 true
-//     return markdownPatterns.some(pattern => pattern.test(text));
-// }
-
 // 学习对话接口
 async function sendMessage() {
     const input = document.getElementById('chat-input');
@@ -343,6 +323,160 @@ async function sendMessage() {
 
 
 // 学习对话接口 ----- demo
+// async function sendMessagedemo() {
+//     const input = document.getElementById('chat-input');
+//     const messageText = input.innerHTML;
+//     if (messageText) {
+//         // 添加用户消息
+//         const userMessage = document.createElement('div');
+//         userMessage.className = 'message user-message';
+//         userMessage.innerHTML = `
+//             <div class="message-content">
+//                 <div class="message-text">${messageText}</div>
+//             </div>
+//             <img src="images/user.png" alt="User Avatar" class="avatar">
+//         `;
+//         document.getElementById('chat-messages').appendChild(userMessage);
+//         // 清空输入框
+//         input.innerHTML = '';
+//         try {
+//             // 发送POST请求
+//             const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id })
+//             });
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+//             const reader = response.body.getReader();
+//             const decoder = new TextDecoder();
+//             let accumulatedMessage = ''; // 用于存储累积的消息内容
+//             // 创建机器人消息容器
+//             const botMessage = document.createElement('div');
+//             botMessage.className = 'message bot-message';
+//             const uniqueId = `audio-${Date.now()}`;
+//             botMessage.innerHTML = `
+//                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
+//                 <div class="message-content">
+//                     <div class="message-text">
+//                         <div class="loading-indicator">正在生成...</div> <!-- 添加“生成中”效果 -->
+//                     </div>
+//                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
+//                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+//                     <audio id="${uniqueId}" style="display:none"></audio>
+//                 </div>
+//             `;
+//             document.getElementById('chat-messages').appendChild(botMessage);
+//             // 获取消息文本容器
+//             const messageTextContainer = botMessage.querySelector('.message-text');
+//             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+//             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+//             // 用于存储当前事件的容器
+//             let currentStepContainer = null;
+//             let currentUpdateContainer = null;
+//             let markdownBuffer = ''; // 用于存储需要渲染 Markdown 的内容
+//             let isMarkdownStepActive = false; // 标记当前是否在处理需要渲染 Markdown 的步骤
+//             // 初始化 Markdown 渲染器
+//             const md = window.markdownit(); // 确保页面中引入了 markdown-it 库
+//             async function read() {
+//                 const { done, value } = await reader.read();
+//                 if (done) {
+//                     // 数据全部接收完毕，统一替换为 Markdown 渲染结果
+//                     if (isMarkdownStepActive) {
+//                         currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 渲染 Markdown
+//                         isMarkdownStepActive = false; // 重置标记
+//                     }
+//                     playButton.style.display = 'block'; // 显示播放按钮
+//                     return;
+//                 }
+//                 const responseText = decoder.decode(value);
+//                 // 解析 SSE 格式的数据
+//                 const lines = responseText.split('\n');
+//                 console.log('Received response:', lines);
+//                 for (let i = 0; i < lines.length; i++) {
+//                     const line = lines[i].trim();
+//                     if (line.startsWith('event:')) {
+//                         const eventName = line.split(':')[1].trim();
+//                         if (eventName.startsWith('step')) {
+//                             // 处理 step 事件
+//                             currentStepContainer = document.createElement('div');
+//                             currentStepContainer.className = 'step-container';
+//                             messageTextContainer.appendChild(currentStepContainer);
+//                             const stepTitle = document.createElement('div');
+//                             stepTitle.className = 'step-title';
+//                             stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
+//                             currentStepContainer.appendChild(stepTitle);
+//                             // 清空 update 容器
+//                             currentUpdateContainer = null;
+//                             // 如果是 step3 或 step8，标记为 active
+//                             if (eventName === 'step3' || eventName === 'step8') {
+//                                 isMarkdownStepActive = true;
+//                                 markdownBuffer = ''; // 清空缓存
+//                             } else {
+//                                 isMarkdownStepActive = false;
+//                             }
+//                         } else if (eventName === 'Update' || eventName === 'update') {
+//                             // 处理 update 事件
+//                             if (!currentUpdateContainer) {
+//                                 currentUpdateContainer = document.createElement('div');
+//                                 currentUpdateContainer.className = 'update-container';
+//                                 messageTextContainer.appendChild(currentUpdateContainer);
+//                                 // 移除“生成中”效果
+//                                 const loadingIndicator = messageTextContainer.querySelector('.loading-indicator');
+//                                 if (loadingIndicator) {
+//                                     loadingIndicator.remove();
+//                                 }
+//                             }
+//                         } else if (eventName === 'Done') {
+//                             // 如果是需要渲染 Markdown 的步骤的 Done 事件，统一渲染 Markdown
+//                             if (isMarkdownStepActive) {
+//                                 currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 渲染 Markdown
+//                                 isMarkdownStepActive = false; // 重置标记
+//                             }
+//                             // 忽略 Done 事件，并跳过后续的 data 行
+//                             while (i + 1 < lines.length && lines[i + 1].trim().startsWith('data:')) {
+//                                 i++; // 跳过 data 行
+//                             }
+//                             continue;
+//                         }
+//                     } else if (line.startsWith('data:')) {
+//                         const data = line.split(':')[1].trim();
+//                         if (currentStepContainer && !currentUpdateContainer) {
+//                             // 将数据追加到 step 容器
+//                             const stepTitle = currentStepContainer.querySelector('.step-title');
+//                             stepTitle.innerHTML += ` ${data}`;
+//                         } else if (currentUpdateContainer) {
+//                             if (isMarkdownStepActive) {
+//                                 // 如果是需要渲染 Markdown 的步骤，将数据追加到缓存并立即渲染
+//                                 markdownBuffer += data;
+//                                 currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 实时渲染 Markdown
+//                             } else {
+//                                 // 其他步骤直接渲染
+//                                 currentUpdateContainer.innerHTML += data;
+//                             }
+//                             accumulatedMessage += data; // 更新 accumulatedMessage
+//                         }
+//                     }
+//                 }
+//                 // 滚动到底部
+//                 const chatMessages = document.getElementById('chat-messages');
+//                 chatMessages.scrollTop = chatMessages.scrollHeight;
+//                 await read();
+//             }
+//             await read();
+//         } catch (error) {
+//             console.error('Fetch failed:', error);
+//         }
+//     }
+// }
+
+
+let streamingInProgress = false;
+let currentMarkdown = ""; // 保存 Markdown 格式内容
+
 async function sendMessagedemo() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
@@ -359,23 +493,25 @@ async function sendMessagedemo() {
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
         input.innerHTML = '';
+        if (streamingInProgress) return;
+        streamingInProgress = true;
         try {
-            // 发送POST请求
-            const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id })
+            // 发送 POST 请求
+            const response = await fetch("https://nlp-demo.szmckj.cn/api/chat/analysis", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_input: messageText,
+                    chat_id: "f47e82a1-1878-453f-81e9-e9641773abd6",
+                    database_id: "string",
+                }),
             });
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP error: ${response.status}`);
             }
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-
-            let accumulatedMessage = ''; // 用于存储累积的消息内容
-            // 创建机器人消息容器
+            // 初始化 dataContent
+            let dataContent = ''; // 用于累积 Markdown 内容
+            // 创建 bot 消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
             const uniqueId = `audio-${Date.now()}`;
@@ -383,136 +519,238 @@ async function sendMessagedemo() {
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
                 <div class="message-content">
                     <div class="message-text">
-                        <div class="loading-indicator">正在生成...</div> <!-- 添加“生成中”效果 -->
+                        <div class="loading-indicator">正在生成...</div> <!-- 加载指示器 -->
                     </div>
-                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${dataContent}')"></i>
                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
                     <audio id="${uniqueId}" style="display:none"></audio>
                 </div>
             `;
             document.getElementById('chat-messages').appendChild(botMessage);
             // 获取消息文本容器
-            const messageTextContainer = botMessage.querySelector('.message-text');
+            const contentDiv = botMessage.querySelector('.message-text');
             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
-            // 用于存储当前事件的容器
-            let currentStepContainer = null;
-            let currentUpdateContainer = null;
-            let step3Buffer = ''; // 用于存储 step3 的 Markdown 内容
-            let isStep3Active = false; // 标记当前是否在处理 step3
+            // 初始化 Markdown 渲染器
+            const md = window.markdownit({
+                html: true,
+                linkify: true,
+                typographer: true,
+            }).use(window.markdownitTaskLists, {
+                enabled: true,
+                label: true,
+                labelAfter: true,
+            });
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = ''; // 用于存储未完成的事件块
+            let currentMarkdown = ''; // 用于累积要渲染的 Markdown 内容
 
+            function updateContent(newMarkdown, isHeader = false) {
+                if (isHeader) {
+                    currentMarkdown += `\n\n---\n\n${newMarkdown}\n\n`; // 添加标题和分割线
+                } else {
+                    currentMarkdown += newMarkdown; // 拼接流式更新内容
+                }
+                contentDiv.innerHTML = md.render(currentMarkdown); // 渲染 Markdown
+            }
+
+            // 处理 SSE 数据块
+            function processSSEChunk(chunk) {
+                const lines = chunk.split(/(?<=\n)/); // 保留换行符
+                let currentEvent = null;
+                for (const line of lines) {
+                    if (line.startsWith("event:")) {
+                        currentEvent = line.slice(6).trim();
+                    } else if (line.startsWith("data:")) {
+                        const content = line.slice(5);
+                        if (currentEvent === "update") {
+                            dataContent += content;
+                        } else if (currentEvent === "Done") {
+                            while (
+                                line + 1 < lines.length &&
+                                lines[line + 1].trim().startsWith("data:")
+                            ) {
+                                line++;
+                            }
+                            continue;
+                        } else {
+                            // 非 update 或 Done 的 event 作为标题显示
+                            updateContent(`### ${currentEvent}: ${content}\n\n`, true);
+                        }
+                    }
+                }
+                // 如果是 `update` 事件，渲染累积的 Markdown 数据
+                if (currentEvent === "update") {
+                    updateContent(dataContent); // 更新页面
+                    dataContent = ''; // 清空累积内容
+                }
+            }
+
+            // 读取和处理 SSE 流
             async function read() {
                 const { done, value } = await reader.read();
                 if (done) {
-                    // 数据全部接收完毕，统一替换为 Markdown 渲染结果
-                    if (isStep3Active) {
-                        //                         // 追加 Markdown 表格
-                        //                         step3Buffer += `
-                        // | Column 1 | Column 2 |
-                        // |----------|----------|
-                        // | Data 1   | Data 2   |
-                        //                         `;
-                        //                         console.log('Step3 Buffer:', step3Buffer); // 调试：打印 step3Buffer
-                        currentUpdateContainer.innerHTML = marked.parse(step3Buffer); // 渲染 Markdown
-                        isStep3Active = false; // 重置标记
-                    }
+                    // 数据全部接收完毕
                     playButton.style.display = 'block'; // 显示播放按钮
-
+                    streamingInProgress = false; // 重置流式标志
                     return;
                 }
-                const responseText = decoder.decode(value);
-                // 解析 SSE 格式的数据
-                const lines = responseText.split('\n');
-                console.log('Received response:', lines);
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (line.startsWith('event:')) {
-                        const eventName = line.split(':')[1].trim();
-                        if (eventName.startsWith('step')) {
-                            // 处理 step 事件
-                            currentStepContainer = document.createElement('div');
-                            currentStepContainer.className = 'step-container';
-                            messageTextContainer.appendChild(currentStepContainer);
-
-                            const stepTitle = document.createElement('div');
-                            stepTitle.className = 'step-title';
-                            stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
-                            currentStepContainer.appendChild(stepTitle);
-                            // 清空 update 容器
-                            currentUpdateContainer = null;
-                            // 如果是 step3，标记为 active
-                            if (eventName === 'step3') {
-                                isStep3Active = true;
-                                step3Buffer = ''; // 清空 step3 的缓存
-                            } else {
-                                isStep3Active = false;
-                            }
-                        } else if (eventName === 'Update' || eventName === 'update') {
-                            // 处理 update 事件
-                            if (!currentUpdateContainer) {
-                                currentUpdateContainer = document.createElement('div');
-                                currentUpdateContainer.className = 'update-container';
-                                messageTextContainer.appendChild(currentUpdateContainer);
-
-                                // 移除“生成中”效果
-                                const loadingIndicator = messageTextContainer.querySelector('.loading-indicator');
-                                if (loadingIndicator) {
-                                    loadingIndicator.remove();
-                                }
-                            }
-
-                        } else if (eventName === 'Done') {
-                            // 如果是 step3 的 Done 事件，统一渲染 Markdown
-                            if (isStep3Active) {
-                                //                                 // 追加 Markdown 表格
-                                //                                 step3Buffer += `
-                                // | Column 1 | Column 2 |
-                                // |----------|----------|
-                                // | Data 1   | Data 2   |
-                                //                                 `;
-                                //                                 console.log('Step3 Buffer:', step3Buffer); // 调试：打印 step3Buffer
-                                currentUpdateContainer.innerHTML = marked.parse(step3Buffer); // 渲染 Markdown
-                                isStep3Active = false; // 重置标记
-                            }
-                            // 忽略 Done 事件，并跳过后续的 data 行
-                            while (i + 1 < lines.length && lines[i + 1].trim().startsWith('data:')) {
-                                i++; // 跳过 data 行
-                            }
-                            continue;
-                        }
-                    } else if (line.startsWith('data:')) {
-                        const data = line.split(':')[1].trim();
-                        if (currentStepContainer && !currentUpdateContainer) {
-                            // 将数据追加到 step 容器
-                            const stepTitle = currentStepContainer.querySelector('.step-title');
-                            stepTitle.innerHTML += ` ${data}`;
-                        } else if (currentUpdateContainer) {
-
-                            if (isStep3Active) {
-                                // 如果是 step3，将数据追加到缓存
-                                step3Buffer += data;
-                                // 流式显示原始内容
-                                currentUpdateContainer.innerHTML += data;
-                            } else {
-                                // 其他步骤直接渲染
-                                currentUpdateContainer.innerHTML += data;
-                            }
-                            accumulatedMessage += data; // 更新 accumulatedMessage
-
-                        }
-                    }
+                buffer += decoder.decode(value, { stream: true });
+                // 处理事件块
+                let boundary = buffer.lastIndexOf("\n\n");
+                while (boundary !== -1) {
+                    const completeChunk = buffer.slice(0, boundary); // 提取完整块
+                    buffer = buffer.slice(boundary + 2); // 移除已处理部分
+                    processSSEChunk(completeChunk); // 处理块
+                    boundary = buffer.lastIndexOf("\n\n"); // 查找下一个事件块的分隔符
                 }
                 // 滚动到底部
                 const chatMessages = document.getElementById('chat-messages');
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                await read();
+                await read(); // 继续读取
             }
-            await read();
+            await read(); // 开始读取
         } catch (error) {
-            console.error('Fetch failed:', error);
+            console.error("Error during SSE POST request:", error);
+            streamingInProgress = false; // 重置流式标志
         }
     }
 }
+
+// async function sendMessagedemo() {
+//     const input = document.getElementById('chat-input');
+//     const messageText = input.innerHTML;
+//     if (messageText) {
+//         // Add user message
+//         const userMessage = document.createElement('div');
+//         userMessage.className = 'message user-message';
+//         userMessage.innerHTML = `
+//         <div class="message-content">
+//           <div class="message-text">${messageText}</div>
+//         </div>
+//         <img src="images/user.png" alt="User Avatar" class="avatar">
+//       `;
+//         document.getElementById('chat-messages').appendChild(userMessage);
+//         // Clear input
+//         input.innerHTML = '';
+
+//         try {
+//             // Send POST request
+//             const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id }),
+//             });
+
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+
+//             const reader = response.body.getReader();
+//             const decoder = new TextDecoder('utf-8');
+//             let buffer = ''; // Buffer for incomplete chunks
+//             let dataContent = ''; // Accumulated Markdown content
+
+//             // Create bot message container
+//             const botMessage = document.createElement('div');
+//             botMessage.className = 'message bot-message';
+//             const uniqueId = `audio-${Date.now()}`;
+//             botMessage.innerHTML = `
+//           <img src="images/robot.png" alt="Bot Avatar" class="avatar">
+//           <div class="message-content">
+//             <div class="message-text">
+//               <div class="loading-indicator">正在生成...</div> <!-- Loading indicator -->
+//             </div>
+//             <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${dataContent}')"></i>
+//             <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+//             <audio id="${uniqueId}" style="display:none"></audio>
+//           </div>
+//         `;
+//             document.getElementById('chat-messages').appendChild(botMessage);
+
+//             // Get message text container
+//             const messageTextContainer = botMessage.querySelector('.message-text');
+//             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+//             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+
+//             // Initialize Markdown renderer
+//             const md = window.markdownit({
+//                 html: true,
+//                 linkify: true,
+//                 typographer: true,
+//             });
+
+//             // Check if markdownitTaskLists is available
+//             if (typeof window.markdownitTaskLists === 'function') {
+//                 md.use(window.markdownitTaskLists, {
+//                     enabled: true,
+//                     label: true,
+//                     labelAfter: true,
+//                 });
+//             } else {
+//                 console.error('markdownitTaskLists plugin is not loaded!');
+//             }
+
+//             // Function to process SSE chunks
+//             function processSSEChunk(chunk) {
+//                 const lines = chunk.split(/(?<=\n)/); // Preserve newlines
+//                 let currentEvent = null;
+
+//                 for (const line of lines) {
+//                     if (line.startsWith('event:')) {
+//                         currentEvent = line.slice(6).trim();
+//                     } else if (line.startsWith('data:')) {
+//                         const content = line.slice(5);
+//                         if (currentEvent === 'update') {
+//                             dataContent += content; // Accumulate Markdown content
+//                             // Render the accumulated content
+//                             messageTextContainer.innerHTML = md.render(dataContent);
+//                         } else if (currentEvent.startsWith('step')) {
+//                             // Display step events as headers
+//                             messageTextContainer.innerHTML += `<h3>${currentEvent}: ${content}</h3>`;
+//                         } else if (currentEvent === 'Done') {
+//                             // Skip additional data lines for 'Done' event
+//                             continue;
+//                         }
+//                     }
+//                 }
+//             }
+
+//             // Read and process SSE stream
+//             async function read() {
+//                 const { done, value } = await reader.read();
+//                 if (done) {
+//                     // Data fully received, render final Markdown
+//                     messageTextContainer.innerHTML = md.render(dataContent);
+//                     playButton.style.display = 'block'; // Show play button
+//                     return;
+//                 }
+
+//                 buffer += decoder.decode(value, { stream: true });
+
+//                 // Process event chunks
+//                 let boundary = buffer.lastIndexOf('\n\n');
+//                 while (boundary !== -1) {
+//                     const completeChunk = buffer.slice(0, boundary); // Extract complete chunk
+//                     buffer = buffer.slice(boundary + 2); // Remove processed part
+//                     processSSEChunk(completeChunk); // Process the chunk
+//                     boundary = buffer.lastIndexOf('\n\n'); // Find next boundary
+//                 }
+
+//                 // Scroll to bottom
+//                 const chatMessages = document.getElementById('chat-messages');
+//                 chatMessages.scrollTop = chatMessages.scrollHeight;
+
+//                 await read(); // Continue reading
+//             }
+
+//             await read(); // Start reading
+//         } catch (error) {
+//             console.error('Fetch failed:', error);
+//         }
+//     }
+// }
 
 // 是否开启知识库搜素
 function handleCheckboxChange(checkbox) {
@@ -637,7 +875,21 @@ function handleButtonClick(button) {
 
 // 需要初始化的api
 window.onload = function () {
-    this.md = new markdownit()
+    // 创建 markdown-it 实例并注册 task-lists 插件
+    this.md = window
+        .markdownit({
+            html: true,
+            linkify: true,
+            typographer: true,
+        })
+        .use(window.markdownitTaskLists, {
+            enabled: true,
+            label: true,
+            labelAfter: true,
+        });
+    // this.md = new markdownit()
+    // document.getElementById('chat-messages').innerHTML = this.md.render(`根据根据查询结果，梧州市烟草专卖局的部分人员名单如下：\n\n- 测试，手机号：13530838018\n- 袁培，手机号：13977410718，邮箱：00000001029@farhr.com\n- 黄永明，手机号：13877498515，邮箱：00000001028@farhr.com`);
+    // console.log("onload",this.md.render(`根据查询结果，梧州市烟草专卖局的部分人员名单如下：-测试，手机号：13530838018-袁培，手机号：13977410718，邮箱：00000001029@farhr.com-黄永明，手机号：13877498515，邮箱：00000001028@farhr.com`))
     // console.log("onload", this.md)
     getChatId()
     fetchRandomQuestion();
