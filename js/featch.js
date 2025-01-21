@@ -238,7 +238,7 @@ async function sendMessage() {
         userMessage.className = 'message user-message';
         userMessage.innerHTML = `
             <div class="message-content">
-                <div class="message-text">${messageText}</div>
+                <div class="message-text" style="color:white">${messageText}</div>
             </div>
             <img src="images/user.png" alt="User Avatar" class="avatar">
         `;
@@ -266,7 +266,7 @@ async function sendMessage() {
             const uniqueId = `audio-${Date.now()}`;
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
+                <div class="message-content" style="background-color: #e5e5e5;">
                     <div class="message-text">${accumulatedMessage}</div>
                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
@@ -288,12 +288,13 @@ async function sendMessage() {
                 const responseText = decoder.decode(value);
                 // 解析SSE格式的数据
                 const lines = responseText.split('\n');
+                console.log(lines)
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
-                    if (line.startsWith('event: Update')) {
+                    if (line.startsWith('event:update')) {
                         // 找到对应的data行
                         const dataLine = lines[i + 1]?.trim();
-                        if (dataLine && dataLine.startsWith('data: ')) {
+                        if (dataLine && dataLine.startsWith('data:')) {
                             const data = dataLine.slice(5).trim();
                             if (data) {
                                 // 累积AI消息
