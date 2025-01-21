@@ -9196,7 +9196,7 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
 
   .mes {
 	cursor: pointer;
-	background-color: rgb(235, 235, 235);
+	background-color: #f4f3f3;
 	margin: 5px;
 	padding: 5px;
 	border-radius: 5px;
