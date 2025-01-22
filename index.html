@@ -83,7 +83,7 @@
                         <a class="rd-nav-link" href="about-us.html">应用场景</a>
                       </li>
                       <li class="rd-nav-item">
-                        <a class="rd-nav-link" href="services.html">服务</a>
+                        <a class="rd-nav-link" href="services.html">对话服务</a>
                         <!-- <ul class="rd-menu rd-navbar-dropdown">
                           <li class="rd-dropdown-item">
                             <a
@@ -93,6 +93,9 @@
                             >
                           </li>
                         </ul> -->
+                      </li>
+                      <li class="rd-nav-item">
+                        <a class="rd-nav-link" href="test.html">test_demo</a>
                       </li>
                       <!-- <li class="rd-nav-item">
                         <a class="rd-nav-link" href="#">Pages</a>
@@ -186,9 +189,9 @@
                           </li>
                         </ul>
                       </li> -->
-                      <li class="rd-nav-item">
+                      <!-- <li class="rd-nav-item">
                         <a class="rd-nav-link" href="contacts.html">联系我们</a>
-                      </li>
+                      </li> -->
                     </ul>
                     <!-- <div class="rd-navbar-button-block">
                       <a
@@ -262,12 +265,8 @@
                   <button id="refresh-question" class="btn btn-sm btn-outline-secondary position-absolute" style="right: 0px;display: block;" onclick="fetchRandomQuestion()">
                     <i class="fa fa-refresh"></i> 刷新
                   </button>
-                  <div id="question" class="mb-3" style="display: block;padding-right: 60px;">暂无内容......</div>
-                  <div id="options" class="list-group">
-                    <button id="optionA" type="button" class="list-group-item list-group-item-action"></button>
-                    <button id="optionB" type="button" class="list-group-item list-group-item-action"></button>
-                    <button id="optionC" type="button" class="list-group-item list-group-item-action"></button>
-                    <button id="optionD" type="button" class="list-group-item list-group-item-action"></button>
+                  <div id="questionB" class="mb-3" style="display: block;padding-right: 60px;">暂无内容......</div>
+                  <div id="optionsB" class="list-group">
                   </div>
                 </div>
                 </div>
@@ -277,10 +276,10 @@
               <div class="animate-box">
                 <!-- 添加按钮组 -->
                 <div class="button-group wow fadeIn" data-wow-delay="0.35s">
-                  <button id="show-questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">推荐相似题</button>
-                  <button id="show-text" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法条推荐</button>
-                  <button id="show-analysis" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法理分析</button>
-              </div>
+                    <button id="show-questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">推荐相似题</button>
+                    <button id="show-text" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法条推荐</button>
+                    <button id="show-analysis" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法理分析</button>
+                </div>
               </div>
               <div class="button-group wow fadeIn" data-wow-delay="0.35s">
                 <!-- 显示内容的区域 -->
@@ -345,7 +344,7 @@
                         overflow-wrap: break-word;
                       "
                     ></div>
-                        <button id="send-button" onclick="sendMessage()">发送</button>
+                        <button id="send-button" onclick="sendMessage()" style="display: block;">发送</button>
                     </div>
                 </div>
                 </div>
@@ -362,11 +361,7 @@
                       <i class="fa fa-refresh"></i> 刷新
                     </button>
                     <div id="questionA" class="mb-3" style="display: block;padding-right: 60px;">暂无内容......</div>
-                    <div id="options" class="list-group">
-                      <button id="optiona" type="button" class="list-group-item list-group-item-action"></button>
-                      <button id="optionb" type="button" class="list-group-item list-group-item-action"></button>
-                      <button id="optionc" type="button" class="list-group-item list-group-item-action"></button>
-                      <button id="optiond" type="button" class="list-group-item list-group-item-action"></button>
+                    <div id="optionsA" class="list-group">
                     </div>
                   </div>
                   </div>

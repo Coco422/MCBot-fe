@@ -9180,19 +9180,6 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
 	border-radius: 4px;
 	margin-right: 8px;
   }
-  
-  #send-button {
-	padding: 8px 16px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-  }
-  
-  #send-button:hover {
-	background-color: #0056b3;
-  }
 
   .mes {
 	cursor: pointer;
@@ -9276,11 +9263,27 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
+	display: none;
 }
 
 #send-button:hover {
 	background-color: #0056b3;
 }
+
+/* 按钮样式 */
+#send-button_QA {
+	padding: 8px 16px;
+	background-color: #1FDE82;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#send-button_QA:hover {
+	background-color: #18c772;
+}
+
 .blue-top {
   position: absolute;
   top: -150px;
@@ -9435,7 +9438,7 @@ h5 {
     padding: 10px;
     overflow-y: auto;
     display: flex;
-    height: 89%;
+    height: 86%;
     flex-direction: column;
     gap: 10px;
 }
@@ -9508,7 +9511,7 @@ h5 {
 		padding: 10px;
 		overflow-y: auto;
 		display: flex;
-		height: 89%;
+		height: 86%;
 		flex-direction: column;
 		gap: 10px;
 	}
@@ -9576,7 +9579,7 @@ h5 {
 	.message-text {
 		font-family: Arial, sans-serif;
 		line-height: 1.6;
-		color: #333;
+		/* color: #333; */
 	}
 	
 	.message-text h3 {

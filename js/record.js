@@ -5,7 +5,7 @@ let isRecording = false;
 // 获取用户麦克风权限并开始录音
 document.getElementById('record_button').addEventListener('click', async () => {
     const button = document.getElementById('record_button');
-    
+
     if (!isRecording) {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -19,6 +19,8 @@ document.getElementById('record_button').addEventListener('click', async () => {
                 audioChunks = []; // 清空录音数据
             };
             mediaRecorder.start();
+
+            document.getElementById('record_button').style.backgroundColor = "red";
             isRecording = true;
             button.innerText = "停";
             // document.getElementById('result').innerText = "录音中...";
@@ -31,6 +33,8 @@ document.getElementById('record_button').addEventListener('click', async () => {
             mediaRecorder.stop();
             isRecording = false;
             button.innerText = "录";
+            document.getElementById('record_button').style.backgroundColor = "#007bff";
+
             // document.getElementById('result').innerText = "录音已停止，正在上传...";
         }
     }
@@ -50,11 +54,11 @@ function record_voice(audioBlob) {
             "Content-Type": "multipart/form-data", // 设置请求头
         },
     })
-    .then(response => {
-        console.log("识别结果:", response.data);
-        document.getElementById('chat-input').innerText = response.data.text;
-    })
-    .catch(error => {
-        console.error("识别失败:", error);
-    });
+        .then(response => {
+            console.log("识别结果:", response.data);
+            document.getElementById('chat-input').innerText = response.data.text;
+        })
+        .catch(error => {
+            console.error("识别失败:", error);
+        });
 }
