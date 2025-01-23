@@ -13,10 +13,10 @@
       <div class="grid-container">
         <!-- 摘要 -->
         <div class="grid-item">
-            <p style="font-size: 24px;font-weight: bold;border-bottom: 1px solid black;">本考试是<span style="color: rgb(238, 63, 63);">烟草执法资格考试模拟练习</span>，共计<span style="color:rgb(238, 63, 63) ;">80</span>道题，满分<span style="color:rgb(238, 63, 63) ;">100</span>分，单选题。题库中共收录相关题目<span style="color: rgb(238, 63, 63);">486</span>道，</p>
+            <p style="font-size: 24px;font-weight: bold;border-bottom: 1px solid black;">烟草执法资格考试题库中共收录<span style="color: rgb(238, 63, 63);">486</span>道题目，<span style="color: rgb(238, 63, 63);">考卷模拟烟草执法资格考试</span>，共计<span style="color:rgb(238, 63, 63) ;">80</span>道题，满分<span style="color:rgb(238, 63, 63) ;">100</span>分，单选题。</p>
             <ol>
-                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 15px;">1.根据《烟草专卖执法资格证考试题库》（2017年版）任意节选组合，单选题60个（30分），多选题25个（55分），判断题15个（15分），每次随机选取定量题目组成考卷，满分100分，以90分为优、80分为良。</li>
-                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 15px;">2.主要涉及《中华人民共和国烟草专卖法实施条例》，法条共11个章节，66条法条。</li>
+                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 10px;">1.根据《烟草专卖执法资格证考试题库》（2017年版）任意节选组合，单选题60个（30分），多选题25个（55分），判断题15个（15分），每次随机选取定量题目组成考卷，满分100分，以90分为优、80分为良。</li>
+                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 10px;">2.主要涉及《中华人民共和国烟草专卖法实施条例》，法条共11个章节，66条法条。</li>
             </ol>
         </div>
         <!-- step8 内容 -->
@@ -87,12 +87,13 @@
             <!-- 机器人消息 -->
             <div class="message bot-message">
               <img src="images/robot.png" alt="User Avatar" class="avatar" />
-              <div class="message-content">
+              <!-- QA 问答 -->
+              <div class="message-content" id="qa_messages">
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('你好，我想问一个问题。')"
+                  onclick="selectMessage('你是谁？')"
                 >
-                  你好，我想问一个问题。
+                  你是谁？
                 </div>
                 <div
                   class="message-text1 mes"
@@ -106,6 +107,34 @@
                 >
                   谢谢你的帮助！
                 </div>
+              </div>
+              <!-- 数据问答 -->
+              <div class="message-content" id="data_messages" style="display: none;">
+                <div
+                  class="message-text1 mes"
+                  onclick="selectMessage('3799这道题的答对人数和答错人数。')"
+                >
+                  3799这道题的答对人数和答错人数
+                </div>
+                <div
+                  class="message-text1 mes"
+                  onclick="selectMessage('3779这道题的总分、考试次数、平均得分。')"
+                >
+                  3779这道题的总分、考试次数、平均得分
+                </div>
+                <div
+                  class="message-text1 mes"
+                  onclick="selectMessage('第一章到第十章法条的相关题目各有多少道?')"
+                >
+                  第一章到第十章法条的相关题目各有多少道?
+                </div>
+                <div
+                  class="message-text1 mes"
+                  onclick="selectMessage('得分前五的考试是哪几个?')"
+                >
+                  得分前五的考试是哪几个？
+                </div>
+           
               </div>
             </div>
             <!-- 用户消息 -->

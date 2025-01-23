@@ -201,6 +201,8 @@ function switchPanel(panelType, showAlert = true) {
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'block';
             document.getElementById('send-button').style.display = 'none';
+            document.getElementById('qa_messages').style.display = 'block';
+            document.getElementById('data_messages').style.display = 'none';
             showMessage('已切换到 QA问答 模式');
         }
         // 这里可以添加 QA 问答相关的逻辑
@@ -209,6 +211,8 @@ function switchPanel(panelType, showAlert = true) {
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'none';
             document.getElementById('send-button').style.display = 'block';
+            document.getElementById('qa_messages').style.display = 'none';
+            document.getElementById('data_messages').style.display = 'block';
             showMessage('已切换到 数据看板 模式');
         }
         // 这里可以添加数据看板相关的逻辑

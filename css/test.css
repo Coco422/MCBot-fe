@@ -238,3 +238,17 @@ button {
     height: auto; /* 高度自适应 */
   }
 }
+
+
+.message-text2 table {
+  width: 100%;
+  border-collapse: collapse; /* 合并边框 */
+}
+.message-text2  th, td {
+  border: 1px solid #000; /* 添加边框 */
+  padding: 8px; /* 添加内边距 */
+  text-align: left; /* 文本对齐方式 */
+}
+.message-text2 th {
+  background-color: #f2f2f2; /* 表头背景色 */
+}
