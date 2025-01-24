@@ -737,7 +737,7 @@ async function QAsendMessage() {
                     'Content-Type': 'application/json'
                 },
                 // question_id: this.idtest,
-                body: JSON.stringify({ user_input: messageText, if_kb: "false", question_id: this.idtest, chat_id: this.chat_id })
+                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: this.chat_id })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
