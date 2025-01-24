@@ -8,9 +8,28 @@ const barchartData = {
         left: '10%',   // 左边距
         right: '10%'   // 右边距
     },
+    tooltip: {
+        trigger: 'axis', // 按坐标轴触发
+        formatter: function (params) {
+            // 自定义提示框内容
+            let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+            params.forEach(param => {
+                result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+            });
+            return result;
+        }
+    },
     xAxis: {
         type: 'category',
-        data: []
+        data: [],
+        axisLabel: {
+            formatter: function(value) {
+                if (value.length > 6) {
+                    return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
+                }
+                return value;
+            }
+        }
     },
     yAxis: {
         type: 'value'
@@ -30,6 +49,12 @@ const piechartData = {
         left: '10%',   // 左边距
         right: '10%'   // 右边距
     },
+    // tooltip: {
+    //     trigger: 'item', // 按数据项触发
+    //     formatter: function (params) {
+    //         return `${params.name}: ${params.value} (${(params.percent).toFixed(2)}%)`;
+    //     }
+    // },
     tooltip: {
         trigger: 'item'
     },
@@ -51,9 +76,27 @@ const linechartData = {
         left: '10%',   // 左边距
         right: '10%'   // 右边距
     },
+    tooltip: {
+        trigger: 'axis', // 按坐标轴触发
+        formatter: function (params) {
+            let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+            params.forEach(param => {
+                result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+            });
+            return result;
+        }
+    },
     xAxis: {
         type: 'category',
-        data: []
+        data: [],
+        axisLabel: {
+            formatter: function(value) {
+                if (value.length > 6) {
+                    return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
+                }
+                return value;
+            }
+        }
     },
     yAxis: {
         type: 'value'
@@ -76,9 +119,28 @@ function transformData(jsonData, type) {
                 left: '10%',   // 左边距
                 right: '10%'   // 右边距
             },
+            tooltip: {
+                trigger: 'axis', // 按坐标轴触发
+                formatter: function (params) {
+                    // 自定义提示框内容
+                    let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+                    params.forEach(param => {
+                        result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                    });
+                    return result;
+                }
+            },
             xAxis: {
                 type: 'category',
-                data: jsonData.categories
+                data: jsonData.categories,
+                axisLabel: {
+                    formatter: function(value) {
+                        if (value.length > 6) {
+                            return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
+                        }
+                        return value;
+                    }
+                }
             },
             yAxis: {
                 type: 'value'
@@ -118,9 +180,27 @@ function transformData(jsonData, type) {
                 left: '10%',   // 左边距
                 right: '10%'   // 右边距
             },
+            tooltip: {
+                trigger: 'axis', // 按坐标轴触发
+                formatter: function (params) {
+                    let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+                    params.forEach(param => {
+                        result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                    });
+                    return result;
+                }
+            },
             xAxis: {
                 type: 'category',
-                data: jsonData.categories
+                data: jsonData.categories,
+                axisLabel: {
+                    formatter: function(value) {
+                        if (value.length > 6) {
+                            return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
+                        }
+                        return value;
+                    }
+                }
             },
             yAxis: {
                 type: 'value'
