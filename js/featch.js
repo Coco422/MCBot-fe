@@ -9,68 +9,129 @@ const if_kb = false
 const chat_id = null
 const user_id = 'nlp-demo.szmckj.cn'
 const md = null
-
+const idtest = null
+const echartsData = '1111';
 // 获取随机题目接口
 function fetchRandomQuestion() {
     axios.get(`${BASE_URL}/api/randomquestion`)
         .then(function (response) {
-            document.getElementById('question').innerText = response.data.q_stem;
-            const options = response.data.options;
+            // 设置题目
+            document.getElementById('questionB').innerText = response.data.q_stem;
             this.id = response.data.id;
+
+            // 清空选项区域
+            const optionsContainer = document.getElementById('optionsB');
+            optionsContainer.innerHTML = ''; // 清空现有选项
+
+            const options = response.data.options;
             const splitData = options.split('|');
 
             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
                 // 如果选项是“正确|错误”格式
-                document.getElementById("optionA").textContent = `A、正确`;
-                document.getElementById("optionB").textContent = `B、错误`;
+                createOption(optionsContainer, "A", "正确");
+                createOption(optionsContainer, "B", "错误");
             } else {
                 // 创建一个对象来存储切分后的数据
                 const alloptions = {};
-                // 遍历切分后的数据
                 splitData.forEach(item => {
                     const [key, value] = item.split("、"); // 根据冒号切分键值对
                     alloptions[key] = value; // 将数据存储到对象中
                 });
-                // 将数据填入相应的选项
-                document.getElementById("optionA").textContent = `A、${alloptions["A"] || "无数据"}`;
-                document.getElementById("optionB").textContent = `B、${alloptions["B"] || "无数据"}`;
-                document.getElementById("optionC").textContent = `C、${alloptions["C"] || "无数据"}`;
-                document.getElementById("optionD").textContent = `D、${alloptions["D"] || "无数据"}`;
+
+                // 动态生成选项
+                createOption(optionsContainer, "A", alloptions["A"] || "无数据");
+                createOption(optionsContainer, "B", alloptions["B"] || "无数据");
+                createOption(optionsContainer, "C", alloptions["C"] || "无数据");
+                createOption(optionsContainer, "D", alloptions["D"] || "无数据");
             }
-        }).catch(function (err) {
-            console.log(err)
+        })
+        .catch(function (err) {
+            console.log(err);
         });
+}
+
+// 获取随机题目接口 test.html2
+function TestfetchRandomQuestion() {
+    // console.log("fetchRandomQuestion");
+    axios.get(`${BASE_URL}/api/randomquestion`)
+        .then(function (response) {
+            // 设置题目
+            document.getElementById('question').innerText = response.data.q_stem;
+            this.id = response.data.id;
+            // 清空选项区域
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = ''; // 清空现有选项
+
+            const options = response.data.options;
+            const splitData = options.split('|');
+
+            if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
+                // 如果选项是“正确|错误”格式
+                createOption(optionsContainer, "A", "正确");
+                createOption(optionsContainer, "B", "错误");
+            } else {
+                // 创建一个对象来存储切分后的数据
+                const alloptions = {};
+                splitData.forEach(item => {
+                    const [key, value] = item.split("、"); // 根据冒号切分键值对
+                    alloptions[key] = value; // 将数据存储到对象中
+                });
+
+                // 动态生成选项
+                createOption(optionsContainer, "A", alloptions["A"] || "无数据");
+                createOption(optionsContainer, "B", alloptions["B"] || "无数据");
+                createOption(optionsContainer, "C", alloptions["C"] || "无数据");
+                createOption(optionsContainer, "D", alloptions["D"] || "无数据");
+            }
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+}
+
+// 动态创建选项的函数
+function createOption(container, optionKey, optionValue) {
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'option-item';
+    optionDiv.textContent = `${optionKey}、${optionValue}`;
+    container.appendChild(optionDiv);
 }
 
 // 获取随机题目接口2
 function fetchRandomQuestionA() {
     axios.get(`${BASE_URL}/api/randomquestion`)
         .then(function (response) {
+            // 设置题目
             document.getElementById('questionA').innerText = response.data.q_stem;
-            const options = response.data.options;
             this.idA = response.data.id;
+            // 清空选项区域
+            const optionsContainer = document.getElementById('optionsA');
+            optionsContainer.innerHTML = ''; // 清空现有选项
+
+            const options = response.data.options;
             const splitData = options.split('|');
 
             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
                 // 如果选项是“正确|错误”格式
-                document.getElementById("optiona").textContent = `A、正确`;
-                document.getElementById("optionb").textContent = `B、错误`;
+                createOption(optionsContainer, "A", "正确");
+                createOption(optionsContainer, "B", "错误");
             } else {
                 // 创建一个对象来存储切分后的数据
                 const alloptions = {};
-                // 遍历切分后的数据
                 splitData.forEach(item => {
                     const [key, value] = item.split("、"); // 根据冒号切分键值对
                     alloptions[key] = value; // 将数据存储到对象中
                 });
-                // 将数据填入相应的选项
-                document.getElementById("optiona").textContent = `A、${alloptions["A"] || "无数据"}`;
-                document.getElementById("optionb").textContent = `B、${alloptions["B"] || "无数据"}`;
-                document.getElementById("optionc").textContent = `C、${alloptions["C"] || "无数据"}`;
-                document.getElementById("optiond").textContent = `D、${alloptions["D"] || "无数据"}`;
+
+                // 动态生成选项
+                createOption(optionsContainer, "A", alloptions["A"] || "无数据");
+                createOption(optionsContainer, "B", alloptions["B"] || "无数据");
+                createOption(optionsContainer, "C", alloptions["C"] || "无数据");
+                createOption(optionsContainer, "D", alloptions["D"] || "无数据");
             }
-        }).catch(function (err) {
-            console.log(err)
+        })
+        .catch(function (err) {
+            console.log(err);
         });
 }
 
@@ -546,6 +607,9 @@ async function sendMessagedemo() {
             const decoder = new TextDecoder("utf-8");
             let buffer = ''; // 用于存储未完成的事件块
             let currentMarkdown = ''; // 用于累积要渲染的 Markdown 内容
+            let step8Content = ''; // 用于存储 step8 的内容
+            let isStep8Active = false; // 标记是否正在处理 step8 的内容
+            let echartsData = null; // 用于存储 sqldata 的数据
 
             function updateContent(newMarkdown, isHeader = false) {
                 if (isHeader) {
@@ -563,10 +627,18 @@ async function sendMessagedemo() {
                 for (const line of lines) {
                     if (line.startsWith("event:")) {
                         currentEvent = line.slice(6).trim();
+                        // 如果检测到 step8 事件，开始累积 step8 的内容
+                        if (currentEvent === "step8") {
+                            isStep8Active = true;
+                        }
                     } else if (line.startsWith("data:")) {
                         const content = line.slice(5);
                         if (currentEvent === "update") {
                             dataContent += content;
+                            // 如果正在处理 step8 的内容，将 update 内容也累积到 step8Content
+                            if (isStep8Active) {
+                                step8Content += content;
+                            }
                         } else if (currentEvent === "Done") {
                             while (
                                 line + 1 < lines.length &&
@@ -575,9 +647,25 @@ async function sendMessagedemo() {
                                 line++;
                             }
                             continue;
+                        } else if (currentEvent === "sqldata") {
+                            // 处理 sqldata 事件
+                            this.echartsData = content; // 假设数据是 JSON 格式
+                            console.log('echartsData:', this.echartsData);
+                            // 创建 CustomEvent 对象
+                            const event = new CustomEvent('sqldataReceived', {
+                                detail: this.echartsData // 将数据作为 detail 传递
+                            });
+
+                            // 触发事件
+                            window.dispatchEvent(event);
+                            // 这里可以根据需要将 echartsData 传递给 ECharts 进行渲染
                         } else {
                             // 非 update 或 Done 的 event 作为标题显示
                             updateContent(`### ${currentEvent}: ${content}\n\n`, true);
+                            // 如果是 step8 事件，单独存储内容
+                            if (currentEvent === "step8") {
+                                step8Content += content;
+                            }
                         }
                     }
                 }
@@ -595,6 +683,9 @@ async function sendMessagedemo() {
                     // 数据全部接收完毕
                     playButton.style.display = 'block'; // 显示播放按钮
                     streamingInProgress = false; // 重置流式标志
+                    // 将 step8 的内容赋值给 id 为 step8 的 div
+                    document.getElementById('step8').classList.remove('has-content');
+                    document.getElementById('step8').innerText = step8Content;
                     return;
                 }
                 buffer += decoder.decode(value, { stream: true });
@@ -618,6 +709,104 @@ async function sendMessagedemo() {
         }
     }
 }
+
+// QA问答
+async function QAsendMessage() {
+    const input = document.getElementById('chat-input');
+    const messageText = input.innerHTML;
+    // const rendermessage = this.md.render(messageText);
+    console.log(messageText)
+    if (messageText) {
+        // 添加用户消息
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user-message';
+        userMessage.innerHTML = `
+            <div class="message-content">
+                <div class="message-text" style="color:white">${messageText}</div>
+            </div>
+            <img src="images/user.png" alt="User Avatar" class="avatar">
+        `;
+        document.getElementById('chat-messages').appendChild(userMessage);
+        // 清空输入框
+        input.innerHTML = '';
+        try {
+            // 发送POST请求
+            const response = await fetch(`${BASE_URL}/api/chat/train`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // question_id: this.idtest,
+                body: JSON.stringify({ user_input: messageText, if_kb: "false", question_id: this.idtest, chat_id: this.chat_id })
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedMessage = ''; // 用于存储累积的消息
+            // 创建机器人消息容器
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot-message';
+            const uniqueId = `audio-${Date.now()}`;
+            botMessage.innerHTML = `
+                <img src="images/robot.png" alt="Bot Avatar" class="avatar">
+                <div class="message-content">
+                    <div class="message-text">${accumulatedMessage}</div>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
+                    <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+                    <audio id="${uniqueId}" style="display:none"></audio>
+                </div>
+            `;
+            document.getElementById('chat-messages').appendChild(botMessage);
+            // 获取消息文本容器
+            const messageTextContainer = botMessage.querySelector('.message-text');
+            const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+            const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+            async function read() {
+                const { done, value } = await reader.read();
+                if (done) {
+                    // 显示播放按钮
+                    playButton.style.display = 'block';
+                    return;
+                }
+                const responseText = decoder.decode(value);
+                // 解析SSE格式的数据
+                const lines = responseText.split('\n');
+                console.log(lines)
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('event:update')) {
+                        // 找到对应的data行
+                        const dataLine = lines[i + 1]?.trim();
+                        if (dataLine && dataLine.startsWith('data:')) {
+                            const data = dataLine.slice(5).trim();
+                            if (data) {
+                                // 累积AI消息
+                                accumulatedMessage += data;
+                                // 使用 marked.js 将 Markdown 转换为 HTML
+                                const htmlContent = this.md.render(accumulatedMessage);
+                                // 更新机器人消息内容
+                                // setTimeout(() => {
+                                messageTextContainer.innerHTML = htmlContent;
+                                playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
+                                // }, 200);
+                                // 滚动到底部
+                                const chatMessages = document.getElementById('chat-messages');
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        }
+                    }
+                }
+                await read();
+            }
+            await read();
+        } catch (error) {
+            console.error('Fetch failed:', error);
+        }
+    }
+}
+
 
 // async function sendMessagedemo() {
 //     const input = document.getElementById('chat-input');
@@ -888,12 +1077,9 @@ window.onload = function () {
             label: true,
             labelAfter: true,
         });
-    // this.md = new markdownit()
-    // document.getElementById('chat-messages').innerHTML = this.md.render(`根据根据查询结果，梧州市烟草专卖局的部分人员名单如下：\n\n- 测试，手机号：13530838018\n- 袁培，手机号：13977410718，邮箱：00000001029@farhr.com\n- 黄永明，手机号：13877498515，邮箱：00000001028@farhr.com`);
-    // console.log("onload",this.md.render(`根据查询结果，梧州市烟草专卖局的部分人员名单如下：-测试，手机号：13530838018-袁培，手机号：13977410718，邮箱：00000001029@farhr.com-黄永明，手机号：13877498515，邮箱：00000001028@farhr.com`))
-    // console.log("onload", this.md)
     getChatId()
     fetchRandomQuestion();
+    TestfetchRandomQuestion()
     fetchRandomQuestionA();
 
     const defaultButton = document.getElementById('show-analysis');
@@ -901,7 +1087,6 @@ window.onload = function () {
     setTimeout(() => {
         fetchLegalAnalysis();
     }, 1000);
-    // fetchLegalAnalysis(); // 执行“法理分析”对应的逻辑
 
 
     displayRandomTexts();

@@ -1,0 +1,254 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh; /* 确保 body 高度占满屏幕 */
+}
+.container {
+  display: flex;
+  height: 100vh; /* 确保容器高度占满屏幕 */
+}
+/* 左边六分田子格 */
+.grid-container {
+  flex: 2; /* 占据2/3的宽度 */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2列 */
+  grid-template-rows: repeat(3, 1fr); /* 3行 */
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box; /* 防止 padding 影响布局 */
+}
+.grid-item {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  white-space: normal; /* 允许换行 */
+  overflow-wrap: break-word; /* 允许在单词内换行 */
+  word-break: break-all; /* 允许在任意字符间换行 */
+  overflow: visible; /* 移除 overflow: hidden; */
+  text-overflow: clip; /* 移除 text-overflow: ellipsis; */
+  overflow-y: auto;
+  white-space: normal;
+  padding: 10px; /* 内边距 */
+  box-sizing: border-box; /* 防止 padding 影响布局 */
+}
+/* 移除最后一个 .grid-item 的 border-bottom */
+.grid-item:last-child {
+  border-bottom: none;
+}
+/* 题目容器 */
+.question-container {
+  max-width: 600px;
+  margin: 0 auto;
+  border: none;
+  height: auto;
+  padding: 0;
+  font-size: 14px;
+  overflow-x: visible;
+  overflow-y: visible;
+  position: relative; /* 设置为相对定位，作为刷新按钮的定位参考 */
+}
+
+/* 题目和刷新按钮的布局 */
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative; /* 设置为相对定位，确保题目文本正常布局 */
+}
+
+/* 题目文本 */
+.question-text {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0; /* 移除默认的 margin */
+  padding-right: 80px; /* 为刷新按钮留出空间，避免题目文本与按钮重叠 */
+}
+
+/* 刷新按钮 */
+#refresh-question {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+  position: absolute; /* 设置为绝对定位 */
+  top: 0; /* 距离顶部 0 */
+  right: 0; /* 距离右侧 0 */
+  width: 100px; /* 按钮宽度 */
+  color: rgb(102, 102, 247); /* 按钮文字颜色 */
+}
+/* 选项列表 */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 选项之间的间距 */
+}
+/* 单个选项 */
+.option-item {
+  padding: 8px 12px; /* 减小内边距 */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px; /* 减小字体大小 */
+  font-weight: bold;
+}
+/* 选项悬停效果 */
+.option-item:hover {
+  background-color: #f0f0f0;
+}
+
+.text-container .text {
+  font-size: 14px;
+}
+
+.text-container {
+  height: auto;
+}
+
+
+.chart-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.chart-button {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #ffffff;
+  background-color: #1FDE82;
+  transition: background-color 0.3s ease;
+  border-radius: 0;
+}
+.chart-button:hover {
+  background-color: #3981DF;
+}
+.chart-button.active {
+  background-color: #3981DF;
+  color: white;
+  border-color: #3981DF;
+}
+.chart-container {
+  height: calc(100% - 50px);
+  width: 100%;
+  overflow: hidden;
+}
+
+#step8 {
+  /* text-indent: 2em; */
+    font-size: 16px;
+    padding-top: 20px;
+}
+
+.has-content {
+    text-indent: 2em;
+    font-size: 16px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+/* 双区域布局样式 */
+.dual-panel {
+  display: flex;
+  width: 100%; /* 占满父容器宽度 */
+}
+
+/* 每个区域的样式 */
+.panel {
+  font: 18px;
+  flex: 1; /* 平分宽度 */
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 高亮选中区域的样式 */
+.panel.active {
+  background-color: #e0f7fa; /* 浅蓝色背景 */
+  border-color: #00bcd4; /* 蓝色边框 */
+  font-weight: bold;
+}
+
+/* 右边聊天对话框 */
+.chat-container {
+  flex: 1; /* 占据1/3的宽度 */
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
+  height: 100vh; /* 高度占满屏幕 */
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+  box-sizing: border-box; /* 防止 padding 影响布局 */
+}
+
+.chat-container1 {
+  flex: 1; /* 聊天框占据剩余空间 */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* 高度占满父容器 */
+}
+
+.chat-messages1 {
+  flex: 1; /* 消息区域占据剩余空间 */
+  overflow-y: auto; /* 允许滚动 */
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-input {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.input-button-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#chat-input {
+  flex: 1;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* 在小屏幕上改为垂直排列 */
+  }
+  .grid-container {
+    grid-template-columns: 1fr; /* 在小屏幕上改为1列 */
+    grid-template-rows: repeat(6, 1fr); /* 6行 */
+  }
+  .chat-container {
+    border-left: none; /* 移除左边框 */
+    border-top: 1px solid #ccc; /* 添加顶部边框 */
+    height: auto; /* 高度自适应 */
+  }
+}
+
+
+.message-text2 table {
+  width: 100%;
+  border-collapse: collapse; /* 合并边框 */
+}
+.message-text2  th, td {
+  border: 1px solid #000; /* 添加边框 */
+  padding: 8px; /* 添加内边距 */
+  text-align: left; /* 文本对齐方式 */
+}
+.message-text2 th {
+  background-color: #f2f2f2; /* 表头背景色 */
+}
