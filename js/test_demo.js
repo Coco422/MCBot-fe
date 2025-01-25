@@ -12,9 +12,9 @@ const barchartData = {
         trigger: 'axis', // 按坐标轴触发
         formatter: function (params) {
             // 自定义提示框内容
-            let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+            let result = `名称：${params[0].name}<br>`; // 显示 x 轴名称
             params.forEach(param => {
-                result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                result += `值：${param.value}<br>`; // 显示系列名称和数据值
             });
             return result;
         }
@@ -60,7 +60,6 @@ const piechartData = {
     },
     series: [
         {
-            name: '访问来源',
             type: 'pie',
             radius: '50%',
             data: [
@@ -79,9 +78,10 @@ const linechartData = {
     tooltip: {
         trigger: 'axis', // 按坐标轴触发
         formatter: function (params) {
-            let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+            // 自定义提示框内容
+            let result = `名称：${params[0].name}<br>`; // 显示 x 轴名称
             params.forEach(param => {
-                result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                result += `值：${param.value}<br>`; // 显示系列名称和数据值
             });
             return result;
         }
@@ -123,9 +123,9 @@ function transformData(jsonData, type) {
                 trigger: 'axis', // 按坐标轴触发
                 formatter: function (params) {
                     // 自定义提示框内容
-                    let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+                    let result = `名称：${params[0].name}<br>`; // 显示 x 轴名称
                     params.forEach(param => {
-                        result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                        result += `值：${param.value}<br>`; // 显示系列名称和数据值
                     });
                     return result;
                 }
@@ -165,7 +165,7 @@ function transformData(jsonData, type) {
             },
             series: [
                 {
-                    name: '访问来源',
+                    // name: '访问来源',
                     type: 'pie',
                     radius: '50%',
                     data: jsonData.pieData
@@ -183,9 +183,10 @@ function transformData(jsonData, type) {
             tooltip: {
                 trigger: 'axis', // 按坐标轴触发
                 formatter: function (params) {
-                    let result = `${params[0].categories}<br>`; // 显示 x 轴名称
+                    // 自定义提示框内容
+                    let result = `名称：${params[0].name}<br>`; // 显示 x 轴名称
                     params.forEach(param => {
-                        result += `${param.categories}: ${param.values}<br>`; // 显示系列名称和数据值
+                        result += `值：${param.value}<br>`; // 显示系列名称和数据值
                     });
                     return result;
                 }
