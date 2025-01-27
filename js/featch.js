@@ -539,6 +539,7 @@ async function sendMessage() {
 let streamingInProgress = false;
 let currentMarkdown = ""; // 保存 Markdown 格式内容
 
+// 现在问题在于step8不能赋值 step3不能渲染markdown格式，输出内容多了很多空格莫名其妙
 async function sendMessagedemo() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
@@ -571,8 +572,13 @@ async function sendMessagedemo() {
             if (!response.ok) {
                 throw new Error(`HTTP error: ${response.status}`);
             }
-            // 初始化 dataContent
-            let dataContent = ''; // 用于累积 Markdown 内容
+
+            // 初始化 dataContent 和 step8Content
+            let dataContent = '';
+            let step8Content = '';
+            let isStep8Active = false;
+            const step8Div = document.getElementById('step8');
+
             // 创建 bot 消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
@@ -581,7 +587,7 @@ async function sendMessagedemo() {
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
                 <div class="message-content">
                     <div class="message-text">
-                        <div class="loading-indicator">正在生成...</div> <!-- 加载指示器 -->
+                        <div class="loading-indicator">正在生成...</div>
                     </div>
                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${dataContent}')"></i>
                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
@@ -589,10 +595,10 @@ async function sendMessagedemo() {
                 </div>
             `;
             document.getElementById('chat-messages').appendChild(botMessage);
+
             // 获取消息文本容器
             const contentDiv = botMessage.querySelector('.message-text');
-            const playButton = botMessage.querySelector(`#play_${uniqueId}`);
-            const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+
             // 初始化 Markdown 渲染器
             const md = window.markdownit({
                 html: true,
@@ -603,50 +609,69 @@ async function sendMessagedemo() {
                 label: true,
                 labelAfter: true,
             });
+
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
-            let buffer = ''; // 用于存储未完成的事件块
-            let currentMarkdown = ''; // 用于累积要渲染的 Markdown 内容
-            let step8Content = ''; // 用于存储 step8 的内容
-            let isStep8Active = false; // 标记是否正在处理 step8 的内容
+            let buffer = '';
+            let currentMarkdown = '';
+            let lastEventType = null;
             let echartsData = null; // 用于存储 sqldata 的数据
 
+            // 修改后的内容更新函数
             function updateContent(newMarkdown, isHeader = false) {
+                // 处理分隔符逻辑
                 if (isHeader) {
-                    currentMarkdown += `\n\n---\n\n${newMarkdown}\n\n`; // 添加标题和分割线
+                    if (lastEventType !== 'header') {
+                        currentMarkdown += `\n\n---\n\n`;
+                    }
+                    currentMarkdown += `### ${newMarkdown}\n\n`;
+                    lastEventType = 'header';
                 } else {
-                    currentMarkdown += newMarkdown; // 拼接流式更新内容
+                    if (currentMarkdown.includes('正在生成...')) {
+                        currentMarkdown = '';
+                    }
+                    currentMarkdown += newMarkdown;
+                    lastEventType = 'content';
                 }
-                contentDiv.innerHTML = md.render(currentMarkdown); // 渲染 Markdown
+                contentDiv.innerHTML = md.render(currentMarkdown);
             }
 
-            // 处理 SSE 数据块
+            // 修改后的 processSSEChunk 函数
             function processSSEChunk(chunk) {
-                const lines = chunk.split(/(?<=\n)/); // 保留换行符
+                const lines = chunk.split(/(?<=\n)/);
                 let currentEvent = null;
-                for (const line of lines) {
+                for (let line of lines) {
+                    line = line.trim();
+                    if (!line) continue;
                     if (line.startsWith("event:")) {
                         currentEvent = line.slice(6).trim();
-                        // 如果检测到 step8 事件，开始累积 step8 的内容
                         if (currentEvent === "step8") {
                             isStep8Active = true;
                         }
                     } else if (line.startsWith("data:")) {
-                        const content = line.slice(5);
-                        if (currentEvent === "update") {
+                        const content = line.slice(5).trim();
+                        if (!content) continue;
+
+                        // 更新 step8Div 和机器人消息内容的逻辑
+                        if (isStep8Active && currentEvent === "update") {
+                            step8Content += content;
+                            if (step8Div) {
+                                step8Div.classList.remove('has-content');
+                                step8Div.innerHTML = step8Content;
+                            }
                             dataContent += content;
-                            // 如果正在处理 step8 的内容，将 update 内容也累积到 step8Content
-                            if (isStep8Active) {
-                                step8Content += content;
+                            updateContent(dataContent);
+                            dataContent = '';
+                        } else if (currentEvent?.startsWith('step')) {
+                            const stepNumber = currentEvent.replace('step', '');
+                            const stepTitle = `Step ${stepNumber}: ${content}`;
+                            updateContent(stepTitle, true);
+                        } else if (currentEvent === "update") {
+                            dataContent += content;
+                            if (content.endsWith('.') || content.endsWith('。') || dataContent.length > 50) {
+                                updateContent(dataContent);
+                                dataContent = '';
                             }
-                        } else if (currentEvent === "Done") {
-                            while (
-                                line + 1 < lines.length &&
-                                lines[line + 1].trim().startsWith("data:")
-                            ) {
-                                line++;
-                            }
-                            continue;
                         } else if (currentEvent === "sqldata") {
                             // 处理 sqldata 事件
                             this.echartsData = content; // 假设数据是 JSON 格式
@@ -659,56 +684,219 @@ async function sendMessagedemo() {
                             // 触发事件
                             window.dispatchEvent(event);
                             // 这里可以根据需要将 echartsData 传递给 ECharts 进行渲染
-                        } else {
-                            // 非 update 或 Done 的 event 作为标题显示
-                            updateContent(`### ${currentEvent}: ${content}\n\n`, true);
-                            // 如果是 step8 事件，单独存储内容
-                            if (currentEvent === "step8") {
-                                step8Content += content;
-                            }
                         }
                     }
                 }
-                // 如果是 `update` 事件，渲染累积的 Markdown 数据
-                if (currentEvent === "update") {
-                    updateContent(dataContent); // 更新页面
-                    dataContent = ''; // 清空累积内容
+                if (dataContent.length > 0) {
+                    updateContent(dataContent);
+                    dataContent = '';
                 }
             }
 
-            // 读取和处理 SSE 流
             async function read() {
-                const { done, value } = await reader.read();
-                if (done) {
-                    // 数据全部接收完毕
-                    playButton.style.display = 'block'; // 显示播放按钮
-                    streamingInProgress = false; // 重置流式标志
-                    // 将 step8 的内容赋值给 id 为 step8 的 div
-                    document.getElementById('step8').classList.remove('has-content');
-                    document.getElementById('step8').innerText = step8Content;
-                    return;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        streamingInProgress = false;
+                        isStep8Active = false;
+                        return;
+                    }
+                    buffer += decoder.decode(value, { stream: true });
+                    let boundary;
+                    while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+                        const chunk = buffer.slice(0, boundary);
+                        buffer = buffer.slice(boundary + 2);
+                        processSSEChunk(chunk);
+                    }
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
-                buffer += decoder.decode(value, { stream: true });
-                // 处理事件块
-                let boundary = buffer.lastIndexOf("\n\n");
-                while (boundary !== -1) {
-                    const completeChunk = buffer.slice(0, boundary); // 提取完整块
-                    buffer = buffer.slice(boundary + 2); // 移除已处理部分
-                    processSSEChunk(completeChunk); // 处理块
-                    boundary = buffer.lastIndexOf("\n\n"); // 查找下一个事件块的分隔符
-                }
-                // 滚动到底部
-                const chatMessages = document.getElementById('chat-messages');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                await read(); // 继续读取
             }
-            await read(); // 开始读取
+            await read();
         } catch (error) {
             console.error("Error during SSE POST request:", error);
-            streamingInProgress = false; // 重置流式标志
+            streamingInProgress = false;
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'message-error';
+            errorDiv.textContent = '消息发送失败，请重试';
+            document.getElementById('chat-messages').appendChild(errorDiv);
         }
     }
 }
+
+
+// 2025 0125  发现问题，格式乱套
+
+// async function sendMessagedemo() {
+//     const input = document.getElementById('chat-input');
+//     const messageText = input.innerHTML;
+//     if (messageText) {
+//         // 添加用户消息
+//         const userMessage = document.createElement('div');
+//         userMessage.className = 'message user-message';
+//         userMessage.innerHTML = `
+//             <div class="message-content">
+//                 <div class="message-text">${messageText}</div>
+//             </div>
+//             <img src="images/user.png" alt="User Avatar" class="avatar">
+//         `;
+//         document.getElementById('chat-messages').appendChild(userMessage);
+//         // 清空输入框
+//         input.innerHTML = '';
+//         if (streamingInProgress) return;
+//         streamingInProgress = true;
+//         try {
+//             // 发送 POST 请求
+//             const response = await fetch("https://nlp-demo.szmckj.cn/api/chat/analysis", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({
+//                     user_input: messageText,
+//                     chat_id: "f47e82a1-1878-453f-81e9-e9641773abd6",
+//                     database_id: "string",
+//                 }),
+//             });
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error: ${response.status}`);
+//             }
+//             // 初始化 dataContent
+//             let dataContent = ''; // 用于累积 Markdown 内容
+//             // 创建 bot 消息容器
+//             const botMessage = document.createElement('div');
+//             botMessage.className = 'message bot-message';
+//             const uniqueId = `audio-${Date.now()}`;
+//             botMessage.innerHTML = `
+//                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
+//                 <div class="message-content">
+//                     <div class="message-text">
+//                         <div class="loading-indicator">正在生成...</div> <!-- 加载指示器 -->
+//                     </div>
+//                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${dataContent}')"></i>
+//                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+//                     <audio id="${uniqueId}" style="display:none"></audio>
+//                 </div>
+//             `;
+//             document.getElementById('chat-messages').appendChild(botMessage);
+//             // 获取消息文本容器
+//             const contentDiv = botMessage.querySelector('.message-text');
+//             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+//             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+//             // 初始化 Markdown 渲染器
+//             const md = window.markdownit({
+//                 html: true,
+//                 linkify: true,
+//                 typographer: true,
+//             }).use(window.markdownitTaskLists, {
+//                 enabled: true,
+//                 label: true,
+//                 labelAfter: true,
+//             });
+//             const reader = response.body.getReader();
+//             const decoder = new TextDecoder("utf-8");
+//             let buffer = ''; // 用于存储未完成的事件块
+//             let currentMarkdown = ''; // 用于累积要渲染的 Markdown 内容
+//             let step8Content = ''; // 用于存储 step8 的内容
+//             let isStep8Active = false; // 标记是否正在处理 step8 的内容
+//             let echartsData = null; // 用于存储 sqldata 的数据
+
+//             function updateContent(newMarkdown, isHeader = false) {
+//                 if (isHeader) {
+//                     currentMarkdown += `\n\n---\n\n${newMarkdown}\n\n`; // 添加标题和分割线
+//                 } else {
+//                     currentMarkdown += newMarkdown; // 拼接流式更新内容
+//                 }
+//                 contentDiv.innerHTML = md.render(currentMarkdown); // 渲染 Markdown
+//             }
+
+//             // 处理 SSE 数据块
+//             function processSSEChunk(chunk) {
+//                 const lines = chunk.split(/(?<=\n)/); // 保留换行符
+//                 let currentEvent = null;
+//                 for (const line of lines) {
+//                     if (line.startsWith("event:")) {
+//                         currentEvent = line.slice(6).trim();
+//                         // 如果检测到 step8 事件，开始累积 step8 的内容
+//                         if (currentEvent === "step8") {
+//                             isStep8Active = true;
+//                         }
+//                     } else if (line.startsWith("data:")) {
+//                         const content = line.slice(5);
+//                         if (currentEvent === "update") {
+//                             dataContent += content;
+//                             // 如果正在处理 step8 的内容，将 update 内容也累积到 step8Content
+//                             if (isStep8Active) {
+//                                 step8Content += content;
+//                             }
+//                         } else if (currentEvent === "Done") {
+//                             while (
+//                                 line + 1 < lines.length &&
+//                                 lines[line + 1].trim().startsWith("data:")
+//                             ) {
+//                                 line++;
+//                             }
+//                             continue;
+//                         } else if (currentEvent === "sqldata") {
+//                             // 处理 sqldata 事件
+//                             this.echartsData = content; // 假设数据是 JSON 格式
+//                             console.log('echartsData:', this.echartsData);
+//                             // 创建 CustomEvent 对象
+//                             const event = new CustomEvent('sqldataReceived', {
+//                                 detail: this.echartsData // 将数据作为 detail 传递
+//                             });
+
+//                             // 触发事件
+//                             window.dispatchEvent(event);
+//                             // 这里可以根据需要将 echartsData 传递给 ECharts 进行渲染
+//                         } else {
+//                             // 非 update 或 Done 的 event 作为标题显示
+//                             updateContent(`### ${currentEvent}: ${content}\n\n`, true);
+//                             // 如果是 step8 事件，单独存储内容
+//                             if (currentEvent === "step8") {
+//                                 step8Content += content;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 // 如果是 `update` 事件，渲染累积的 Markdown 数据
+//                 if (currentEvent === "update") {
+//                     updateContent(dataContent); // 更新页面
+//                     dataContent = ''; // 清空累积内容
+//                 }
+//             }
+
+//             // 读取和处理 SSE 流
+//             async function read() {
+//                 const { done, value } = await reader.read();
+//                 if (done) {
+//                     // 数据全部接收完毕
+//                     playButton.style.display = 'block'; // 显示播放按钮
+//                     streamingInProgress = false; // 重置流式标志
+//                     // 将 step8 的内容赋值给 id 为 step8 的 div
+//                     document.getElementById('step8').classList.remove('has-content');
+//                     document.getElementById('step8').innerText = step8Content;
+//                     return;
+//                 }
+//                 buffer += decoder.decode(value, { stream: true });
+//                 // 处理事件块
+//                 let boundary = buffer.lastIndexOf("\n\n");
+//                 while (boundary !== -1) {
+//                     const completeChunk = buffer.slice(0, boundary); // 提取完整块
+//                     buffer = buffer.slice(boundary + 2); // 移除已处理部分
+//                     processSSEChunk(completeChunk); // 处理块
+//                     boundary = buffer.lastIndexOf("\n\n"); // 查找下一个事件块的分隔符
+//                 }
+//                 // 滚动到底部
+//                 const chatMessages = document.getElementById('chat-messages');
+//                 chatMessages.scrollTop = chatMessages.scrollHeight;
+//                 await read(); // 继续读取
+//             }
+//             await read(); // 开始读取
+//         } catch (error) {
+//             console.error("Error during SSE POST request:", error);
+//             streamingInProgress = false; // 重置流式标志
+//         }
+//     }
+// }
 
 // QA问答
 async function QAsendMessage() {
