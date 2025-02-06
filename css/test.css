@@ -174,6 +174,11 @@ body {
 
 /* 高亮选中区域的样式 */
 .panel.active {
+  background-color: #e0fae3; /* 浅蓝色背景 */
+  border-color: #00d483; /* 蓝色边框 */
+  font-weight: bold;
+}
+.panel.active_data {
   background-color: #e0f7fa; /* 浅蓝色背景 */
   border-color: #00bcd4; /* 蓝色边框 */
   font-weight: bold;
@@ -251,4 +256,135 @@ button {
 }
 .message-text2 th {
   background-color: #f2f2f2; /* 表头背景色 */
+}
+
+
+/* 历史记录弹框的样式 */
+.history-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 25%; /* 占父容器或视口宽度的75%，根据实际情况调整 */
+  height: 100%; /* 整个屏幕的高度 */
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(100%); /* 初始状态隐藏在右侧 */
+}
+
+/* 当添加 active 类时，弹框滑入显示 */
+.history-modal.active {
+  transform: translateX(0);
+}
+
+/* 弹框头部样式 */
+.history-modal .modal-header {
+  padding: 10px;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 弹框内容区域 */
+.history-modal .modal-body {
+  /* padding: 10px; */
+  height: 55px;
+  line-height: 55px;
+}
+.modal-body ul li {
+  padding-left: 10px;
+  border-bottom: 1px solid #ccc; /* 添加下划线 */
+  cursor: pointer;
+}
+.modal-body ul li:last-child {
+  border-bottom: none; /* 最后一个不显示下划线 */
+}
+.modal-body ul li:hover {
+  background-color: #ebebeb;
+}
+
+/* 用户消息 */
+.user-message {
+  display: flex;
+  justify-content: flex-end; /* 让内容向右对齐 */
+  margin: 10px 0;
+}
+
+.user-message .avatar {
+  order: 1; /* 将头像放到右边 */
+}
+
+.user-message .message-content {
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%; /* 限制消息的最大宽度 */
+}
+
+/* 机器人消息 */
+.bot-message {
+  display: flex;
+  justify-content: flex-start; /* 让内容向左对齐 */
+  margin: 10px 0;
+}
+
+.bot-message .avatar {
+  order: 0; /* 将头像放到左边 */
+}
+
+.bot-message .message-content {
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+}
+
+
+/* 初始状态：隐藏在底部 */
+#qa_messages {
+  position: fixed;
+  bottom: -100%;  /* 初始位置在视图之外 */
+  right: 0;
+  width: 33%;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: bottom 0.3s ease;  /* 使用平滑的动画效果 */
+  z-index: 1000;  /* 确保弹框在最上层 */
+}
+
+/* 显示状态：将位置移动到视口 */
+#qa_messages.show {
+  bottom: 0;  /* 从底部弹出 */
+}
+
+/* 你可以根据需要调整消息框的样式 */
+.message-text1 {
+  margin: 5px 0;
+  cursor: pointer;
+  padding: 5px;
+  background-color: #444;
+  border-radius: 5px;
+}
+
+/* 初始状态：隐藏在底部 */
+#data_messages {
+  position: fixed;
+  bottom: -100%;  /* 初始位置在视图之外 */
+  right: 0;
+  width: 33%;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: bottom 0.3s ease;  /* 使用平滑的动画效果 */
+  z-index: 1000;  /* 确保弹框在最上层 */
+}
+
+/* 显示状态：将位置移动到视口 */
+#data_messages.show {
+  bottom: 0;  /* 从底部弹出 */
 }

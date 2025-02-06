@@ -71,11 +71,12 @@
       <!-- 右边聊天对话框 -->
       <div class="chat-container">
           <!-- 双区域布局 -->
-        <div class="dual-panel">
+        <div class="dual-panel" style="position: relative;">
             <!-- QA 问答区域 -->
             <div id="qa-panel" class="panel active" onclick="switchPanel('qa')" style="font-size: 18px;">
                 QA 问答
             </div>
+            <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 35%;cursor: pointer;" title="历史记录"></image>
             <!-- 数据看板区域 -->
             <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
                 数据问答
@@ -86,24 +87,24 @@
           <div id="chat-messages" class="chat-messages1">
             <!-- 机器人消息 -->
             <div class="message bot-message">
-              <img src="images/robot.png" alt="User Avatar" class="avatar" />
+              <!-- <img src="images/robot.png" alt="User Avatar" class="avatar" /> -->
               <!-- QA 问答 -->
               <div class="message-content" id="qa_messages">
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？')"
+                  onclick="selectMessage_test('国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？')"
                 >
                   国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？
                 </div>
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？')"
+                  onclick="selectMessage_test('申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？')"
                 >
                 申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？
                 </div>
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('取得烟草专卖零售许可证的单位或个人，应从哪里进货？')"
+                  onclick="selectMessage_test('取得烟草专卖零售许可证的单位或个人，应从哪里进货？')"
                 >
                 取得烟草专卖零售许可证的单位或个人，应从哪里进货？
                 </div>
@@ -112,25 +113,25 @@
               <div class="message-content" id="data_messages" style="display: none;">
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('3799这道题的答对人数和答错人数。')"
+                  onclick="selectMessage_test('3799这道题的答对人数和答错人数。')"
                 >
                   3799这道题的答对人数和答错人数
                 </div>
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('3779这道题的总分、考试次数、平均得分。')"
+                  onclick="selectMessage_test('3779这道题的总分、考试次数、平均得分。')"
                 >
                   3779这道题的总分、考试次数、平均得分
                 </div>
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('第一章到第十章法条的相关题目各有多少道?')"
+                  onclick="selectMessage_test('第一章到第十章法条的相关题目各有多少道?')"
                 >
                   第一章到第十章法条的相关题目各有多少道?
                 </div>
                 <div
                   class="message-text1 mes"
-                  onclick="selectMessage('得分前五的考试是哪几个?')"
+                  onclick="selectMessage_test('得分前五的考试是哪几个?')"
                 >
                   得分前五的考试是哪几个？
                 </div>
@@ -144,6 +145,8 @@
           <div class="chat-input">
             <!-- 输入框和按钮 -->
             <div class="input-button-container">
+              <button id="qa-button" style="background-color: #1FDE82;">Q</button>
+              <button id="data-button" style="display: none;">Q</button>
               <div
                 id="chat-input"
                 contenteditable="true"
@@ -157,11 +160,23 @@
                   cursor: text;
                 "
               ></div>
-              <button id="record_button">录</button>
+              <button id="record_button" style="background-color: #1FDE82;">录</button>
               <button id="send-button" onclick="sendMessagedemo()">发送</button>
               <button id="send-button_QA" onclick="QAsendMessage()">发送</button>
             </div>
           </div>
+        </div>
+      </div>
+      <!-- 历史记录弹框 -->
+      <div id="historyModal" class="history-modal">
+        <div class="modal-header">
+          <span style="font-weight: bold;font-size: 16px;">QA问答 历史记录</span>
+          <image id="closeModal" src="../images/guanbi.png" style="width: 18px;height: 18px;cursor: pointer;"></image>
+        </div>
+        <!-- 历史记录内容 -->
+        <div class="modal-body">
+          <ul id="historyList">
+          </ul>
         </div>
       </div>
     </div>

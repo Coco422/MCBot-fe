@@ -7,7 +7,7 @@ const idA = null;
 const tts_message = null;
 const if_kb = false
 const chat_id = null
-const user_id = 'nlp-demo.szmckj.cn'
+const user_id = null
 const md = null
 const idtest = null
 const echartsData = '1111';
@@ -276,15 +276,40 @@ function selectMessage(message) {
     document.getElementById('chat-input').innerHTML = message;
 }
 
-// 获取chat_id的接口
+// 语音助手的开始页面初始化的三条信息
+function selectMessage_test(message) {
+    const qaMessages = document.getElementById("qa_messages");
+    qaMessages.classList.remove("show");
+
+    const dataMessages = document.getElementById("data_messages");
+    dataMessages.classList.remove("show");
+
+    document.getElementById('chat-input').innerHTML = message;
+}
+
+// 获取chat_id的接口     TODO : 获取chat_id的接口,当没有会话数据的时候就不重新获取  没完善  20250206   目前改善方法只有当有title的时候才显示历史记录，为chat_id的时候说明没有会话记录，不显示，实际上该方法并不是很好
 function getChatId() {
-    axios.get(`${BASE_URL}/api/chatid?user_id=nlp-demo.szmckj.cn`)
-        .then(function (response) {
-            // console.log(response.data)
-            this.chat_id = response.data.chat_id
-        }).catch(function (err) {
-            console.log(err)
-        });
+    // // 检查 localStorage 中是否有用户消息的状态
+    // let hasSentMessage = localStorage.getItem('hasSentMessage');
+    // console.log('localstory',hasSentMessage)
+    // // 如果页面有用户消息或 localStorage 中记录了消息状态，就重新获取 chat_id
+    // if (hasSentMessage === 'true') {
+        // 获取用户 ID（假设你有获取用户 ID 的方法）
+        this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
+        console.log('111',document.getElementById('chat-messages').innerHTML)
+
+        axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
+            .then(function (response) {
+                // 获取 chat_id
+                this.chat_id = response.data.chat_id;
+                console.log('重新获取 chat_id:', this.chat_id);
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
+    // } else {
+    //     console.log('没有用户消息，不需要重新获取 chat_id');
+    // }
 }
 
 // 学习对话接口
@@ -539,7 +564,8 @@ async function sendMessage() {
 let streamingInProgress = false;
 let currentMarkdown = ""; // 保存 Markdown 格式内容
 
-// 现在问题在于step8不能赋值 step3不能渲染markdown格式，输出内容多了很多空格莫名其妙
+// TODO :  chat_id暂时未改好  20250206
+// step3不能渲染markdown格式
 async function sendMessagedemo() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
@@ -615,7 +641,6 @@ async function sendMessagedemo() {
             let buffer = '';
             let currentMarkdown = '';
             let lastEventType = null;
-            let echartsData = null; // 用于存储 sqldata 的数据
 
             // 修改后的内容更新函数
             function updateContent(newMarkdown, isHeader = false) {
@@ -726,7 +751,6 @@ async function sendMessagedemo() {
 
 
 // 2025 0125  发现问题，格式乱套
-
 // async function sendMessagedemo() {
 //     const input = document.getElementById('chat-input');
 //     const messageText = input.innerHTML;
@@ -903,7 +927,8 @@ async function QAsendMessage() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
     // const rendermessage = this.md.render(messageText);
-    console.log(messageText)
+    // console.log(messageText)
+    localStorage.setItem('hasSentMessage', 'true');
     if (messageText) {
         // 添加用户消息
         const userMessage = document.createElement('div');
@@ -1250,6 +1275,129 @@ function handleButtonClick(button) {
     }
 }
 
+let historyData = [];
+// 历史记录
+// 当点击历史记录图标时，显示弹框
+document.getElementById("history").addEventListener("click", function (event) {
+    // 阻止点击事件传播到 document 上
+    event.stopPropagation();
+    document.getElementById("historyModal").classList.add("active");
+    // 获取cookie中的随机ID
+    const randomId = getRandomIdFromCookie();
+    axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
+        .then(function (response) {
+            let historyIds = response.data.chat_id_list;
+            // 过滤掉索引为 0 的元素
+            historyIds = historyIds.slice(1);
+            // 获取 ul 元素
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = '';  // 清空现有的历史记录列表
+            // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
+            historyIds.forEach(item => {
+                // const li = document.createElement("li");
+                // 显示 title，如果 title 为 null，则显示 chat_id
+                // li.textContent = item.title ? item.title : item.chat_id;
+                 // 只有当 item.title 存在时才创建 li 元素
+                 if (!item.title) return;
+                
+                 const li = document.createElement("li");
+                 li.textContent = item.title;
+                 
+                // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
+                li.addEventListener("click", function () {
+                    // console.log("点击的历史记录 chat_id:", item.chat_id);
+                    document.getElementById("historyModal").classList.remove("active");
+                    axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
+                        .then(function (response) {
+                            console.log(response.data.messages.history);
+                            // 清空全局的 historyData 数组，防止数据累加
+                            historyData = [];
+
+                            // 重新获取新的历史记录数据并存入 historyData
+                            const newHistory = (response.data.messages && response.data.messages.history) || [];
+                            historyData.push(...newHistory);
+
+                            // 清空聊天记录显示区域，防止重复渲染相同的消息
+                            const chatMessagesContainer = document.getElementById('chat-messages');
+                            chatMessagesContainer.innerHTML = '';
+
+                            // 渲染历史记录
+                            historyData.forEach(msg => {
+                                const msgContainer = document.createElement('div');
+                                msgContainer.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
+                                msgContainer.innerHTML = `
+                                    <img src="${msg.role === 'user' ? 'images/user.png' : 'images/robot.png'}" alt="${msg.role} Avatar" class="avatar">
+                                    <div class="message-content">
+                                        <div class="message-text">${msg.content}</div>
+                                    </div>
+                                `;
+                                document.getElementById('chat-messages').appendChild(msgContainer);
+                            });
+                            // 将聊天记录显示在页面上
+                        }).catch(function (err) {
+                            console.log(err)
+                        })
+                });
+                historyList.appendChild(li);
+            });
+
+        }).catch(function (err) {
+            console.log(err)
+        });
+});
+
+// 当点击关闭按钮时，隐藏弹框
+document.getElementById("closeModal").addEventListener("click", function (event) {
+    // 阻止点击事件传播到 document 上
+    event.stopPropagation();
+    document.getElementById("historyModal").classList.remove("active");
+});
+
+// 当点击页面的其他区域时，关闭弹框
+document.addEventListener("click", function (event) {
+    const modal = document.getElementById("historyModal");
+    const historyButton = document.getElementById("history");
+
+    // 如果点击的区域不是弹框本身或历史记录按钮，则关闭弹框
+    if (!modal.contains(event.target) && event.target !== historyButton) {
+        modal.classList.remove("active");
+    }
+});
+// 生成一个随机的ID
+function generateRandomId() {
+    return 'id_' + Math.random().toString(36).substr(2, 8); // 生成一个8位的随机ID
+}
+
+// 存储随机 ID 到 Cookie 中
+function setRandomIdInCookie() {
+    // 判断是否存在id
+    const existingId = getRandomIdFromCookie();
+    if (existingId) {
+        console.log(`Cookie中已存在随机ID: ${existingId}`);
+        return; // 如果已经存在则不再设置
+    }
+
+    const randomId = generateRandomId();
+    // 设置过期时间为 2099 年 12 月 31 日 23:59:59 GMT
+    const expires = "Fri, 31 Dec 2099 23:59:59 GMT";
+
+    // 设置 id，包含随机 ID 和过期时间
+    document.cookie = `nlp_Id=${randomId}; expires=${expires}; path=/`;
+    console.log(`Random ID stored in cookie: ${randomId}`);
+}
+
+// 获取 cookie中设置的 随机 ID
+function getRandomIdFromCookie() {
+    const cookieArray = document.cookie.split('; ');
+    for (let i = 0; i < cookieArray.length; i++) {
+        const cookie = cookievalue = cookieArray[i].split('=');
+        if (cookie[0] === 'nlp_Id') {
+            return cookie[1];
+        }
+    }
+    return null; // 如果没有随机 ID，返回 null
+}
+
 
 // 需要初始化的api
 window.onload = function () {
@@ -1265,6 +1413,7 @@ window.onload = function () {
             label: true,
             labelAfter: true,
         });
+    setRandomIdInCookie();
     getChatId()
     fetchRandomQuestion();
     TestfetchRandomQuestion()
@@ -1276,6 +1425,7 @@ window.onload = function () {
         fetchLegalAnalysis();
     }, 1000);
 
+    localStorage.setItem('hasSentMessage', 'false')
 
     displayRandomTexts();
 }
