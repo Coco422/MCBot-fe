@@ -6,7 +6,7 @@ const id = null;
 const idA = null;
 const tts_message = null;
 const if_kb = false
-const chat_id = null
+const chat_id = localStorage.getItem('chat_id');
 const user_id = null
 const md = null
 const idtest = null
@@ -287,29 +287,76 @@ function selectMessage_test(message) {
     document.getElementById('chat-input').innerHTML = message;
 }
 
-// 获取chat_id的接口     TODO : 获取chat_id的接口,当没有会话数据的时候就不重新获取  没完善  20250206   目前改善方法只有当有title的时候才显示历史记录，为chat_id的时候说明没有会话记录，不显示，实际上该方法并不是很好
-function getChatId() {
-    // // 检查 localStorage 中是否有用户消息的状态
-    // let hasSentMessage = localStorage.getItem('hasSentMessage');
-    // console.log('localstory',hasSentMessage)
-    // // 如果页面有用户消息或 localStorage 中记录了消息状态，就重新获取 chat_id
-    // if (hasSentMessage === 'true') {
-        // 获取用户 ID（假设你有获取用户 ID 的方法）
-        this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
-        console.log('111',document.getElementById('chat-messages').innerHTML)
+// 获取chat_id的接口
+// function getChatId() {
+//     // // 检查 localStorage 中是否有用户消息的状态
+//     // let hasSentMessage = localStorage.getItem('hasSentMessage');
+//     // console.log('localstory',hasSentMessage)
+//     // // 如果页面有用户消息或 localStorage 中记录了消息状态，就重新获取 chat_id
+//     // if (hasSentMessage === 'true') {
+//     // 获取用户 ID（假设你有获取用户 ID 的方法）
+//     this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
+//     console.log('111', document.getElementById('chat-messages').innerHTML)
 
-        axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
-            .then(function (response) {
-                // 获取 chat_id
-                this.chat_id = response.data.chat_id;
-                console.log('重新获取 chat_id:', this.chat_id);
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
-    // } else {
-    //     console.log('没有用户消息，不需要重新获取 chat_id');
-    // }
+//     axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
+//         .then(function (response) {
+//             // 获取 chat_id
+//             this.chat_id = response.data.chat_id;
+//             console.log('重新获取 chat_id:', this.chat_id);
+//         })
+//         .catch(function (err) {
+//             console.log(err);
+//         });
+//     // } else {
+//     //     console.log('没有用户消息，不需要重新获取 chat_id');
+//     // }
+// }
+
+function getChatId() {
+    this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
+    const randomId = getRandomIdFromCookie();
+
+    axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
+        .then(function (response) {
+            let historyIds = response.data.chat_id_list;
+            console.log('historyIds.length', historyIds.length)
+            // 如果没有历史记录，分配新的 chat_id
+            if (historyIds.length === 0) {
+                axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
+                    .then(function (response) {
+                        // 获取 chat_id
+                        this.chat_id = response.data.chat_id;
+                        localStorage.setItem('chat_id', this.chat_id);
+                        console.log('没有历史记录，分配新的 chat_id:', this.chat_id);
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+            } else {
+                // 获取索引为 0 的历史记录
+                const firstHistory = historyIds[0];
+                console.log('firstHistory', firstHistory)
+                console.log('firstHistory.title', firstHistory.title)
+                // 如果历史记录有 title，重新获取 chat_id
+                if (firstHistory.title) {
+                    axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
+                        .then(function (response) {
+                            // 获取 chat_id
+                            this.chat_id = response.data.chat_id;
+                            localStorage.setItem('chat_id', this.chat_id);
+                            console.log('历史记录有 title，重新获取 chat_id:', this.chat_id);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                } else {
+                    console.log('历史记录没有 title，跳过重新获取 chat_id');
+                }
+            }
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
 }
 
 // 学习对话接口
@@ -338,7 +385,7 @@ async function sendMessage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: messageText, if_kb: this.if_kb, question_id: this.idA, chat_id: this.chat_id })
+                body: JSON.stringify({ user_input: messageText, if_kb: this.if_kb, question_id: this.idA, chat_id: localStorage.getItem('chat_id') })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -407,159 +454,6 @@ async function sendMessage() {
         }
     }
 }
-
-
-// 学习对话接口 ----- demo
-// async function sendMessagedemo() {
-//     const input = document.getElementById('chat-input');
-//     const messageText = input.innerHTML;
-//     if (messageText) {
-//         // 添加用户消息
-//         const userMessage = document.createElement('div');
-//         userMessage.className = 'message user-message';
-//         userMessage.innerHTML = `
-//             <div class="message-content">
-//                 <div class="message-text">${messageText}</div>
-//             </div>
-//             <img src="images/user.png" alt="User Avatar" class="avatar">
-//         `;
-//         document.getElementById('chat-messages').appendChild(userMessage);
-//         // 清空输入框
-//         input.innerHTML = '';
-//         try {
-//             // 发送POST请求
-//             const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id })
-//             });
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             const reader = response.body.getReader();
-//             const decoder = new TextDecoder();
-//             let accumulatedMessage = ''; // 用于存储累积的消息内容
-//             // 创建机器人消息容器
-//             const botMessage = document.createElement('div');
-//             botMessage.className = 'message bot-message';
-//             const uniqueId = `audio-${Date.now()}`;
-//             botMessage.innerHTML = `
-//                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-//                 <div class="message-content">
-//                     <div class="message-text">
-//                         <div class="loading-indicator">正在生成...</div> <!-- 添加“生成中”效果 -->
-//                     </div>
-//                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
-//                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
-//                     <audio id="${uniqueId}" style="display:none"></audio>
-//                 </div>
-//             `;
-//             document.getElementById('chat-messages').appendChild(botMessage);
-//             // 获取消息文本容器
-//             const messageTextContainer = botMessage.querySelector('.message-text');
-//             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
-//             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
-//             // 用于存储当前事件的容器
-//             let currentStepContainer = null;
-//             let currentUpdateContainer = null;
-//             let markdownBuffer = ''; // 用于存储需要渲染 Markdown 的内容
-//             let isMarkdownStepActive = false; // 标记当前是否在处理需要渲染 Markdown 的步骤
-//             // 初始化 Markdown 渲染器
-//             const md = window.markdownit(); // 确保页面中引入了 markdown-it 库
-//             async function read() {
-//                 const { done, value } = await reader.read();
-//                 if (done) {
-//                     // 数据全部接收完毕，统一替换为 Markdown 渲染结果
-//                     if (isMarkdownStepActive) {
-//                         currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 渲染 Markdown
-//                         isMarkdownStepActive = false; // 重置标记
-//                     }
-//                     playButton.style.display = 'block'; // 显示播放按钮
-//                     return;
-//                 }
-//                 const responseText = decoder.decode(value);
-//                 // 解析 SSE 格式的数据
-//                 const lines = responseText.split('\n');
-//                 console.log('Received response:', lines);
-//                 for (let i = 0; i < lines.length; i++) {
-//                     const line = lines[i].trim();
-//                     if (line.startsWith('event:')) {
-//                         const eventName = line.split(':')[1].trim();
-//                         if (eventName.startsWith('step')) {
-//                             // 处理 step 事件
-//                             currentStepContainer = document.createElement('div');
-//                             currentStepContainer.className = 'step-container';
-//                             messageTextContainer.appendChild(currentStepContainer);
-//                             const stepTitle = document.createElement('div');
-//                             stepTitle.className = 'step-title';
-//                             stepTitle.innerHTML = `<strong>${eventName}:</strong>`; // 显示 step 这几个字
-//                             currentStepContainer.appendChild(stepTitle);
-//                             // 清空 update 容器
-//                             currentUpdateContainer = null;
-//                             // 如果是 step3 或 step8，标记为 active
-//                             if (eventName === 'step3' || eventName === 'step8') {
-//                                 isMarkdownStepActive = true;
-//                                 markdownBuffer = ''; // 清空缓存
-//                             } else {
-//                                 isMarkdownStepActive = false;
-//                             }
-//                         } else if (eventName === 'Update' || eventName === 'update') {
-//                             // 处理 update 事件
-//                             if (!currentUpdateContainer) {
-//                                 currentUpdateContainer = document.createElement('div');
-//                                 currentUpdateContainer.className = 'update-container';
-//                                 messageTextContainer.appendChild(currentUpdateContainer);
-//                                 // 移除“生成中”效果
-//                                 const loadingIndicator = messageTextContainer.querySelector('.loading-indicator');
-//                                 if (loadingIndicator) {
-//                                     loadingIndicator.remove();
-//                                 }
-//                             }
-//                         } else if (eventName === 'Done') {
-//                             // 如果是需要渲染 Markdown 的步骤的 Done 事件，统一渲染 Markdown
-//                             if (isMarkdownStepActive) {
-//                                 currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 渲染 Markdown
-//                                 isMarkdownStepActive = false; // 重置标记
-//                             }
-//                             // 忽略 Done 事件，并跳过后续的 data 行
-//                             while (i + 1 < lines.length && lines[i + 1].trim().startsWith('data:')) {
-//                                 i++; // 跳过 data 行
-//                             }
-//                             continue;
-//                         }
-//                     } else if (line.startsWith('data:')) {
-//                         const data = line.split(':')[1].trim();
-//                         if (currentStepContainer && !currentUpdateContainer) {
-//                             // 将数据追加到 step 容器
-//                             const stepTitle = currentStepContainer.querySelector('.step-title');
-//                             stepTitle.innerHTML += ` ${data}`;
-//                         } else if (currentUpdateContainer) {
-//                             if (isMarkdownStepActive) {
-//                                 // 如果是需要渲染 Markdown 的步骤，将数据追加到缓存并立即渲染
-//                                 markdownBuffer += data;
-//                                 currentUpdateContainer.innerHTML = md.render(markdownBuffer); // 实时渲染 Markdown
-//                             } else {
-//                                 // 其他步骤直接渲染
-//                                 currentUpdateContainer.innerHTML += data;
-//                             }
-//                             accumulatedMessage += data; // 更新 accumulatedMessage
-//                         }
-//                     }
-//                 }
-//                 // 滚动到底部
-//                 const chatMessages = document.getElementById('chat-messages');
-//                 chatMessages.scrollTop = chatMessages.scrollHeight;
-//                 await read();
-//             }
-//             await read();
-//         } catch (error) {
-//             console.error('Fetch failed:', error);
-//         }
-//     }
-// }
-
 
 let streamingInProgress = false;
 let currentMarkdown = ""; // 保存 Markdown 格式内容
@@ -942,6 +836,7 @@ async function QAsendMessage() {
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
         input.innerHTML = '';
+        // console.log('发送成功',this.chat_id)
         try {
             // 发送POST请求
             const response = await fetch(`${BASE_URL}/api/chat/train`, {
@@ -950,7 +845,7 @@ async function QAsendMessage() {
                     'Content-Type': 'application/json'
                 },
                 // question_id: this.idtest,
-                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: this.chat_id })
+                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: localStorage.getItem('chat_id') })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1019,141 +914,6 @@ async function QAsendMessage() {
         }
     }
 }
-
-
-// async function sendMessagedemo() {
-//     const input = document.getElementById('chat-input');
-//     const messageText = input.innerHTML;
-//     if (messageText) {
-//         // Add user message
-//         const userMessage = document.createElement('div');
-//         userMessage.className = 'message user-message';
-//         userMessage.innerHTML = `
-//         <div class="message-content">
-//           <div class="message-text">${messageText}</div>
-//         </div>
-//         <img src="images/user.png" alt="User Avatar" class="avatar">
-//       `;
-//         document.getElementById('chat-messages').appendChild(userMessage);
-//         // Clear input
-//         input.innerHTML = '';
-
-//         try {
-//             // Send POST request
-//             const response = await fetch(`${BASE_URL}/api/chat/analysis`, {
-//                 method: 'POST',
-//                 headers: { 'Content-Type': 'application/json' },
-//                 body: JSON.stringify({ user_input: messageText, database_id: "", chat_id: this.chat_id }),
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-
-//             const reader = response.body.getReader();
-//             const decoder = new TextDecoder('utf-8');
-//             let buffer = ''; // Buffer for incomplete chunks
-//             let dataContent = ''; // Accumulated Markdown content
-
-//             // Create bot message container
-//             const botMessage = document.createElement('div');
-//             botMessage.className = 'message bot-message';
-//             const uniqueId = `audio-${Date.now()}`;
-//             botMessage.innerHTML = `
-//           <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-//           <div class="message-content">
-//             <div class="message-text">
-//               <div class="loading-indicator">正在生成...</div> <!-- Loading indicator -->
-//             </div>
-//             <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${dataContent}')"></i>
-//             <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
-//             <audio id="${uniqueId}" style="display:none"></audio>
-//           </div>
-//         `;
-//             document.getElementById('chat-messages').appendChild(botMessage);
-
-//             // Get message text container
-//             const messageTextContainer = botMessage.querySelector('.message-text');
-//             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
-//             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
-
-//             // Initialize Markdown renderer
-//             const md = window.markdownit({
-//                 html: true,
-//                 linkify: true,
-//                 typographer: true,
-//             });
-
-//             // Check if markdownitTaskLists is available
-//             if (typeof window.markdownitTaskLists === 'function') {
-//                 md.use(window.markdownitTaskLists, {
-//                     enabled: true,
-//                     label: true,
-//                     labelAfter: true,
-//                 });
-//             } else {
-//                 console.error('markdownitTaskLists plugin is not loaded!');
-//             }
-
-//             // Function to process SSE chunks
-//             function processSSEChunk(chunk) {
-//                 const lines = chunk.split(/(?<=\n)/); // Preserve newlines
-//                 let currentEvent = null;
-
-//                 for (const line of lines) {
-//                     if (line.startsWith('event:')) {
-//                         currentEvent = line.slice(6).trim();
-//                     } else if (line.startsWith('data:')) {
-//                         const content = line.slice(5);
-//                         if (currentEvent === 'update') {
-//                             dataContent += content; // Accumulate Markdown content
-//                             // Render the accumulated content
-//                             messageTextContainer.innerHTML = md.render(dataContent);
-//                         } else if (currentEvent.startsWith('step')) {
-//                             // Display step events as headers
-//                             messageTextContainer.innerHTML += `<h3>${currentEvent}: ${content}</h3>`;
-//                         } else if (currentEvent === 'Done') {
-//                             // Skip additional data lines for 'Done' event
-//                             continue;
-//                         }
-//                     }
-//                 }
-//             }
-
-//             // Read and process SSE stream
-//             async function read() {
-//                 const { done, value } = await reader.read();
-//                 if (done) {
-//                     // Data fully received, render final Markdown
-//                     messageTextContainer.innerHTML = md.render(dataContent);
-//                     playButton.style.display = 'block'; // Show play button
-//                     return;
-//                 }
-
-//                 buffer += decoder.decode(value, { stream: true });
-
-//                 // Process event chunks
-//                 let boundary = buffer.lastIndexOf('\n\n');
-//                 while (boundary !== -1) {
-//                     const completeChunk = buffer.slice(0, boundary); // Extract complete chunk
-//                     buffer = buffer.slice(boundary + 2); // Remove processed part
-//                     processSSEChunk(completeChunk); // Process the chunk
-//                     boundary = buffer.lastIndexOf('\n\n'); // Find next boundary
-//                 }
-
-//                 // Scroll to bottom
-//                 const chatMessages = document.getElementById('chat-messages');
-//                 chatMessages.scrollTop = chatMessages.scrollHeight;
-
-//                 await read(); // Continue reading
-//             }
-
-//             await read(); // Start reading
-//         } catch (error) {
-//             console.error('Fetch failed:', error);
-//         }
-//     }
-// }
 
 // 是否开启知识库搜素
 function handleCheckboxChange(checkbox) {
@@ -1294,15 +1054,12 @@ document.getElementById("history").addEventListener("click", function (event) {
             historyList.innerHTML = '';  // 清空现有的历史记录列表
             // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
             historyIds.forEach(item => {
-                // const li = document.createElement("li");
-                // 显示 title，如果 title 为 null，则显示 chat_id
-                // li.textContent = item.title ? item.title : item.chat_id;
-                 // 只有当 item.title 存在时才创建 li 元素
-                 if (!item.title) return;
-                
-                 const li = document.createElement("li");
-                 li.textContent = item.title;
-                 
+                // 只有当 item.title 存在时才创建 li 元素
+                if (!item.title) return;
+
+                const li = document.createElement("li");
+                li.textContent = item.title;
+
                 // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
                 li.addEventListener("click", function () {
                     // console.log("点击的历史记录 chat_id:", item.chat_id);

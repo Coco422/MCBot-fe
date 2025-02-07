@@ -88,55 +88,6 @@
             <!-- 机器人消息 -->
             <div class="message bot-message">
               <!-- <img src="images/robot.png" alt="User Avatar" class="avatar" /> -->
-              <!-- QA 问答 -->
-              <div class="message-content" id="qa_messages">
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？')"
-                >
-                  国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？
-                </div>
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？')"
-                >
-                申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？
-                </div>
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('取得烟草专卖零售许可证的单位或个人，应从哪里进货？')"
-                >
-                取得烟草专卖零售许可证的单位或个人，应从哪里进货？
-                </div>
-              </div>
-              <!-- 数据问答 -->
-              <div class="message-content" id="data_messages" style="display: none;">
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('3799这道题的答对人数和答错人数。')"
-                >
-                  3799这道题的答对人数和答错人数
-                </div>
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('3779这道题的总分、考试次数、平均得分。')"
-                >
-                  3779这道题的总分、考试次数、平均得分
-                </div>
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('第一章到第十章法条的相关题目各有多少道?')"
-                >
-                  第一章到第十章法条的相关题目各有多少道?
-                </div>
-                <div
-                  class="message-text1 mes"
-                  onclick="selectMessage_test('得分前五的考试是哪几个?')"
-                >
-                  得分前五的考试是哪几个？
-                </div>
-           
-              </div>
             </div>
             <!-- 用户消息 -->
             <div class="message1 user-message1"></div>
@@ -162,7 +113,7 @@
               ></div>
               <button id="record_button" style="background-color: #1FDE82;">录</button>
               <button id="send-button" onclick="sendMessagedemo()">发送</button>
-              <button id="send-button_QA" onclick="QAsendMessage()">发送</button>
+              <button id="send-button_QA" onclick="QAsendMessage()">发送QA</button>
             </div>
           </div>
         </div>
@@ -179,6 +130,57 @@
           </ul>
         </div>
       </div>
+
+      <!-- QA 问答  下拉框默认题目 -->
+      <div class="message-content" id="qa_messages">
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？')"
+        >
+          国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？')"
+        >
+        申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('取得烟草专卖零售许可证的单位或个人，应从哪里进货？')"
+        >
+        取得烟草专卖零售许可证的单位或个人，应从哪里进货？
+        </div>
+      </div>
+      <!-- 数据问答 下拉框默认题目 -->
+      <div class="message-content" id="data_messages" style="display: none;">
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('3799这道题的答对人数和答错人数。')"
+        >
+          3799这道题的答对人数和答错人数
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('3779这道题的总分、考试次数、平均得分。')"
+        >
+          3779这道题的总分、考试次数、平均得分
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('第一章到第十章法条的相关题目各有多少道?')"
+        >
+          第一章到第十章法条的相关题目各有多少道?
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('得分前五的考试是哪几个?')"
+        >
+          得分前五的考试是哪几个？
+        </div>
+    
+      </div>
+
     </div>
     <script src="js/core.min.js"></script>
     <script src="js/script.js"></script>
