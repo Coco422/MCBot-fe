@@ -6,7 +6,7 @@ const id = null;
 const idA = null;
 const tts_message = null;
 const if_kb = false
-const chat_id = localStorage.getItem('chat_id');
+const chat_id = null;
 const user_id = null
 const md = null
 const idtest = null
@@ -313,20 +313,21 @@ function selectMessage_test(message) {
 
 // 获取chat_id的接口
 function getChatId() {
+
     this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
     const randomId = getRandomIdFromCookie();
 
     axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
         .then(function (response) {
             let historyIds = response.data.chat_id_list;
-            console.log('historyIds.length', historyIds.length)
+            console.log('historyIds.length', historyIds)
             // 如果没有历史记录，分配新的 chat_id
             if (historyIds.length === 0) {
                 axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
                     .then(function (response) {
                         // 获取 chat_id
                         this.chat_id = response.data.chat_id;
-                        localStorage.setItem('chat_id', this.chat_id);
+                        // localStorage.setItem('chat_id', this.chat_id);
                         console.log('没有历史记录，分配新的 chat_id:', this.chat_id);
                     })
                     .catch(function (err) {
@@ -335,22 +336,20 @@ function getChatId() {
             } else {
                 // 获取索引为 0 的历史记录
                 const firstHistory = historyIds[0];
-                console.log('firstHistory', firstHistory)
-                console.log('firstHistory.title', firstHistory.title)
                 // 如果历史记录有 title，重新获取 chat_id
                 if (firstHistory.title) {
                     axios.get(`${BASE_URL}/api/chatid?user_id=${this.user_id}`)
                         .then(function (response) {
                             // 获取 chat_id
                             this.chat_id = response.data.chat_id;
-                            localStorage.setItem('chat_id', this.chat_id);
+                            // localStorage.setItem('chat_id', this.chat_id);
                             console.log('历史记录有 title，重新获取 chat_id:', this.chat_id);
                         })
                         .catch(function (err) {
                             console.log(err);
                         });
                 } else {
-                    console.log('历史记录没有 title，跳过重新获取 chat_id');
+                    this.chat_id = firstHistory.chat_id
                 }
             }
         })
@@ -836,7 +835,7 @@ async function QAsendMessage() {
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
         input.innerHTML = '';
-        // console.log('发送成功',this.chat_id)
+        console.log('发送成功',this.chat_id)
         try {
             // 发送POST请求
             const response = await fetch(`${BASE_URL}/api/chat/train`, {
@@ -845,7 +844,7 @@ async function QAsendMessage() {
                     'Content-Type': 'application/json'
                 },
                 // question_id: this.idtest,
-                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: localStorage.getItem('chat_id') })
+                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: this.chat_id })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1079,7 +1078,10 @@ function loadHistory() {
                         // 调用 API 获取指定 chat_id 的聊天记录
                         axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
                             .then(function (response) {
-                                console.log(response.data.messages.history);
+                                // console.log(response.data.messages.history);
+
+                                this.chat_id = item.chat_id;
+                                console.log('this.chat_id',this.chat_id);
 
                                 // 清空全局的 historyData 数组，防止数据累加
                                 historyData = [];
