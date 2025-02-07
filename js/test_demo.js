@@ -23,7 +23,7 @@ const barchartData = {
         type: 'category',
         data: [],
         axisLabel: {
-            formatter: function(value) {
+            formatter: function (value) {
                 if (value.length > 6) {
                     return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
                 }
@@ -90,7 +90,7 @@ const linechartData = {
         type: 'category',
         data: [],
         axisLabel: {
-            formatter: function(value) {
+            formatter: function (value) {
                 if (value.length > 6) {
                     return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
                 }
@@ -134,7 +134,7 @@ function transformData(jsonData, type) {
                 type: 'category',
                 data: jsonData.categories,
                 axisLabel: {
-                    formatter: function(value) {
+                    formatter: function (value) {
                         if (value.length > 6) {
                             return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
                         }
@@ -195,7 +195,7 @@ function transformData(jsonData, type) {
                 type: 'category',
                 data: jsonData.categories,
                 axisLabel: {
-                    formatter: function(value) {
+                    formatter: function (value) {
                         if (value.length > 6) {
                             return value.substring(0, 6) + '...'; // 超过 3 个字符，显示省略号
                         }
@@ -275,28 +275,47 @@ function switchPanel(panelType, showAlert = true) {
     // 移除所有面板的 active 类
     qaPanel.classList.remove('active');
     dataPanel.classList.remove('active');
+    qaPanel.classList.remove('active_data');
+    dataPanel.classList.remove('active_data');
 
     // 根据点击的面板类型添加 active 类
     if (panelType === 'qa') {
         qaPanel.classList.add('active');
+        // const chatMessages = document.getElementById('chat-messages');
+        // if (chatMessages) {
+        //     chatMessages.innerHTML = ''; // 清空聊天记录
+        // }
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'block';
             document.getElementById('send-button').style.display = 'none';
             document.getElementById('qa_messages').style.display = 'block';
             document.getElementById('data_messages').style.display = 'none';
+            document.getElementById('qa-button').style.display = 'block';
+            document.getElementById('data-button').style.display = 'none';
+            const recordButton = document.getElementById('record_button');
+            recordButton.style.backgroundColor = '#1FDE82';
+              // 只有当 #chat-messages 元素存在时才清空内容
+
             showMessage('已切换到 QA问答 模式');
         }
         // 这里可以添加 QA 问答相关的逻辑
     } else if (panelType === 'data') {
-        dataPanel.classList.add('active');
+        dataPanel.classList.add('active_data');
+        // const chatMessages = document.getElementById('chat-messages');
+        // if (chatMessages) {
+        //     chatMessages.innerHTML = ''; // 清空聊天记录
+        // }
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'none';
             document.getElementById('send-button').style.display = 'block';
             document.getElementById('qa_messages').style.display = 'none';
             document.getElementById('data_messages').style.display = 'block';
+            document.getElementById('qa-button').style.display = 'none';
+            document.getElementById('data-button').style.display = 'block';
+            const recordButton = document.getElementById('record_button');
+            recordButton.style.backgroundColor = '';
             showMessage('已切换到 数据看板 模式');
         }
-        // 这里可以添加数据看板相关的逻辑
     }
 }
 
@@ -343,3 +362,51 @@ function showMessage(message) {
 
 // 默认选中 QA 问答区域，但不显示消息提示
 switchPanel('qa', false); // 第二个参数为 false，表示不显示消息提示
+
+// 获取 QA问答 Q 按钮和 qa_messages 元素
+const qaButton = document.getElementById("qa-button");
+const qaMessages = document.getElementById("qa_messages");
+
+// 点击 Q 按钮时，显示/隐藏 qa_messages
+qaButton.addEventListener("click", function(event) {
+  // 阻止点击事件冒泡，避免触发 document 上的点击事件
+  event.stopPropagation();
+  qaMessages.classList.toggle("show");
+});
+
+// 阻止点击 qa_messages 内部内容时，事件冒泡到 document（避免误关闭弹框）
+qaMessages.addEventListener("click", function(event) {
+  event.stopPropagation();
+});
+
+// 点击页面其他区域时，隐藏 qa_messages
+document.addEventListener("click", function(event) {
+  // 如果点击的目标既不在 qa_messages 内，也不是 Q 按钮，则关闭 qa_messages
+  if (!qaMessages.contains(event.target) && event.target !== qaButton) {
+    qaMessages.classList.remove("show");
+  }
+});
+
+// 获取 数据看板 Q 按钮和 data_messages 元素
+const dataButton = document.getElementById("data-button");
+const dataMessages = document.getElementById("data_messages");
+
+// 点击 Q 按钮时，显示/隐藏 data_messages
+dataButton.addEventListener("click", function(event) {
+  // 阻止点击事件冒泡，避免触发 document 上的点击事件
+  event.stopPropagation();
+  dataMessages.classList.toggle("show");
+});
+
+// 阻止点击 data_messages 内部内容时，事件冒泡到 document（避免误关闭弹框）
+dataMessages.addEventListener("click", function(event) {
+  event.stopPropagation();
+});
+
+// 点击页面其他区域时，隐藏 data_messages
+document.addEventListener("click", function(event) {
+  // 如果点击的目标既不在 data_messages 内，也不是 Q 按钮，则关闭 data_messages
+  if (!dataMessages.contains(event.target) && event.target !== qaButton) {
+    dataMessages.classList.remove("show");
+  }
+});
