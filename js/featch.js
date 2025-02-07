@@ -245,7 +245,7 @@ function fetchLegalAnalysis() {
         axios.get(`${BASE_URL}/api/analysis?questionid=${this.id}`)
             .then(function (response) {
                 const analysisData = JSON.parse(response.data.analysis);
-                const analysisText = analysisData.Analysis;
+                const analysisText = analysisData.Analysis || analysisData.Answer;
                 displayTypingEffect(analysisText);
             }).catch(function (err) {
                 console.log(err);
@@ -287,7 +287,6 @@ function selectMessage_test(message) {
     document.getElementById('chat-input').innerHTML = message;
 }
 
-// 获取chat_id的接口
 // function getChatId() {
 //     // // 检查 localStorage 中是否有用户消息的状态
 //     // let hasSentMessage = localStorage.getItem('hasSentMessage');
@@ -312,6 +311,7 @@ function selectMessage_test(message) {
 //     // }
 // }
 
+// 获取chat_id的接口
 function getChatId() {
     this.user_id = getRandomIdFromCookie(); // 从 cookie 获取用户 ID
     const randomId = getRandomIdFromCookie();
@@ -385,7 +385,7 @@ async function sendMessage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: messageText, if_kb: this.if_kb, question_id: this.idA, chat_id: localStorage.getItem('chat_id') })
+                body: JSON.stringify({ user_input: messageText, if_kb: this.if_kb, question_id: this.idA, chat_id: "f47e82a1-1878-453f-81e9-e9641773abd6" })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1038,88 +1038,89 @@ function handleButtonClick(button) {
 let historyData = [];
 // 历史记录
 // 当点击历史记录图标时，显示弹框
-document.getElementById("history").addEventListener("click", function (event) {
-    // 阻止点击事件传播到 document 上
-    event.stopPropagation();
-    document.getElementById("historyModal").classList.add("active");
-    // 获取cookie中的随机ID
-    const randomId = getRandomIdFromCookie();
-    axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
-        .then(function (response) {
-            let historyIds = response.data.chat_id_list;
-            // 过滤掉索引为 0 的元素
-            historyIds = historyIds.slice(1);
-            // 获取 ul 元素
-            const historyList = document.getElementById("historyList");
-            historyList.innerHTML = '';  // 清空现有的历史记录列表
-            // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
-            historyIds.forEach(item => {
-                // 只有当 item.title 存在时才创建 li 元素
-                if (!item.title) return;
-
-                const li = document.createElement("li");
-                li.textContent = item.title;
-
-                // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
-                li.addEventListener("click", function () {
-                    // console.log("点击的历史记录 chat_id:", item.chat_id);
-                    document.getElementById("historyModal").classList.remove("active");
-                    axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
-                        .then(function (response) {
-                            console.log(response.data.messages.history);
-                            // 清空全局的 historyData 数组，防止数据累加
-                            historyData = [];
-
-                            // 重新获取新的历史记录数据并存入 historyData
-                            const newHistory = (response.data.messages && response.data.messages.history) || [];
-                            historyData.push(...newHistory);
-
-                            // 清空聊天记录显示区域，防止重复渲染相同的消息
-                            const chatMessagesContainer = document.getElementById('chat-messages');
-                            chatMessagesContainer.innerHTML = '';
-
-                            // 渲染历史记录
-                            historyData.forEach(msg => {
-                                const msgContainer = document.createElement('div');
-                                msgContainer.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
-                                msgContainer.innerHTML = `
-                                    <img src="${msg.role === 'user' ? 'images/user.png' : 'images/robot.png'}" alt="${msg.role} Avatar" class="avatar">
-                                    <div class="message-content">
-                                        <div class="message-text">${msg.content}</div>
-                                    </div>
-                                `;
-                                document.getElementById('chat-messages').appendChild(msgContainer);
-                            });
-                            // 将聊天记录显示在页面上
-                        }).catch(function (err) {
-                            console.log(err)
-                        })
-                });
-                historyList.appendChild(li);
-            });
-
-        }).catch(function (err) {
-            console.log(err)
-        });
-});
-
-// 当点击关闭按钮时，隐藏弹框
-document.getElementById("closeModal").addEventListener("click", function (event) {
-    // 阻止点击事件传播到 document 上
-    event.stopPropagation();
-    document.getElementById("historyModal").classList.remove("active");
-});
-
-// 当点击页面的其他区域时，关闭弹框
-document.addEventListener("click", function (event) {
-    const modal = document.getElementById("historyModal");
+function loadHistory() {
+    // 获取历史记录按钮
     const historyButton = document.getElementById("history");
+    historyButton.addEventListener("click", function (event) {
+        // 阻止点击事件传播到 document 上
+        event.stopPropagation();
 
-    // 如果点击的区域不是弹框本身或历史记录按钮，则关闭弹框
-    if (!modal.contains(event.target) && event.target !== historyButton) {
-        modal.classList.remove("active");
-    }
-});
+        // 显示历史记录模态框
+        const historyModal = document.getElementById("historyModal");
+        historyModal.classList.add("active");
+
+        // 获取cookie中的随机ID
+        const randomId = getRandomIdFromCookie();
+
+        // 调用 API 获取历史记录
+        axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
+            .then(function (response) {
+                let historyIds = response.data.chat_id_list;
+                // 过滤掉索引为 0 的元素
+                historyIds = historyIds.slice(1);
+
+                // 获取 ul 元素
+                const historyList = document.getElementById("historyList");
+                historyList.innerHTML = '';  // 清空现有的历史记录列表
+
+                // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
+                historyIds.forEach(item => {
+                    // 只有当 item.title 存在时才创建 li 元素
+                    if (!item.title) return;
+
+                    const li = document.createElement("li");
+                    li.textContent = item.title;
+
+                    // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
+                    li.addEventListener("click", function () {
+                        // 关闭历史记录模态框
+                        historyModal.classList.remove("active");
+
+                        // 调用 API 获取指定 chat_id 的聊天记录
+                        axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
+                            .then(function (response) {
+                                console.log(response.data.messages.history);
+
+                                // 清空全局的 historyData 数组，防止数据累加
+                                historyData = [];
+
+                                // 重新获取新的历史记录数据并存入 historyData
+                                const newHistory = (response.data.messages && response.data.messages.history) || [];
+                                historyData.push(...newHistory);
+
+                                // 清空聊天记录显示区域，防止重复渲染相同的消息
+                                const chatMessagesContainer = document.getElementById('chat-messages');
+                                chatMessagesContainer.innerHTML = '';
+
+                                // 渲染历史记录
+                                historyData.forEach(msg => {
+                                    const msgContainer = document.createElement('div');
+                                    msgContainer.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
+                                    msgContainer.innerHTML = `
+                                        <img src="${msg.role === 'user' ? 'images/user.png' : 'images/robot.png'}" alt="${msg.role} Avatar" class="avatar">
+                                        <div class="message-content">
+                                            <div class="message-text">${msg.content}</div>
+                                        </div>
+                                    `;
+                                    chatMessagesContainer.appendChild(msgContainer);
+                                });
+
+                                // 滚动到聊天记录的底部
+                                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                            }).catch(function (err) {
+                                console.log(err);
+                            });
+                    });
+
+                    // 将 li 元素添加到历史记录列表
+                    historyList.appendChild(li);
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+    });
+}
+
 // 生成一个随机的ID
 function generateRandomId() {
     return 'id_' + Math.random().toString(36).substr(2, 8); // 生成一个8位的随机ID

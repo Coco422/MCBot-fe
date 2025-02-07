@@ -410,3 +410,21 @@ document.addEventListener("click", function(event) {
     dataMessages.classList.remove("show");
   }
 });
+
+// 当点击关闭按钮时，隐藏弹框
+document.getElementById("closeModal").addEventListener("click", function (event) {
+    // 阻止点击事件传播到 document 上
+    event.stopPropagation();
+    document.getElementById("historyModal").classList.remove("active");
+});
+
+// 当点击页面的其他区域时，关闭弹框
+document.addEventListener("click", function (event) {
+    const modal = document.getElementById("historyModal");
+    const historyButton = document.getElementById("history");
+
+    // 如果点击的区域不是弹框本身或历史记录按钮，则关闭弹框
+    if (!modal.contains(event.target) && event.target !== historyButton) {
+        modal.classList.remove("active");
+    }
+});
