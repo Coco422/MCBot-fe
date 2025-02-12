@@ -1636,6 +1636,19 @@ document.getElementById('AI_desc').addEventListener('click', (event) => {
         document.getElementById('problemdescription1').style.display = 'none';
     } else {
         switchPanel('qa', false);
+        document.getElementById('send-button_QA').style.display = 'block';
+        document.getElementById('send-button').style.display = 'none';
+        document.getElementById('qa_messages').style.display = 'block';
+
+        document.getElementById('data_messages').style.display = 'none';
+        document.getElementById('qa-button').style.display = 'block';
+        document.getElementById('data-button').style.display = 'none';
+
+        document.getElementById('knowledge_data_messages').style.display = 'none';
+        document.getElementById('Q-data-button').style.display = 'none';
+        document.getElementById('send-button-knowledge').style.display = 'none';
+        const recordButton = document.getElementById('record_button');
+        recordButton.style.backgroundColor = '#1FDE82';
         document.getElementById('chat-input').innerHTML = '请根据聊天记录生成简单的问题描述';
         AI_QAsendMessage();
     }
@@ -1794,6 +1807,19 @@ document.getElementById('AI_kf_reply').addEventListener('click', (event) => {
         // 请根据聊天记录生成简单的客服回复
         // 默认选中 QA 问答区域
         switchPanel('qa', false);
+        document.getElementById('send-button_QA').style.display = 'block';
+        document.getElementById('send-button').style.display = 'none';
+        document.getElementById('qa_messages').style.display = 'block';
+
+        document.getElementById('data_messages').style.display = 'none';
+        document.getElementById('qa-button').style.display = 'block';
+        document.getElementById('data-button').style.display = 'none';
+
+        document.getElementById('knowledge_data_messages').style.display = 'none';
+        document.getElementById('Q-data-button').style.display = 'none';
+        document.getElementById('send-button-knowledge').style.display = 'none';
+        const recordButton = document.getElementById('record_button');
+        recordButton.style.backgroundColor = '#1FDE82';
         document.getElementById('chat-input').innerHTML = '请根据聊天记录生成简单的客服回复';
         AI_QAsendMessage_reply();
     }
