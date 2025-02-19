@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test_demo</title>
+    <title>LG</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/test.css" />
   </head>
@@ -142,19 +142,25 @@
           </div>
           <!-- 是否开启知识库 -->
           <div class="knowledge-switch">
-            <div class="knowledge-switch">
-                <label class="switch">
-                  <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledge(this)">
-                  <span class="slider round"></span>
-                </label>
-                <span style="font-size: 16px;">知识库</span>
-                <label class="switch">
-                  <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
-                  <span class="slider round"></span>
-                </label>
-                <span style="font-size: 16px;">深度思考(R1)</span>
-            </div>
+              <label class="switch">
+                <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledge(this)">
+                <span class="slider round"></span>
+              </label>
+              <span style="font-size: 16px;">知识库</span>
+              <label class="switch">
+                <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
+                <span class="slider round"></span>
+              </label>
+              <span style="font-size: 16px;">深度思考(R1)</span>
           </div>
+          <!-- 是否深度思考（R1） -->
+          <!-- <div class="knowledge-switch">
+            <label class="switch">
+              <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledge()">
+              <span class="slider round"></span>
+            </label>
+            <span style="font-size: 16px;">深度思考（R1）</span>
+          </div> -->
           <!-- 聊天输入区域 -->
           <div class="chat-input">
             <!-- 输入框和按钮 -->
@@ -283,10 +289,10 @@
     <script src="js/script.js"></script>
     <script src="js/axios.min.js"></script>
     <!-- <script src="js/featch.js"></script> -->
-    <script src="js/record.js"></script>
     <script src="js/markdown-it.js"></script>
     <script src="js/markdown-it-task-lists.min.js"></script>
     <script src="js/echarts.js"></script>
     <script src="js/test_demo.js"></script>
+    <script src="js/record.js"></script>
   </body>
 </html>

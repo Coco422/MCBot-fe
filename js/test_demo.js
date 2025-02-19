@@ -741,8 +741,8 @@ function fetchKnowledge() {
             const data = JSON.parse(jsonString);
             // console.log("解析后的数据:", data);
             if (data) {
-                const finalScore = data.Response["最终得分"];
-                // console.log("最终得分:", finalScore);
+                const finalScore = data.Response["final_score"];
+                console.log("最终得分:", finalScore);
                 document.getElementById('kf_score').textContent = finalScore;
             } else {
                 // console.log('wu')
@@ -778,6 +778,7 @@ function fetchsummery() {
             // console.log("解析后的数据:", data);
             if (data) {
                 const finalScore = data.Response["final_score"];
+                console.log("最终得分:", finalScore);
                 document.getElementById('fit_score').textContent = finalScore;
             } else {
                 // console.log('wu')
@@ -940,14 +941,14 @@ function getOrderDetail() {
                             kbModal = response.data;
 
                             try {
-                                console.log("续写按钮点击，消息内容:", this.if_r1);
+                                console.log("续写按钮点击，消息内容:", if_r1);
                                 // 发送POST请求
                                 const response = await fetch(`${BASE_URL}/lg/generate_current_reply`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json'
                                     },
-                                    body: JSON.stringify({ user_input: text, chat_history: array, kb_content: kbModal, if_r1: this.if_r1 })
+                                    body: JSON.stringify({ user_input: text, chat_history: array, kb_content: kbModal, if_r1: 'false' })
                                 });
                                 if (!response.ok) {
                                     throw new Error('Network response was not ok');
@@ -1136,11 +1137,11 @@ function toggleKnowledge(checkbox_ai) {
 // 是否开R1
 function toggleKnowledgeR1(checkbox_r1) {
     if (checkbox_r1.checked) {
-        this.if_r1 = true;
-        console.log('开启知识库', this.if_r1)
+        if_r1 = true;
+        console.log('开启知识库', if_r1)
     } else {
-        this.if_r1 = false;
-        console.log('关闭知识库', this.if_r1)
+        if_r1 = false;
+        console.log('关闭知识库', if_r1)
 
     }
 }
@@ -1173,7 +1174,7 @@ async function QAsendMessage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: messageText, chat_type: '0', if_kb: this.if_kb_QA, case_id: this.selectedOrderTitle, case_date_begin: this.selectedDate, case_date_end: this.selectDateStop, case_create_by: this.selectedId, case_problem_description: 'string', chat_id: 'f47e1111-1111-1111-1111-111111111111' })
+                body: JSON.stringify({ user_input: messageText, chat_type: '0', if_kb: this.if_kb_QA, if_r1: if_r1, case_id: this.selectedOrderTitle, case_date_begin: this.selectedDate, case_date_end: this.selectDateStop, case_create_by: this.selectedId, case_problem_description: 'string', chat_id: 'f47e1111-1111-1111-1111-111111111111' })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1279,7 +1280,7 @@ async function sendMessagequestion() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: "string", chat_history: this.ChatHistory, if_r1: this.if_r1 })
+                body: JSON.stringify({ user_input: "string", chat_history: this.ChatHistory, if_r1: if_r1 })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1405,7 +1406,7 @@ async function sendMessagedemoknowledge() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ chat_history: this.ChatHistory, issues: questions, if_r1: this.if_r1, kb_content: this.current_knowledge })
+                body: JSON.stringify({ chat_history: this.ChatHistory, issues: questions, if_r1: if_r1, kb_content: this.current_knowledge })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
