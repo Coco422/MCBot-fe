@@ -59,6 +59,7 @@
                     <button style="font-size: 16px;" id="show-questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">推荐相似题</button>
                     <button style="font-size: 16px;" id="show-text" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">相关法条</button>
                     <button style="font-size: 16px;" id="show-analysis" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法理分析</button>
+                    <button style="font-size: 16px;margin-left: 10%;" id="answer_question" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">AI答题➡</button>
                 </div>
                 <div data-wow-delay="0.35s" style="margin-top: 10px;">
                     <div id="question-display" class="question-container">暂无内容......</div>
@@ -92,6 +93,19 @@
             <!-- 用户消息 -->
             <div class="message1 user-message1"></div>
           </div>
+                    <!-- 是否开启知识库 -->
+                    <div class="knowledge-switch" id="knowledge-switch">
+                      <label class="switch">
+                        <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
+                        <span class="slider round"></span>
+                      </label>
+                      <span style="font-size: 16px;">深度思考(R1)</span>
+                      <label class="switch">
+                        <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)" checked>
+                        <span class="slider round"></span>
+                      </label>
+                      <span style="font-size: 16px;">知识库</span>
+                    </div>
           <!-- 聊天输入区域 -->
           <div class="chat-input">
             <!-- 输入框和按钮 -->
