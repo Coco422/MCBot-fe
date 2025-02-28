@@ -4,6 +4,8 @@ const wzyc = 'https://wzyc-demo.szmckj.cn'
 
 const id = null;
 const idA = null;
+const question_id = null;
+const question_idA = null;
 const tts_message = null;
 const if_kb = false
 const chat_id = null;
@@ -11,6 +13,7 @@ const user_id = null
 const md = null
 const idtest = null
 const echartsData = '1111';
+const question_title = null;
 // 获取随机题目接口
 function fetchRandomQuestion() {
     axios.get(`${BASE_URL}/api/randomquestion`)
@@ -57,7 +60,10 @@ function TestfetchRandomQuestion() {
         .then(function (response) {
             // 设置题目
             document.getElementById('question').innerText = response.data.q_stem;
+            this.question_title = response.data.q_stem;
             this.id = response.data.id;
+            this.question_id = response.data.id;
+            // console.log('随机题目',this.question_id);
             // 清空选项区域
             const optionsContainer = document.getElementById('options');
             optionsContainer.innerHTML = ''; // 清空现有选项
@@ -104,6 +110,7 @@ function fetchRandomQuestionA() {
             // 设置题目
             document.getElementById('questionA').innerText = response.data.q_stem;
             this.idA = response.data.id;
+            console.log('随机题目',this.question_id);
             // 清空选项区域
             const optionsContainer = document.getElementById('optionsA');
             optionsContainer.innerHTML = ''; // 清空现有选项
@@ -816,11 +823,9 @@ async function sendMessagedemo() {
 // }
 
 // QA问答
-async function QAsendMessage() {
+async function QAsendMessage(q_id) {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
-    // const rendermessage = this.md.render(messageText);
-    // console.log(messageText)
     localStorage.setItem('hasSentMessage', 'true');
     if (messageText) {
         // 添加用户消息
@@ -835,7 +840,11 @@ async function QAsendMessage() {
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
         input.innerHTML = '';
-        console.log('发送成功',this.chat_id)
+        console.log('发送成功', this.chat_id,if_kb,this.question_id,if_user_kb,if_kb_QA)
+
+        const is_q_id = q_id ? q_id : null;
+        // 存储RAG相关文档的数组
+        let ragDocuments = [];
         try {
             // 发送POST请求
             const response = await fetch(`${BASE_URL}/api/chat/train`, {
@@ -843,8 +852,7 @@ async function QAsendMessage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                // question_id: this.idtest,
-                body: JSON.stringify({ user_input: messageText, if_kb: "true", question_id: '0', chat_id: this.chat_id })
+                body: JSON.stringify({ user_input: messageText, if_kb: if_kb, question_id: is_q_id, chat_id: this.chat_id, if_r1: if_kb_QA, if_user_kb: if_user_kb })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -852,15 +860,24 @@ async function QAsendMessage() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let accumulatedMessage = ''; // 用于存储累积的消息
+            let ragContent = ''; // 用于存储所有RAG相关内容
+            let inRagEvent = false; // 标记是否在RAG事件中
+            
+            // 创建唯一的消息ID
+            const messageId = Date.now();
+            const uniqueId = `audio-${messageId}`;
+            
             // 创建机器人消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
-            const uniqueId = `audio-${Date.now()}`;
+            botMessage.dataset.messageId = messageId; // 添加消息ID作为数据属性
+            
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
                 <div class="message-content">
-                    <div class="message-text">${accumulatedMessage}</div>
-                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '${accumulatedMessage}')"></i>
+                    <div class="message-text"></div>
+                    <div class="rag-documents" style="display:none; margin-top: 10px;"></div>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '')"></i>
                     <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
                     <audio id="${uniqueId}" style="display:none"></audio>
                 </div>
@@ -868,36 +885,98 @@ async function QAsendMessage() {
             document.getElementById('chat-messages').appendChild(botMessage);
             // 获取消息文本容器
             const messageTextContainer = botMessage.querySelector('.message-text');
+            const ragDocumentsContainer = botMessage.querySelector('.rag-documents');
             const playButton = botMessage.querySelector(`#play_${uniqueId}`);
             const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
+            
             async function read() {
                 const { done, value } = await reader.read();
                 if (done) {
                     // 显示播放按钮
                     playButton.style.display = 'block';
+                    // 处理RAG内容并提取文档
+                    if (ragContent) {
+                        // 处理并解析RAG内容
+                        parseRagContent(ragContent);
+                        // 如果有RAG文档，显示它们
+                        if (ragDocuments.length > 0) {
+                            ragDocumentsContainer.style.display = 'block';
+                            let ragHtml = '';
+                            // 为每个文档添加可点击的标题和隐藏的内容，使用消息ID确保唯一性
+                            ragDocuments.forEach((doc, index) => {
+                                ragHtml += `
+                                    <div class="rag-doc-item" style="margin-bottom: 10px;">
+                                        <div class="rag-doc-title" data-message-id="${messageId}" data-index="${index}" style="font-weight: bold; cursor: pointer; color: #ff7272; font-size: larger;">
+                                            相关文档 ${index + 1}
+                                        </div>
+                                        <div id="rag-doc-content-${messageId}-${index}" style="display: none; padding: 8px; border: 1px solid #eee; border-radius: 4px; margin-top: 5px;">
+                                            <div><strong>法律ID:</strong> ${doc.lawId}</div>
+                                            <div><strong>法律名称:</strong> ${doc.lawName}</div>
+                                            <div><strong>章节:</strong> ${doc.chapter}</div>
+                                            <div><strong>文章内容:</strong> ${doc.content}</div>
+                                            <div><strong>相似度:</strong> ${doc.similarity}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            ragDocumentsContainer.innerHTML = ragHtml;
+                            
+                            // 添加点击事件处理，点击标题时只展开对应的内容
+                            const docTitles = ragDocumentsContainer.querySelectorAll('.rag-doc-title');
+                            docTitles.forEach(title => {
+                                title.addEventListener('click', () => {
+                                    const msgId = title.getAttribute('data-message-id');
+                                    const index = title.getAttribute('data-index');
+                                    const contentElement = document.getElementById(`rag-doc-content-${msgId}-${index}`);
+                                    // 切换当前点击的文档内容显示状态
+                                    if (contentElement.style.display === 'none') {
+                                        contentElement.style.display = 'block';
+                                    } else {
+                                        contentElement.style.display = 'none';
+                                    }
+                                });
+                            });
+                        }
+                    }
+                    // 更新语音播放的文本内容（不包含RAG文档）
+                    playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
                     return;
                 }
                 const responseText = decoder.decode(value);
                 // 解析SSE格式的数据
                 const lines = responseText.split('\n');
-                console.log(lines)
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
-                    if (line.startsWith('event:update')) {
-                        // 找到对应的data行
+                    // 检测RAG事件开始
+                    if (line === 'event:rag') {
+                        inRagEvent = true;
+                        continue;
+                    }
+                    // 如果在RAG事件中，收集RAG内容
+                    if (inRagEvent) {
+                        // 如果遇到另一个事件开始，表示RAG事件结束
+                        if (line.startsWith('event:')) {
+                            inRagEvent = false;
+                        } else if (line) { // 只有非空行才添加
+                            ragContent += line + '\n';
+                        }
+                    }
+                    // 检测update事件
+                    if (line === 'event:update') {
+                        inRagEvent = false; // 确保我们不再收集RAG内容
                         const dataLine = lines[i + 1]?.trim();
                         if (dataLine && dataLine.startsWith('data:')) {
                             const data = dataLine.slice(5).trim();
                             if (data) {
                                 // 累积AI消息
                                 accumulatedMessage += data;
-                                // 使用 marked.js 将 Markdown 转换为 HTML
-                                const htmlContent = this.md.render(accumulatedMessage);
+                                // 检测 </think> 标签，如果存在，在其后添加换行符
+                                if (accumulatedMessage.includes('</think>')) {
+                                    accumulatedMessage = accumulatedMessage.replace('</think>', '</think>\n');
+                                }
+                                const htmlContent = this.md.render(accumulatedMessage.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
                                 // 更新机器人消息内容
-                                // setTimeout(() => {
                                 messageTextContainer.innerHTML = htmlContent;
-                                playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
-                                // }, 200);
                                 // 滚动到底部
                                 const chatMessages = document.getElementById('chat-messages');
                                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -907,6 +986,44 @@ async function QAsendMessage() {
                 }
                 await read();
             }
+            
+            // 解析RAG内容并提取文档
+            function parseRagContent(content) {
+                // 分割不同的相关文档
+                const docRegex = /相关文档\s+(\d+):/g;
+                let match;
+                let docPositions = [];
+                // 找出所有相关文档的起始位置
+                while ((match = docRegex.exec(content)) !== null) {
+                    docPositions.push({
+                        index: match.index,
+                        docNumber: match[1]
+                    });
+                }
+                // 处理每个文档
+                for (let i = 0; i < docPositions.length; i++) {
+                    const startPos = docPositions[i].index;
+                    const endPos = (i < docPositions.length - 1) ? docPositions[i + 1].index : content.length;
+                    // 提取当前文档内容
+                    const docContent = content.substring(startPos, endPos).trim();
+                    // 解析文档内容
+                    const lawIdMatch = docContent.match(/法律ID:\s*(.*)/);
+                    const lawNameMatch = docContent.match(/法律名称:\s*(.*)/);
+                    const chapterMatch = docContent.match(/章节:\s*(.*)/);
+                    const contentMatch = docContent.match(/文章内容:\s*(.*(?:\n.*)*?)(?=相似度:|$)/s);
+                    const similarityMatch = docContent.match(/相似度:\s*(.*)/);
+                    if (lawIdMatch && lawNameMatch && chapterMatch && contentMatch && similarityMatch) {
+                        ragDocuments.push({
+                            lawId: lawIdMatch[1].trim(),
+                            lawName: lawNameMatch[1].trim(),
+                            chapter: chapterMatch[1].trim(),
+                            content: contentMatch[1].trim(),
+                            similarity: similarityMatch[1].trim()
+                        });
+                    }
+                }
+            }
+            
             await read();
         } catch (error) {
             console.error('Fetch failed:', error);
@@ -914,12 +1031,38 @@ async function QAsendMessage() {
     }
 }
 
+
+
+
 // 是否开启知识库搜素
-function handleCheckboxChange(checkbox) {
-    if (checkbox.checked) {
-        this.if_kb = true;
+// function handleCheckboxChange(checkbox) {
+//     if (checkbox.checked) {
+//         this.if_kb = true;
+//     } else {
+//         this.if_kb = false;
+//     }
+// }
+let if_kb_QA = true;
+// // 是否开启R1
+function toggleKnowledgeR1(checkbox_ai) {
+    if (checkbox_ai.checked) {
+        this.if_kb_QA = true;
+        console.log('开启R1', this.if_kb_QA)
     } else {
-        this.if_kb = false;
+        this.if_kb_QA = false;
+        console.log('关闭R1', this.if_kb_QA)
+    }
+}
+
+let if_user_kb = true;
+// // 是否开启知识库
+function toggleKnowledgebash(checkbox_ai) {
+    if (checkbox_ai.checked) {
+        this.if_user_kb = true;
+        console.log('开启知识库', this.if_user_kb)
+    } else {
+        this.if_user_kb = false;
+        console.log('关闭知识库', this.if_user_kb)
     }
 }
 
@@ -1031,6 +1174,16 @@ function handleButtonClick(button) {
         fetchTextContent();
     } else if (button.id === 'show-analysis') {
         fetchLegalAnalysis();
+    } else if (button.id === 'answer_question') {
+        // 复制题目到QA问答的输入框
+        document.getElementById('chat-input').innerHTML = '请帮我分析并回答这道题目。'
+        this.if_kb = true
+        // this.question_idA = this.question_id
+        // console.log('复制题目到QA问答的输入框',this.question_id)
+        // 发送消息
+        QAsendMessage(this.question_id)
+
+        // this.question_idA = null
     }
 }
 
@@ -1081,7 +1234,7 @@ function loadHistory() {
                                 // console.log(response.data.messages.history);
 
                                 this.chat_id = item.chat_id;
-                                console.log('this.chat_id',this.chat_id);
+                                console.log('this.chat_id', this.chat_id);
 
                                 // 清空全局的 historyData 数组，防止数据累加
                                 historyData = [];
@@ -1150,7 +1303,7 @@ function setRandomIdInCookie() {
 function getRandomIdFromCookie() {
     const cookieArray = document.cookie.split('; ');
     for (let i = 0; i < cookieArray.length; i++) {
-        const cookie = cookievalue = cookieArray[i].split('=');
+        const cookie = cookieArray[i].split('=');
         if (cookie[0] === 'nlp_Id') {
             return cookie[1];
         }
