@@ -14,6 +14,32 @@ const md = null
 const idtest = null
 const echartsData = '1111';
 const question_title = null;
+localStorage.setItem('if_kb_QA', true);
+localStorage.setItem('if_user_kb', true);
+
+const if_kb_QA = true;
+// // 是否开启R1
+function toggleKnowledgeR1(checkbox_ai) {
+    if (checkbox_ai.checked) {
+        localStorage.setItem('if_kb_QA', true);
+    } else {
+        localStorage.setItem('if_kb_QA', false);
+        console.log('关闭R1', this.if_kb_QA)
+    }
+}
+
+const if_user_kb = false;
+// // 是否开启知识库
+function toggleKnowledgebash(checkbox_ai) {
+    if (checkbox_ai.checked) {
+        localStorage.setItem('if_user_kb', true);
+        console.log('开启知识库', this.if_user_kb)
+    } else {
+        // this.if_user_kb = false;
+        localStorage.setItem('if_user_kb', false);
+        console.log('关闭知识库', this.if_user_kb)
+    }
+}
 // 获取随机题目接口
 function fetchRandomQuestion() {
     axios.get(`${BASE_URL}/api/randomquestion`)
@@ -823,7 +849,7 @@ async function sendMessagedemo() {
 // }
 
 // QA问答
-async function QAsendMessage(q_id) {
+async function QAsendMessage(q_id,ifkb) {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
     localStorage.setItem('hasSentMessage', 'true');
@@ -840,9 +866,11 @@ async function QAsendMessage(q_id) {
         document.getElementById('chat-messages').appendChild(userMessage);
         // 清空输入框
         input.innerHTML = '';
-        console.log('发送成功', this.chat_id,if_kb,this.question_id,if_user_kb,if_kb_QA)
 
         const is_q_id = q_id ? q_id : null;
+        const is_if_kb = ifkb ? ifkb : false;
+        console.log('发送成功', if_user_kb,if_kb_QA)
+
         // 存储RAG相关文档的数组
         let ragDocuments = [];
         try {
@@ -852,7 +880,7 @@ async function QAsendMessage(q_id) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ user_input: messageText, if_kb: if_kb, question_id: is_q_id, chat_id: this.chat_id, if_r1: if_kb_QA, if_user_kb: if_user_kb })
+                body: JSON.stringify({ user_input: messageText, if_kb: is_if_kb, question_id: is_q_id, chat_id: this.chat_id, if_r1: localStorage.getItem('if_kb_QA'), if_user_kb: localStorage.getItem('if_user_kb') })
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -1042,29 +1070,7 @@ async function QAsendMessage(q_id) {
 //         this.if_kb = false;
 //     }
 // }
-let if_kb_QA = true;
-// // 是否开启R1
-function toggleKnowledgeR1(checkbox_ai) {
-    if (checkbox_ai.checked) {
-        this.if_kb_QA = true;
-        console.log('开启R1', this.if_kb_QA)
-    } else {
-        this.if_kb_QA = false;
-        console.log('关闭R1', this.if_kb_QA)
-    }
-}
 
-let if_user_kb = true;
-// // 是否开启知识库
-function toggleKnowledgebash(checkbox_ai) {
-    if (checkbox_ai.checked) {
-        this.if_user_kb = true;
-        console.log('开启知识库', this.if_user_kb)
-    } else {
-        this.if_user_kb = false;
-        console.log('关闭知识库', this.if_user_kb)
-    }
-}
 
 // 播放语音
 function bf_vedio(audioId, text) {
@@ -1181,7 +1187,7 @@ function handleButtonClick(button) {
         // this.question_idA = this.question_id
         // console.log('复制题目到QA问答的输入框',this.question_id)
         // 发送消息
-        QAsendMessage(this.question_id)
+        QAsendMessage(this.question_id,this.if_kb)
 
         // this.question_idA = null
     }
