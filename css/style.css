@@ -9086,9 +9086,9 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
 	height: 100%;
 }
 
-#text-display {
+/* #text-display {
 	display: none;
-}
+} */
 
 .text-container{
 	display: none;
@@ -9121,7 +9121,7 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
   .message {
 	display: flex;
 	align-items: flex-start;
-	max-width: 70%;
+	max-width: 80%;
   }
   
   /* 机器人消息 */
@@ -9195,7 +9195,7 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
     padding: 15px;
     border: 1px solid #ccc;
     cursor: pointer;
-	height: 200px; 
+	/* height: 200px;  */
     /* 启用垂直滚动 */
     overflow-y: auto;
     /* 确保内容不会超出容器宽度 */
@@ -9212,7 +9212,7 @@ html:not(.ie-11):not(.ios) .parallax-disabled {
     border: 1px solid #ccc;
     cursor: pointer;
 	display: block;
-	height: 200px; 
+	/* height: 200px;  */
     /* 启用垂直滚动 */
     overflow-y: auto;
     /* 确保内容不会超出容器宽度 */
@@ -9621,4 +9621,10 @@ h5 {
 
 	.message-text ol {
 		margin-left: 20px;
+	}
+
+	.btn-primary1 {
+		color: rgb(0, 0, 0);
+		font-weight: bold;
+		/* margin-bottom: 5px; */
 	}

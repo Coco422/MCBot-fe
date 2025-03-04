@@ -24,7 +24,7 @@ function toggleKnowledgeR1(checkbox_ai) {
         localStorage.setItem('if_kb_QA', true);
     } else {
         localStorage.setItem('if_kb_QA', false);
-        console.log('关闭R1', this.if_kb_QA)
+        // console.log('关闭R1', this.if_kb_QA)
     }
 }
 
@@ -33,11 +33,11 @@ const if_user_kb = false;
 function toggleKnowledgebash(checkbox_ai) {
     if (checkbox_ai.checked) {
         localStorage.setItem('if_user_kb', true);
-        console.log('开启知识库', this.if_user_kb)
+        // console.log('开启知识库', this.if_user_kb)
     } else {
         // this.if_user_kb = false;
         localStorage.setItem('if_user_kb', false);
-        console.log('关闭知识库', this.if_user_kb)
+        // console.log('关闭知识库', this.if_user_kb)
     }
 }
 // 获取随机题目接口

@@ -1,54 +1,88 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  height: 100vh; /* 确保 body 高度占满屏幕 */
+  height: 100vh;
+  overflow: hidden;
 }
 .container {
   display: flex;
-  height: 100vh; /* 确保容器高度占满屏幕 */
+  height: 100%;
+  overflow: hidden;
 }
 /* 左边六分田子格 */
 .grid-container {
-  flex: 2; /* 占据2/3的宽度 */
+  flex: 3;
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2列 */
-  grid-template-rows: repeat(3, 1fr); /* 3行 */
+  grid-template-columns: 1fr 1.2fr;
   gap: 10px;
   padding: 10px;
-  box-sizing: border-box; /* 防止 padding 影响布局 */
+  overflow: hidden;
+  box-sizing: border-box;
 }
-.grid-item {
+/* 左列样式 */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grid-item1 {
+  flex: 2; /* 占据左列2/3高度 */
   background-color: #f4f4f4;
   border: 1px solid #ccc;
-  display: block;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5em;
-  white-space: normal; /* 允许换行 */
-  overflow-wrap: break-word; /* 允许在单词内换行 */
-  word-break: break-all; /* 允许在任意字符间换行 */
-  overflow: visible; /* 移除 overflow: hidden; */
-  text-overflow: clip; /* 移除 text-overflow: ellipsis; */
+  padding: 15px;
   overflow-y: auto;
-  white-space: normal;
-  padding: 10px; /* 内边距 */
-  box-sizing: border-box; /* 防止 padding 影响布局 */
 }
-/* 移除最后一个 .grid-item 的 border-bottom */
-.grid-item:last-child {
-  border-bottom: none;
+
+.grid-item2 {
+  flex: 1; /* 占据左列1/3高度 */
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  /* padding: 15px; */
+  overflow-y: auto;
 }
+
+/* 右列样式 */
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grid-item3, .grid-item4, .grid-item6 {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.grid-item3 {
+  flex: 1;
+}
+
+.grid-item4 {
+  flex: 1;
+}
+
+.grid-item6 {
+  flex: 1;
+}
+
 /* 题目容器 */
 .question-container {
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
   border: none;
   height: auto;
-  padding: 0;
+  padding: 10px;
   font-size: 14px;
   overflow-x: visible;
   overflow-y: visible;
-  position: relative; /* 设置为相对定位，作为刷新按钮的定位参考 */
+  position: relative;
 }
 
 /* 题目和刷新按钮的布局 */
@@ -56,61 +90,78 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  position: relative; /* 设置为相对定位，确保题目文本正常布局 */
+  position: relative;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  margin-bottom: 15px;
 }
 
 /* 题目文本 */
-.question-text {
+.question-title {
   font-size: 16px;
+  color: #333;
+  /* margin-bottom: 10px; */
+  line-height: 1.5;
+  flex: 1;
+  padding-right: 15px;
+  word-break: break-word;
   font-weight: bold;
-  margin: 0; /* 移除默认的 margin */
-  padding-right: 80px; /* 为刷新按钮留出空间，避免题目文本与按钮重叠 */
 }
 
 /* 刷新按钮 */
 #refresh-question {
   background: none;
-  border: none;
+  border: 1px solid rgb(102, 102, 247);
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  padding: 0;
-  margin: 0;
-  position: absolute; /* 设置为绝对定位 */
-  top: 0; /* 距离顶部 0 */
-  right: 0; /* 距离右侧 0 */
-  width: 100px; /* 按钮宽度 */
-  color: rgb(102, 102, 247); /* 按钮文字颜色 */
+  font-size: 14px;
+  padding: 5px 10px;
+  color: rgb(102, 102, 247);
+  transition: all 0.3s ease;
+  margin-left: 10px;
+  white-space: nowrap;
 }
+
+#refresh-question:hover {
+  background: rgb(102, 102, 247);
+  color: white;
+}
+
 /* 选项列表 */
 .options-list {
   display: flex;
-  flex-direction: column;
-  gap: 10px; /* 选项之间的间距 */
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 15px;
+  /* margin-top: 15px; */
+  margin-top: -8%;
 }
+
 /* 单个选项 */
 .option-item {
-  padding: 8px 12px; /* 减小内边距 */
+  flex: 1;
+  padding: 10px 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 14px; /* 减小字体大小 */
-  font-weight: bold;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-align: center;
+  min-width: 80px;
 }
+
 /* 选项悬停效果 */
 .option-item:hover {
   background-color: #f0f0f0;
+  border-color: rgb(102, 102, 247);
+  color: rgb(102, 102, 247);
 }
 
 .text-container {
+  margin-top: 10px;
   font-size: 14px;
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  line-height: 1.6;
 }
 
 .text-container .text {
@@ -186,8 +237,9 @@ body {
 
 /* 双区域布局样式 */
 .dual-panel {
+  height: 50px; /* 固定顶部面板高度 */
   display: flex;
-  width: 100%; /* 占满父容器宽度 */
+  width: 100%;
 }
 
 /* 每个区域的样式 */
@@ -215,27 +267,31 @@ body {
 
 /* 右边聊天对话框 */
 .chat-container {
-  flex: 1; /* 占据1/3的宽度 */
+  flex: 1;
   display: flex;
-  flex-direction: column; /* 垂直排列 */
-  height: 100vh; /* 高度占满屏幕 */
+  flex-direction: column;
+  height: 100vh; /* 设置为视口高度 */
+  overflow: hidden;
   background-color: #fff;
   border-left: 1px solid #ccc;
-  box-sizing: border-box; /* 防止 padding 影响布局 */
+  box-sizing: border-box;
 }
 
 .chat-container1 {
-  flex: 1; /* 聊天框占据剩余空间 */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%; /* 高度占满父容器 */
+  height: calc(100% - 50px); /* 减去顶部面板的高度 */
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 .chat-messages1 {
-  flex: 1; /* 消息区域占据剩余空间 */
-  overflow-y: auto; /* 允许滚动 */
+  flex: 1;
+  overflow-y: auto;
   padding: 10px;
   margin-bottom: 10px;
+  height: calc(100% - 100px); /* 减去输入框和其他元素的高度 */
 }
 
 .chat-input {
@@ -247,16 +303,54 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 #chat-input {
   flex: 1;
+  min-height: 36px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
 }
 
-button {
-  padding: 5px 10px;
+/* 按钮样式 */
+#qa-button, #record_button, #send-button_QA {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+#qa-button {
+  background-color: #1FDE82;
+}
+
+#record_button {
+  background-color: #1FDE82;
+}
+
+#send-button_QA {
+  background-color: #1FDE82;
+}
+
+#qa-button:hover, #record_button:hover, #send-button_QA:hover {
+  opacity: 0.9;
+}
+
+/* 隐藏数据按钮 */
+#data-button {
+  display: none;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .container {
@@ -416,4 +510,96 @@ button {
 /* 显示状态：将位置移动到视口 */
 #data_messages.show {
   bottom: 0;  /* 从底部弹出 */
+}
+
+.markdown-content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  word-wrap: break-word;
+  padding: 15px;
+}
+
+.markdown-content h1, 
+.markdown-content h2, 
+.markdown-content h3, 
+.markdown-content h4, 
+.markdown-content h5, 
+.markdown-content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-content h1 {
+  font-size: 1.8em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h3 {
+  font-size: 1.3em;
+}
+
+.markdown-content h4 {
+  font-size: 1.1em;
+}
+
+.markdown-content h5, .markdown-content h6 {
+  font-size: 0.9em;
+}
+
+.markdown-content ul, .markdown-content ol {
+  padding-left: 2em;
+}
+
+.markdown-content pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+}
+
+.markdown-content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content blockquote {
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+  margin: 0 0 16px 0;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.markdown-content table th, 
+.markdown-content table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+.markdown-content table tr:nth-child(2n) {
+  background-color: #f6f8fa;
 }
