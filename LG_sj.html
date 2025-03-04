@@ -5,70 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>test_demo</title>
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/test_old.css" />
+    <link rel="stylesheet" href="css/LG_sj.css" />
   </head>
   <body>
     <div class="container">
       <!-- 左边六分田子格 -->
       <div class="grid-container">
-        <!-- 摘要 -->
-        <div class="grid-item">
-            <p style="font-size: 24px;font-weight: bold;border-bottom: 1px solid black;">烟草执法资格考试题库中共收录<span style="color: rgb(238, 63, 63);">486</span>道题目，<span style="color: rgb(238, 63, 63);">考卷模拟烟草执法资格考试</span>，共计<span style="color:rgb(238, 63, 63) ;">80</span>道题，满分<span style="color:rgb(238, 63, 63) ;">100</span>分，单选题。</p>
-            <ol>
-                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 10px;">1.根据《烟草专卖执法资格证考试题库》（2017年版）任意节选组合，单选题60个（30分），多选题25个（55分），判断题15个（15分），每次随机选取定量题目组成考卷，满分100分，以90分为优、80分为良。</li>
-                <li style="font-size: 18px;font-weight: bold;list-style: decimal;margin-top: 10px;">2.主要涉及《中华人民共和国烟草专卖法实施条例》，法条共11个章节，66条法条。</li>
-            </ol>
-        </div>
-        <!-- step8 内容 -->
-        <div class="grid-item has-content" id="step8">------ 暂无内容 -----</div>
-        <!-- 考试情况 -->
-        <div class="grid-item">
-            <p style="font-size: 18px;font-weight: bold;line-height: 40px;">1.测试答题均分为<span style="color: rgb(238, 63, 63);">62分</span>，参与测试人数<span style="color: rgb(238, 63, 63);">6人</span>，单选题平均得分<span style="color: rgb(238, 63, 63);">15分</span>，多选题平均得分<span style="color: rgb(238, 63, 63);">38分</span>，判断题平均得分<span style="color: rgb(238, 63, 63);">9分</span>。</p>
-            <p style="font-size: 18px;font-weight: bold;line-height: 40px;">2.考题中涉及《中华人民共和国烟草专卖法实施条例》第十章节的题目最多，其中第十章节中有14条有关法律责任的法条。</p>
-        </div>
-        <!-- 图表切换 -->
-        <div class="grid-item">
-            <!-- 按钮区域 -->
-            <div class="chart-buttons">
-                <button id="bar-chart-btn" class="chart-button active" onclick="switchChart('bar')">柱状图</button>
-                <button id="pie-chart-btn" class="chart-button" onclick="switchChart('pie')">饼图</button>
-                <button id="line-chart-btn" class="chart-button" onclick="switchChart('line')">折线图</button>
+        <!-- 左列 -->
+        <div class="left-column">
+          <!-- 摘要和考试情况合并 -->
+          <div class="grid-item1">
+            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">生成整套考题</h3>
+            <input type="text" id="question-search" placeholder="请输入关键字" style="width: 80%;height: 40px;border: 1px solid #ccc;border-radius: 5px;padding: 0 10px;">
+            <button id="refresh-question" onclick="generateQuestion()" style="width: 80px;margin-top: 2%;margin-left: 1%;">生成考题</button>
+            <div id="question-section" class="question-container" style="display: flex; flex-direction: column;height: 88%;overflow-y: auto;">
+              
             </div>
-            <!-- 图表容器 -->
-            <div id="chart-container" class="chart-container"></div>
-        </div>
-        <!-- 随机题 -->
-        <div class="grid-item">
-            <div id="question-section" class="question-container" style="position: relative;">
-                <!-- 题目标题和刷新按钮 -->
-                <div class="question-header">
-                    <div id="question-title" class="question-title">题目</div>
-                    <button id="refresh-question" onclick="TestfetchRandomQuestion()" class="refresh-button">
-                        <i class="fa fa-refresh"></i> 刷新
-                    </button>
-                </div>
-                <!-- 题目内容 -->
-                <div id="question" class="question-text"></div>
-                <!-- 选项区域 -->
-                <div id="options" class="options-list">
-                </div>
+          </div>
+          <!-- 随机题 -->
+          <div class="grid-item2">
+            <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
+            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">随机单例题</h3>
+              <div class="question-header" style="width: 100%;">
+                  <div id="question-title" class="question-title"></div>
+                  <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
+                      <i class="fa fa-refresh"></i> 刷新
+                  </button>
+              </div>
+              <div id="question" class="options-list" style="width: 100%;">
+              </div>
             </div>
+          </div>
         </div>
-        <!-- 相似题目 法理分析 -->
-        <div class="grid-item">
+        
+        <!-- 右列 -->
+        <div class="right-column">
+          <!-- 推荐相似题 -->
+          <div class="grid-item3">
+            <h3 style="font-size: 18px;" id="show-questions" class="btn btn-primary1 mr-2">推荐相似题</h3>
+            <div id="question-display" class="question-container">暂无内容......</div>
+          </div>
+          <!-- 相关法条 -->
+          <div class="grid-item4">
+            <h3 style="font-size: 18px;" id="show-text" class="btn btn-primary1 mr-2">相关法条</h3>
+            <div id="text-display" class="text-container"></div>
+          </div>
+          <!-- 法理分析 -->
+          <div class="grid-item6">
             <div>
-                <div data-wow-delay="0.35s">
-                    <button style="font-size: 16px;" id="show-questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">推荐相似题</button>
-                    <button style="font-size: 16px;" id="show-text" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">相关法条</button>
-                    <button style="font-size: 16px;" id="show-analysis" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">法理分析</button>
-                    <button style="font-size: 16px;margin-left: 10%;" id="answer_question" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">AI答题➡</button>
-                </div>
-                <div data-wow-delay="0.35s" style="margin-top: 10px;">
-                    <div id="question-display" class="question-container">暂无内容......</div>
-                    <div id="text-display" class="text-container"></div>
-                    <div id="analysis-container" style="font-size: 15px;text-indent: 2em;font-weight: bold;line-height: 30px;"></div>
-                </div>
+              <div data-wow-delay="0.35s" style="display: flex;justify-content: space-between;">
+                <h3 style="font-size: 18px;" id="show-analysis" class="btn btn-primary1 mr-2">法理分析</h3>
+                <!-- <button style="font-size: 16px;margin-left: 10%;" id="answer_question" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">AI答题➡</button>
+                <button style="font-size: 16px;margin-left: 10%;" id="Generate_questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">生成考题➡</button> -->
+              </div>
+              <div data-wow-delay="0.35s" style="margin-top: 10px;">
+                <div id="analysis-container" style="font-size: 15px;text-indent: 2em;font-weight: bold;line-height: 30px;">暂无内容</div>
+              </div>
             </div>
+          </div>
         </div>
       </div>
       <!-- 右边聊天对话框 -->
@@ -77,13 +71,13 @@
         <div class="dual-panel" style="position: relative;">
             <!-- QA 问答区域 -->
             <div id="qa-panel" class="panel active" onclick="switchPanel('qa')" style="font-size: 18px;">
-                QA 问答
+                自由问答
             </div>
-            <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 35%;cursor: pointer;" title="历史记录" onclick="loadHistory()"></image>
+            <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 60%;cursor: pointer;" title="历史记录" onclick="loadHistory()"></image>
             <!-- 数据看板区域 -->
-            <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
+            <!-- <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
                 数据问答
-            </div>
+            </div> -->
         </div>
         <div id="chat-box" class="chat-container1">
           <!-- 聊天消息区域 -->
@@ -103,7 +97,7 @@
                       </label>
                       <span style="font-size: 16px;">深度思考(R1)</span>
                       <label class="switch">
-                        <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)" checked>
+                        <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)">
                         <span class="slider round"></span>
                       </label>
                       <span style="font-size: 16px;">知识库</span>
@@ -128,8 +122,8 @@
                 "
               ></div>
               <button id="record_button" style="background-color: #1FDE82;">录</button>
-              <button id="send-button" onclick="sendMessagedemo()">发送</button>
-              <button id="send-button_QA" onclick="QAsendMessage()">发送QA</button>
+              <!-- <button id="send-button" onclick="sendMessagedemo()">发送</button> -->
+              <button id="send-button_QA" onclick="freesendMessage()">发送</button>
             </div>
           </div>
         </div>
@@ -201,12 +195,12 @@
     <script src="js/core.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/axios.min.js"></script>
-    <script src="js/featch.js"></script>
+    <script src="js/LG_sj.js"></script>
     <script src="js/record.js"></script>
     <!-- <script src="js/marked.js"></script> -->
     <script src="js/markdown-it.js"></script>
     <script src="js/markdown-it-task-lists.min.js"></script>
     <script src="js/echarts.js"></script>
-    <script src="js/test_demo_old.js"></script>
+    <script src="js/LG_sj_question.js"></script>
   </body>
 </html>
