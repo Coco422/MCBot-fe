@@ -281,10 +281,6 @@ function switchPanel(panelType, showAlert = true) {
     // 根据点击的面板类型添加 active 类
     if (panelType === 'qa') {
         qaPanel.classList.add('active');
-        // const chatMessages = document.getElementById('chat-messages');
-        // if (chatMessages) {
-        //     chatMessages.innerHTML = ''; // 清空聊天记录
-        // }
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'block';
             document.getElementById('send-button').style.display = 'none';
@@ -292,29 +288,32 @@ function switchPanel(panelType, showAlert = true) {
             document.getElementById('data_messages').style.display = 'none';
             document.getElementById('qa-button').style.display = 'block';
             document.getElementById('data-button').style.display = 'none';
+            document.getElementById('question-section-lt').style.display = 'none';
+            document.getElementById('chat-messages').style.display = 'block';
+            document.getElementById('chat-messages').style.display = 'flex';
+            // document.getElementById('knowledge-switch').style.display = 'none';
             const recordButton = document.getElementById('record_button');
             recordButton.style.backgroundColor = '#1FDE82';
-              // 只有当 #chat-messages 元素存在时才清空内容
+            // 只有当 #chat-messages 元素存在时才清空内容
 
-            showMessage('已切换到 QA问答 模式');
+            showMessage('已切换到 自由问答 模式');
         }
         // 这里可以添加 QA 问答相关的逻辑
     } else if (panelType === 'data') {
         dataPanel.classList.add('active_data');
-        // const chatMessages = document.getElementById('chat-messages');
-        // if (chatMessages) {
-        //     chatMessages.innerHTML = ''; // 清空聊天记录
-        // }
         if (showAlert) {
             document.getElementById('send-button_QA').style.display = 'none';
             document.getElementById('send-button').style.display = 'block';
             document.getElementById('qa_messages').style.display = 'none';
             document.getElementById('data_messages').style.display = 'block';
             document.getElementById('qa-button').style.display = 'none';
-            document.getElementById('data-button').style.display = 'block';
+            document.getElementById('data-button').style.display = 'none';
+            document.getElementById('question-section-lt').style.display = 'block';
+            document.getElementById('chat-messages').style.display = 'none';
+            // document.getElementById('knowledge-switch').style.display = 'none';
             const recordButton = document.getElementById('record_button');
             recordButton.style.backgroundColor = '';
-            showMessage('已切换到 数据看板 模式');
+            showMessage('已切换到 生成考题 模式');
         }
     }
 }
@@ -363,68 +362,76 @@ function showMessage(message) {
 // 默认选中 QA 问答区域，但不显示消息提示
 switchPanel('qa', false); // 第二个参数为 false，表示不显示消息提示
 
-// 获取 QA问答 Q 按钮和 qa_messages 元素
-const qaButton = document.getElementById("qa-button");
-const qaMessages = document.getElementById("qa_messages");
+// 此部分代码已经在LG_sj.js的window.onload中处理，为避免冲突，这里注释掉
+// document.addEventListener('DOMContentLoaded', function() {
+//     // 获取 QA问答 Q 按钮和 qa_messages 元素
+//     const qaButton = document.getElementById("qa-button");
+//     const qaMessages = document.getElementById("qa_messages");
 
-// 点击 Q 按钮时，显示/隐藏 qa_messages
-qaButton.addEventListener("click", function(event) {
-  // 阻止点击事件冒泡，避免触发 document 上的点击事件
-  event.stopPropagation();
-  qaMessages.classList.toggle("show");
-});
+//     if (qaButton && qaMessages) {
+//         // 点击 Q 按钮时，显示/隐藏 qa_messages
+//         qaButton.addEventListener("click", function (event) {
+//             // 阻止点击事件冒泡，避免触发 document 上的点击事件
+//             event.stopPropagation();
+//             console.log("Q按钮被点击 - DOMContentLoaded");
+//             // 强制添加show类，确保显示
+//             if (!qaMessages.classList.contains("show")) {
+//                 qaMessages.classList.add("show");
+//             } else {
+//                 qaMessages.classList.remove("show");
+//             }
+//         });
 
-// 阻止点击 qa_messages 内部内容时，事件冒泡到 document（避免误关闭弹框）
-qaMessages.addEventListener("click", function(event) {
-  event.stopPropagation();
-});
-
-// 点击页面其他区域时，隐藏 qa_messages
-document.addEventListener("click", function(event) {
-  // 如果点击的目标既不在 qa_messages 内，也不是 Q 按钮，则关闭 qa_messages
-  if (!qaMessages.contains(event.target) && event.target !== qaButton) {
-    qaMessages.classList.remove("show");
-  }
-});
+//         // 阻止点击 qa_messages 内部内容时，事件冒泡到 document（避免误关闭弹框）
+//         qaMessages.addEventListener("click", function (event) {
+//             event.stopPropagation();
+//         });
+//     }
+// });
 
 // 获取 数据看板 Q 按钮和 data_messages 元素
 const dataButton = document.getElementById("data-button");
 const dataMessages = document.getElementById("data_messages");
 
 // 点击 Q 按钮时，显示/隐藏 data_messages
-dataButton.addEventListener("click", function(event) {
-  // 阻止点击事件冒泡，避免触发 document 上的点击事件
-  event.stopPropagation();
-  dataMessages.classList.toggle("show");
+dataButton.addEventListener("click", function (event) {
+    // 阻止点击事件冒泡，避免触发 document 上的点击事件
+    event.stopPropagation();
+    dataMessages.classList.toggle("show");
 });
 
 // 阻止点击 data_messages 内部内容时，事件冒泡到 document（避免误关闭弹框）
-dataMessages.addEventListener("click", function(event) {
-  event.stopPropagation();
+dataMessages.addEventListener("click", function (event) {
+    event.stopPropagation();
 });
 
 // 点击页面其他区域时，隐藏 data_messages
-document.addEventListener("click", function(event) {
-  // 如果点击的目标既不在 data_messages 内，也不是 Q 按钮，则关闭 data_messages
-  if (!dataMessages.contains(event.target) && event.target !== qaButton) {
-    dataMessages.classList.remove("show");
-  }
+document.addEventListener("click", function (event) {
+    // 如果点击的目标既不在 data_messages 内，也不是 Q 按钮，则关闭 data_messages
+    if (!dataMessages.contains(event.target) && event.target !== qaButton) {
+        dataMessages.classList.remove("show");
+    }
 });
 
 // 当点击关闭按钮时，隐藏弹框
 document.getElementById("closeModal").addEventListener("click", function (event) {
     // 阻止点击事件传播到 document 上
+    console.log('ces')
     event.stopPropagation();
     document.getElementById("historyModal").classList.remove("active");
 });
 
+// 阻止点击历史记录弹框内部时关闭弹框
+document.getElementById("historyModal").addEventListener("click", function(event) {
+    event.stopPropagation();
+});
+
 // 当点击页面的其他区域时，关闭弹框
 document.addEventListener("click", function (event) {
-    const modal = document.getElementById("historyModal");
+    const historyModal = document.getElementById("historyModal");
     const historyButton = document.getElementById("history");
-
-    // 如果点击的区域不是弹框本身或历史记录按钮，则关闭弹框
-    if (!modal.contains(event.target) && event.target !== historyButton) {
-        modal.classList.remove("active");
+    // 如果点击的目标既不在historyModal内，也不是history按钮，则关闭弹框
+    if (historyModal.classList.contains("active") && !historyModal.contains(event.target) && event.target !== historyButton) {
+        historyModal.classList.remove("active");
     }
 });

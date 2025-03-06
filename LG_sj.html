@@ -13,24 +13,53 @@
       <div class="grid-container">
         <!-- 左列 -->
         <div class="left-column">
-          <!-- 摘要和考试情况合并 -->
+          <!-- 生成整套考题 -->
           <div class="grid-item1">
-            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">生成整套考题</h3>
+            <!-- <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">生成整套考题</h3>
             <input type="text" id="question-search" placeholder="请输入关键字" style="width: 80%;height: 40px;border: 1px solid #ccc;border-radius: 5px;padding: 0 10px;">
             <button id="refresh-question" onclick="generateQuestion()" style="width: 80px;margin-top: 2%;margin-left: 1%;">生成考题</button>
-            <div id="question-section" class="question-container" style="display: flex; flex-direction: column;height: 88%;overflow-y: auto;">
-              
+            <div id="question-section-all" class="question-container" style="display: flex; flex-direction: column;height: 88%;overflow-y: auto;">
+            </div> -->
+            <h3 style="font-size: 18px;" id="show-questions" class="btn btn-primary1 mr-2">选择医保相关试题</h3>
+
+            <!-- 下层：姓名标签选择器 -->
+            <div class="selector-row" style="margin-top: 10px;">
+              <div class="selector">
+                  <label style="font-size: 18px;font-weight: 400;">选择类型:</label>
+                  <div class="name-selector" style="font-size: 16px;">
+                      <span class="name-tag" data-id="市医保中心/异地就医管理/异地就医报销" onclick="selectName(this)">异地就医管理/异地就医报销</span>
+                      <span class="name-tag" data-id="市医保中心/特定人群医保/学生医保" onclick="selectName(this)">特定人群医保/学生医保</span>
+                  </div>
+              </div>
+            </div>
+            <!-- 工单标签 -->
+            <div class="tabs-wrapper" style="display: flex; align-items: stretch;margin-top: 40px;" id="tab-wrapper">
+              <button type="button" class="tab-scroll-left" onclick="scrollTabs('left')" style="margin-right: 5px;">‹</button>
+              <div class="tab-container" id="order-selector" style="overflow-x: auto; white-space: nowrap; flex-grow: 1;">
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+              </div>
+              <button type="button" class="tab-scroll-right" onclick="scrollTabs('right')" style="margin-left: 5px;">›</button>
             </div>
           </div>
           <!-- 随机题 -->
           <div class="grid-item2">
             <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
-            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">随机单例题</h3>
+            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">生成单例题</h3>
               <div class="question-header" style="width: 100%;">
                   <div id="question-title" class="question-title"></div>
-                  <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
+                  <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
                       <i class="fa fa-refresh"></i> 刷新
-                  </button>
+                  </button> -->
               </div>
               <div id="question" class="options-list" style="width: 100%;">
               </div>
@@ -73,13 +102,15 @@
             <div id="qa-panel" class="panel active" onclick="switchPanel('qa')" style="font-size: 18px;">
                 自由问答
             </div>
-            <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 60%;cursor: pointer;" title="历史记录" onclick="loadHistory()"></image>
+            <!-- <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 35%;cursor: pointer;" title="历史记录" onclick="loadHistory()"></image> -->
             <!-- 数据看板区域 -->
-            <!-- <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
-                数据问答
-            </div> -->
+            <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
+                生成考题
+            </div>
         </div>
         <div id="chat-box" class="chat-container1">
+          <div id="question-section-lt" class="question-container" style="display: none; flex-direction: column;height: 88%;overflow-y: auto;">
+          </div>
           <!-- 聊天消息区域 -->
           <div id="chat-messages" class="chat-messages1">
             <!-- 机器人消息 -->
@@ -89,19 +120,19 @@
             <!-- 用户消息 -->
             <div class="message1 user-message1"></div>
           </div>
-                    <!-- 是否开启知识库 -->
-                    <div class="knowledge-switch" id="knowledge-switch">
-                      <label class="switch">
-                        <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
-                        <span class="slider round"></span>
-                      </label>
-                      <span style="font-size: 16px;">深度思考(R1)</span>
-                      <label class="switch">
-                        <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)">
-                        <span class="slider round"></span>
-                      </label>
-                      <span style="font-size: 16px;">知识库</span>
-                    </div>
+          <!-- 是否开启知识库 -->
+          <!-- <div class="knowledge-switch" id="knowledge-switch">
+            <label class="switch">
+              <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
+              <span class="slider round"></span>
+            </label>
+            <span style="font-size: 16px;">深度思考(R1)</span>
+            <label class="switch">
+              <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)">
+              <span class="slider round"></span>
+            </label>
+            <span style="font-size: 16px;">知识库</span>
+          </div> -->
           <!-- 聊天输入区域 -->
           <div class="chat-input">
             <!-- 输入框和按钮 -->
@@ -122,8 +153,8 @@
                 "
               ></div>
               <button id="record_button" style="background-color: #1FDE82;">录</button>
-              <!-- <button id="send-button" onclick="sendMessagedemo()">发送</button> -->
-              <button id="send-button_QA" onclick="freesendMessage()">发送</button>
+              <button id="send-button" onclick="generateQuestion1()">发送</button>
+              <button id="send-button_QA" onclick="freesendMessage()">发送QA</button>
             </div>
           </div>
         </div>
@@ -145,21 +176,21 @@
       <div class="message-content" id="qa_messages">
         <div
           class="message-text1 mes"
-          onclick="selectMessage_test('国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？')"
+          onclick="selectMessage_test('在深圳市退休人员通过转诊到市外医疗机构，发生的医疗费用可以通过哪些方式进行报销申请？')"
         >
-          国家对卷烟、雪茄烟焦油含量和用于卷烟、雪茄烟的什么成分实行控制？
+        在深圳市退休人员通过转诊到市外医疗机构，发生的医疗费用可以通过哪些方式进行报销申请？
         </div>
         <div
           class="message-text1 mes"
-          onclick="selectMessage_test('申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？')"
+          onclick="selectMessage_test('当参保少儿成功申办并激活金融社保卡后，系统将自动使用哪个账户作为缴费账户？')"
         >
-        申请领取烟草专卖批发企业许可证，在省、自治区、直辖市范围内经营的，由什么部门审批发证？
+        当参保少儿成功申办并激活金融社保卡后，系统将自动使用哪个账户作为缴费账户？
         </div>
         <div
           class="message-text1 mes"
-          onclick="selectMessage_test('取得烟草专卖零售许可证的单位或个人，应从哪里进货？')"
+          onclick="selectMessage_test('对于参加了少儿医保的孩子，扣费账号是如何确定的？')"
         >
-        取得烟草专卖零售许可证的单位或个人，应从哪里进货？
+        对于参加了少儿医保的孩子，扣费账号是如何确定的？
         </div>
       </div>
       <!-- 数据问答 下拉框默认题目 -->

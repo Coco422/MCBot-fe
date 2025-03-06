@@ -29,7 +29,7 @@ body {
 }
 
 .grid-item1 {
-  flex: 2; /* 占据左列2/3高度 */
+  flex: 1; /* 占据左列2/3高度 */
   background-color: #f4f4f4;
   border: 1px solid #ccc;
   padding: 15px;
@@ -37,7 +37,7 @@ body {
 }
 
 .grid-item2 {
-  flex: 1; /* 占据左列1/3高度 */
+  flex: 1.5; /* 占据左列1/3高度 */
   background-color: #f4f4f4;
   border: 1px solid #ccc;
   /* padding: 15px; */
@@ -78,7 +78,7 @@ body {
   margin: 0 auto;
   border: none;
   height: auto;
-  padding: 10px;
+  /* padding: 10px; */
   font-size: 14px;
   overflow-x: visible;
   overflow-y: visible;
@@ -237,7 +237,6 @@ body {
 
 /* 双区域布局样式 */
 .dual-panel {
-  height: 50px; /* 固定顶部面板高度 */
   display: flex;
   width: 100%;
 }
@@ -292,6 +291,8 @@ body {
   padding: 10px;
   margin-bottom: 10px;
   height: calc(100% - 100px); /* 减去输入框和其他元素的高度 */
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-input {
@@ -430,11 +431,23 @@ body {
   background-color: #ebebeb;
 }
 
+/* 聊天消息区域 */
+.chat-messages1 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  height: calc(100% - 100px); /* 减去输入框和其他元素的高度 */
+  display: flex;
+  flex-direction: column;
+}
+
 /* 用户消息 */
 .user-message {
   display: flex;
   justify-content: flex-end; /* 让内容向右对齐 */
   margin: 10px 0;
+  width: 100%; /* 确保消息区域占满宽度 */
 }
 
 .user-message .avatar {
@@ -445,6 +458,7 @@ body {
   padding: 10px;
   border-radius: 10px;
   max-width: 90%; /* 限制消息的最大宽度 */
+  margin-right: 8px; /* 确保头像和消息之间有间距 */
 }
 
 /* 机器人消息 */
@@ -452,6 +466,7 @@ body {
   display: flex;
   justify-content: flex-start; /* 让内容向左对齐 */
   margin: 5px 0;
+  width: 100%; /* 确保消息区域占满宽度 */
 }
 
 .bot-message .avatar {
@@ -462,15 +477,42 @@ body {
   padding: 10px;
   border-radius: 10px;
   max-width: 90%;
+  margin-left: 8px; /* 确保头像和消息之间有间距 */
 }
 
+/* message1样式 */
+.message1 {
+  display: flex;
+  align-items: flex-start;
+  width: 100%; /* 确保消息占据整个宽度 */
+  word-wrap: break-word; /* 允许长单词换行 */
+  word-break: break-word; /* 允许在单词内换行 */
+}
+
+/* user-message1样式 */
+.user-message1 {
+  align-self: flex-end;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%; /* 确保消息区域占满宽度 */
+  margin: 10px 0;
+}
+
+.user-message1 .message-content1 {
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px 12px 0 12px;
+  padding: 10px;
+  margin-right: 10px;
+  max-width: 70%; /* 限制消息的最大宽度 */
+}
 
 /* 初始状态：隐藏在底部 */
 #qa_messages {
   position: fixed;
   bottom: -100%;  /* 初始位置在视图之外 */
   right: 0;
-  width: 33%;
+  width: 28%;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 10px;
@@ -602,4 +644,124 @@ body {
 
 .markdown-content table tr:nth-child(2n) {
   background-color: #f6f8fa;
+}
+
+
+.selector-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selector {
+  display: flex;
+  flex: 1; /* 让每个选择器占满可用空间 */
+  align-items: center;
+  gap: 10px;
+}
+
+.selector-input {
+  flex: 1; /* 让输入框占满剩余空间 */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.name-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1; /* 让姓名标签选择器占满可用空间 */
+}
+
+.name-tag {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  flex: 1; /* 让每个姓名标签占满可用空间 */
+  text-align: center;
+  background-color: #ffffff;
+  color: #000;
+}
+
+.name-tag:hover {
+  background-color: #e0e0e0;
+}
+
+.name-tag.selected {
+  background-color: #1FDE82;
+  color: white;
+  border: none;
+}
+
+.tab-container {
+  display: flex;
+  overflow-x: auto;  /* 当按钮超出容器宽度时出现水平滚动条 */
+  padding: 5px 0;
+  margin-top: 5px;
+  min-width: 0;      /* 允许收缩 */
+  /* 隐藏 Firefox 的滚动条 */
+  scrollbar-width: none;  
+  /* 隐藏 IE 和 Edge 的滚动条 */
+  -ms-overflow-style: none;  
+}
+.tab-container::-webkit-scrollbar {
+  display: none; /* 隐藏 Chrome、Safari 和 Opera 的滚动条 */
+}
+
+.tab-button {
+  flex: 0 0 auto;       /* 防止按钮被压缩 */
+  padding: 6px 10px;
+  /* margin-right: 5px; */
+  background-color: #f1f1f1;
+  /* border-radius: 5px; */
+  cursor: pointer;
+  font-size: 16px;
+  white-space: nowrap;  /* 防止文本换行 */
+  border: 1px solid #ccc;
+  width: 40px;
+  text-align: center;
+}
+
+.active-tab {
+  background-color: #1FDE82;
+  color: white;
+  border: 0;
+}
+
+.tab-button.active-tab:hover {
+  background-color: #1FDE82; /* 保持激活状态的背景色 */
+}
+
+.tab-button:hover {
+  background-color: #e0e0e0;
+}
+
+.tabs-wrapper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;      /* 与 .tab-button 一致 */
+  font-size: 16px;        /* 与 .tab-button 一致 */
+  cursor: pointer;
+  height: 42px;
+  margin-top: 10px;
+  background-color: #81e98e;
+  /* display: none; */
+}
+
+/* 选择包含按钮的容器，设置 flex 布局 */
+[data-wow-delay] {
+  display: flex;
+  gap: 5px; /* 可根据需要调整间距 */
+  margin-top: 5px;
+}
+
+/* 设置容器内所有按钮平均分配宽度 */
+[data-wow-delay] button {
+  flex: 1;
+  /* 如有需要，可清除现有右边距 */
+  margin-right: 0 !important;
 }
