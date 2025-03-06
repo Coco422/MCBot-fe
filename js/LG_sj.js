@@ -126,31 +126,31 @@ function toggleKnowledgebash(checkbox_ai) {
 //         });
 // }
 
-// ... existing code ...
-// 记录上一次随机获取的ID
-let lastRandomId = null;
 
-// 随机获取数组中的题目id
-function getRandomId() {
-    const ids = [121, 131, 49, 53, 82, 106, 105, 51, 4, 128, 119, 2, 129, 126, 68, 92, 94, 66, 10, 32, 78, 80, 86, 22, 88, 91, 124, 18, 115, 96, 24, 113, 111, 112, 83, 11, 99, 118, 123, 127, 39, 40, 7, 62, 9, 42, 6, 100, 28, 14, 47, 81, 98, 59, 61, 21, 45, 54, 57, 95, 29, 26, 15, 74, 30, 5, 63, 130, 84, 23, 12, 27, 52, 19, 33, 37, 25, 20, 44, 16, 65, 48, 50, 77, 114, 60, 72, 41, 70, 93, 64, 67, 73, 75, 79, 85, 87, 89, 90, 103, 97, 104, 58, 102, 109, 110, 71, 116, 117, 122, 125, 1, 34, 108, 101, 3];
-    let randomId;
+// 记录上一次随机获取的ID
+// let lastRandomId = null;
+
+// // 随机获取数组中的题目id
+// function getRandomId() {
+//     const ids = [121, 131, 49, 53, 82, 106, 105, 51, 4, 128, 119, 2, 129, 126, 68, 92, 94, 66, 10, 32, 78, 80, 86, 22, 88, 91, 124, 18, 115, 96, 24, 113, 111, 112, 83, 11, 99, 118, 123, 127, 39, 40, 7, 62, 9, 42, 6, 100, 28, 14, 47, 81, 98, 59, 61, 21, 45, 54, 57, 95, 29, 26, 15, 74, 30, 5, 63, 130, 84, 23, 12, 27, 52, 19, 33, 37, 25, 20, 44, 16, 65, 48, 50, 77, 114, 60, 72, 41, 70, 93, 64, 67, 73, 75, 79, 85, 87, 89, 90, 103, 97, 104, 58, 102, 109, 110, 71, 116, 117, 122, 125, 1, 34, 108, 101, 3];
+//     let randomId;
     
-    // 确保新的随机ID与上一次不同
-    do {
-        randomId = ids[Math.floor(Math.random() * ids.length)];
-    } while (randomId === lastRandomId && ids.length > 1);
+//     // 确保新的随机ID与上一次不同
+//     do {
+//         randomId = ids[Math.floor(Math.random() * ids.length)];
+//     } while (randomId === lastRandomId && ids.length > 1);
     
-    // 更新lastRandomId
-    lastRandomId = randomId;
-    return randomId;
-}
+//     // 更新lastRandomId
+//     lastRandomId = randomId;
+//     return randomId;
+// }
 
 // 全局变量
 let globalQuestionId = null;
 
 // 获取随机题目，法理分析，法理推荐，法条分析
 function TestfetchRandomQuestion() {
-    const currentId = getRandomId();
+    const currentId = selectedOrderTitle;
     return new Promise((resolve, reject) => {
         axios.get(`${BASE_URL}/dev/getQues?q_id=${currentId}`)
             .then((response) => {
@@ -1151,89 +1151,84 @@ let historyData = [];
 // 历史记录
 // 当点击历史记录图标时，显示弹框
 function loadHistory() {
-    // 获取历史记录按钮
-    const historyButton = document.getElementById("history");
-    historyButton.addEventListener("click", function (event) {
-        // 阻止点击事件传播到 document 上
-        event.stopPropagation();
+    console.log('加载历史记录');
+    
+    // 显示历史记录模态框
+    const historyModal = document.getElementById("historyModal");
+    historyModal.classList.add("active");
 
-        // 显示历史记录模态框
-        const historyModal = document.getElementById("historyModal");
-        historyModal.classList.add("active");
+    // 获取cookie中的随机ID
+    const randomId = getRandomIdFromCookie();
 
-        // 获取cookie中的随机ID
-        const randomId = getRandomIdFromCookie();
+    // 调用 API 获取历史记录
+    axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
+        .then(function (response) {
+            let historyIds = response.data.chat_id_list;
+            // 过滤掉索引为 0 的元素
+            historyIds = historyIds.slice(1);
 
-        // 调用 API 获取历史记录
-        axios.get(`${BASE_URL}/api/chat_id_title_list?user_id=${randomId}`)
-            .then(function (response) {
-                let historyIds = response.data.chat_id_list;
-                // 过滤掉索引为 0 的元素
-                historyIds = historyIds.slice(1);
+            // 获取 ul 元素
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = '';  // 清空现有的历史记录列表
 
-                // 获取 ul 元素
-                const historyList = document.getElementById("historyList");
-                historyList.innerHTML = '';  // 清空现有的历史记录列表
+            // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
+            historyIds.forEach(item => {
+                // 只有当 item.title 存在时才创建 li 元素
+                if (!item.title) return;
 
-                // 遍历数组，为每个 id 创建一个 li 元素，并添加点击事件
-                historyIds.forEach(item => {
-                    // 只有当 item.title 存在时才创建 li 元素
-                    if (!item.title) return;
+                const li = document.createElement("li");
+                li.textContent = item.title;
 
-                    const li = document.createElement("li");
-                    li.textContent = item.title;
+                // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
+                li.addEventListener("click", function () {
+                    // 关闭历史记录模态框
+                    historyModal.classList.remove("active");
 
-                    // 添加点击事件，点击时打印 chat_id，并传递 chat_id 发起请求
-                    li.addEventListener("click", function () {
-                        // 关闭历史记录模态框
-                        historyModal.classList.remove("active");
+                    // 调用 API 获取指定 chat_id 的聊天记录
+                    axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
+                        .then(function (response) {
+                            // console.log(response.data.messages.history);
 
-                        // 调用 API 获取指定 chat_id 的聊天记录
-                        axios.get(`${BASE_URL}/api/chat_byid?chat_id=${item.chat_id}`)
-                            .then(function (response) {
-                                // console.log(response.data.messages.history);
+                            this.chat_id = item.chat_id;
+                            console.log('this.chat_id', this.chat_id);
 
-                                this.chat_id = item.chat_id;
-                                console.log('this.chat_id', this.chat_id);
+                            // 清空全局的 historyData 数组，防止数据累加
+                            historyData = [];
 
-                                // 清空全局的 historyData 数组，防止数据累加
-                                historyData = [];
+                            // 重新获取新的历史记录数据并存入 historyData
+                            const newHistory = (response.data.messages && response.data.messages.history) || [];
+                            historyData.push(...newHistory);
 
-                                // 重新获取新的历史记录数据并存入 historyData
-                                const newHistory = (response.data.messages && response.data.messages.history) || [];
-                                historyData.push(...newHistory);
+                            // 清空聊天记录显示区域，防止重复渲染相同的消息
+                            const chatMessagesContainer = document.getElementById('chat-messages');
+                            chatMessagesContainer.innerHTML = '';
 
-                                // 清空聊天记录显示区域，防止重复渲染相同的消息
-                                const chatMessagesContainer = document.getElementById('chat-messages');
-                                chatMessagesContainer.innerHTML = '';
-
-                                // 渲染历史记录
-                                historyData.forEach(msg => {
-                                    const msgContainer = document.createElement('div');
-                                    msgContainer.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
-                                    msgContainer.innerHTML = `
-                                        <img src="${msg.role === 'user' ? 'images/user.png' : 'images/robot.png'}" alt="${msg.role} Avatar" class="avatar">
-                                        <div class="message-content">
-                                            <div class="message-text">${msg.content}</div>
-                                        </div>
-                                    `;
-                                    chatMessagesContainer.appendChild(msgContainer);
-                                });
-
-                                // 滚动到聊天记录的底部
-                                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-                            }).catch(function (err) {
-                                console.log(err);
+                            // 渲染历史记录
+                            historyData.forEach(msg => {
+                                const msgContainer = document.createElement('div');
+                                msgContainer.className = `message ${msg.role === 'user' ? 'user-message' : 'bot-message'}`;
+                                msgContainer.innerHTML = `
+                                    <img src="${msg.role === 'user' ? 'images/user.png' : 'images/robot.png'}" alt="${msg.role} Avatar" class="avatar">
+                                    <div class="message-content">
+                                        <div class="message-text">${msg.content}</div>
+                                    </div>
+                                `;
+                                chatMessagesContainer.appendChild(msgContainer);
                             });
-                    });
 
-                    // 将 li 元素添加到历史记录列表
-                    historyList.appendChild(li);
+                            // 滚动到聊天记录的底部
+                            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                        }).catch(function (err) {
+                            console.log(err);
+                        });
                 });
-            }).catch(function (err) {
-                console.log(err);
+
+                // 将 li 元素添加到历史记录列表
+                historyList.appendChild(li);
             });
-    });
+        }).catch(function (err) {
+            console.log(err);
+        });
 }
 
 // 生成一个随机的ID
@@ -1280,7 +1275,7 @@ async function generateQuestion() {
 
     try {
         // 清空之前的内容
-        const questionSection = document.getElementById('question-section');
+        const questionSection = document.getElementById('question-section-all');
         questionSection.innerHTML = '';
         
         // 创建问题容器
@@ -1409,6 +1404,213 @@ async function generateQuestion() {
     }
 }
 
+// 根据关键字生成考题
+async function generateQuestion1() {
+    console.log('ces')
+    const chatInput = document.getElementById('chat-input');
+    const questionSearch = chatInput.innerHTML;
+    if (!questionSearch) {
+        return;
+    }
+
+    // 清空输入框
+    chatInput.innerHTML = '';
+
+    try {
+        // 清空之前的内容
+        const questionSection = document.getElementById('question-section-lt');
+        questionSection.innerHTML = '';
+        
+        // 创建问题容器
+        const questionContainer = document.createElement('div');
+        questionContainer.className = 'question-container';
+        questionContainer.style.display = 'flex';
+        questionContainer.style.flexDirection = 'column';
+        
+        // 创建内容显示区域
+        const contentArea = document.createElement('div');
+        contentArea.id = 'question-content';
+        contentArea.className = 'markdown-content';
+        contentArea.style.width = '100%';
+        contentArea.style.padding = '10px';
+        contentArea.style.overflow = 'auto';
+        contentArea.style.height = '100%';
+        contentArea.style.lineHeight = '1.6';
+        contentArea.style.fontSize = '15px';
+        
+        // 添加加载提示
+        contentArea.innerHTML = '<div style="text-align: center; padding: 20px;">正在生成考题...</div>';
+        
+        questionContainer.appendChild(contentArea);
+        questionSection.appendChild(questionContainer);
+
+        // 确保已初始化md对象
+        if (!md && window.markdownit) {
+            md = window.markdownit({
+                html: true,
+                linkify: true,
+                typographer: true,
+            }).use(window.markdownitTaskLists, {
+                enabled: true,
+                label: true,
+                labelAfter: true,
+            });
+        }
+
+        // 发送请求
+        const response = await fetch(`${BASE_URL}/dev/geneQusetion?kb_content=${encodeURIComponent(questionSearch)}`, {
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = '';
+        let accumulatedMarkdown = '';
+        
+        // 处理SSE数据流
+        async function read() {
+            const { done, value } = await reader.read();
+            if (done) {
+                // 流结束时，检查是否有最终的JSON数据
+                if (fullContent) {
+                    try {
+                        const jsonMatch = fullContent.match(/data:({.*})/);
+                        if (jsonMatch && jsonMatch[1]) {
+                            const jsonData = JSON.parse(jsonMatch[1]);
+                            if (jsonData.content) {
+                                // 使用markdown-it渲染内容
+                                accumulatedMarkdown = jsonData.content;
+                                // 安全地使用md对象
+                                if (md) {
+                                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                                } else {
+                                    contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error('解析最终JSON数据失败:', e);
+                    }
+                }
+                return;
+            }
+            
+            const chunk = decoder.decode(value);
+            fullContent += chunk;
+            
+            // 解析数据块
+            const lines = chunk.split('\n');
+            let currentMarkdown = '';
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                if (line.startsWith('event:update')) {
+                    continue;
+                }
+                
+                if (line.startsWith('data:')) {
+                    const data = line.slice(5).trim();
+                    if (data && data !== '###' && !data.startsWith('{')) {
+                        currentMarkdown += data;
+                    }
+                }
+            }
+            
+            // 更新Markdown内容
+            if (currentMarkdown) {
+                accumulatedMarkdown += currentMarkdown;
+                // 安全地使用md对象
+                if (md) {
+                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                } else {
+                    contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
+                }
+                // 滚动到底部
+                contentArea.scrollTop = contentArea.scrollHeight;
+            }
+            
+            await read();
+        }
+        
+        await read();
+    } catch (error) {
+        console.error('生成考题失败:', error);
+        const questionSection = document.getElementById('question-section');
+        if (questionSection) {
+            questionSection.innerHTML = `<div style="color: red; padding: 20px;">生成考题失败: ${error.message}</div>`;
+        }
+    }
+}
+
+let selectedId = null;
+//获取选中的姓名
+function selectName(element) {
+    // 获取选中的姓名和对应的ID
+    this.selectedId = element.getAttribute('data-id');
+    // 移除所有已选中的样式
+    const selectedElements = document.querySelectorAll('.name-tag.selected');
+    selectedElements.forEach(selectedElement => {
+        selectedElement.classList.remove('selected');
+    });
+
+    // 添加选中样式到当前点击的元素
+    element.classList.add('selected');
+    getOrderTag();
+}
+
+// 控制工单标签的滑动
+function scrollTabs(direction) {
+    const tabContainer = document.getElementById('order-selector');
+    if (tabContainer) {
+        const scrollAmount = 100; // 可根据实际情况调整滑动的距离
+        if (direction === 'left') {
+            tabContainer.scrollLeft -= scrollAmount;
+        } else if (direction === 'right') {
+            tabContainer.scrollLeft += scrollAmount;
+        }
+    }
+}
+
+// 获取工单标签
+function getOrderTag() {
+    // 使用axios调用接口获取工单标签
+    axios.get(`${BASE_URL}/dev/getQuesid?q_cate=${this.selectedId}`)
+        .then(function (response) {
+            const orderSelector = document.getElementById('order-selector');
+            orderSelector.innerHTML = ''; // 清空之前的选项
+            const order_caseid = response.data.data;
+            order_caseid.forEach(cid => {
+                // console.log('cid', cid.q_id)
+                const option = document.createElement('div');
+                option.className = 'tab-button';
+                option.textContent = cid.q_id;  // 设置显示的文本内容
+                option.value = cid.q_id;  // 添加value属性
+                option.setAttribute('data-id', cid.q_id);  // 添加data-id属性，方便通过dataset访问
+                option.addEventListener('click', function() {
+                    // 先移除所有按钮的激活状态
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                    // 为当前按钮添加激活状态
+                    this.classList.add('active-tab');
+                    // 获取按钮的值
+                    const selectedValue = this.value || this.getAttribute('data-id');
+                    console.log('选中的值:', selectedValue);
+                    // 更新全局变量
+                    window.selectedOrderTitle = selectedValue;
+                    TestfetchRandomQuestion()
+                });
+                orderSelector.appendChild(option);
+            });
+        })
+        .catch(function (error) {
+            console.error('获取工单标签失败:', error);
+        });
+}
+
 // 需要初始化的api
 window.onload = function () {
     this.md = window
@@ -1423,17 +1625,68 @@ window.onload = function () {
             labelAfter: true,
         });
     setRandomIdInCookie();
-    getChatId()
+    getChatId();
     
-    // 使用Promise确保正确的执行顺序
-    // fetchRandomQuestion();
-    TestfetchRandomQuestion()
-        // .then(() => {
-        //     // 在获取到ID后再执行这些函数
-        //     fetchWrongQuestions();
-        //     fetchTextContent();
-        //     fetchLegalAnalysis();
-        // });
+    // // 添加关闭历史记录模态框按钮的事件监听
+    // document.getElementById("closeModal").addEventListener("click", function(event) {
+    //     console.log('关闭历史记录');
+    //     event.stopPropagation();
+    //     document.getElementById("historyModal").classList.remove("active");
+    // });
+    
+    // // 阻止点击历史记录弹框内部时关闭弹框
+    // document.getElementById("historyModal").addEventListener("click", function(event) {
+    //     event.stopPropagation();
+    // });
+    
+    // // 添加历史记录按钮的事件监听
+    // document.getElementById("history").addEventListener("click", function(event) {
+    //     console.log('点击历史记录按钮');
+    //     event.stopPropagation();
+    //     loadHistory();
+    // });
+    
+    // 强制重置并添加Q按钮事件监听
+    const qaButton = document.getElementById("qa-button");
+    const qaMessages = document.getElementById("qa_messages");
+    if (qaButton && qaMessages) {
+        // 首先移除所有已有的点击事件监听器
+        qaButton.replaceWith(qaButton.cloneNode(true));
+        // 重新获取克隆后的按钮
+        const newQaButton = document.getElementById("qa-button");
+        
+        console.log('重新注册Q按钮事件 - window.onload');
+        newQaButton.addEventListener("click", function(event) {
+            console.log('点击Q按钮 - window.onload');
+            event.stopPropagation();
+            if (!qaMessages.classList.contains("show")) {
+                qaMessages.classList.add("show");
+            } else {
+                qaMessages.classList.remove("show");
+            }
+        });
+        
+        // 阻止点击qa_messages内部时关闭弹框
+        qaMessages.addEventListener("click", function(event) {
+            event.stopPropagation();
+        });
+    }
+    
+    // 点击页面其他区域时关闭弹框
+    document.addEventListener("click", function(event) {
+        // 关闭历史记录弹框
+        const historyModal = document.getElementById("historyModal");
+        if (historyModal.classList.contains("active") && event.target !== document.getElementById("history")) {
+            historyModal.classList.remove("active");
+        }
+        
+        // 关闭QA问答弹框
+        const qaMessages = document.getElementById("qa_messages");
+        const newQaButton = document.getElementById("qa-button");
+        if (qaMessages && qaMessages.classList.contains("show") && event.target !== newQaButton && !qaMessages.contains(event.target)) {
+            qaMessages.classList.remove("show");
+        }
+    });
 
     localStorage.setItem('hasSentMessage', 'false')
     displayRandomTexts();
