@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test_demo</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/LG_ts.css" />
+  </head>
+  <style>
+    .grid-item3 {
+        width: 100%;
+        max-width: 100%; /* 设置最大宽度 */
+        margin: 10px auto; /* 居中对齐 */
+    }
+    .question-container {
+        width: 100%;
+        height: 300px; /* 设置图表容器高度 */
+    }
+</style>
+  <body>
+    <div class="container">
+      <!-- 左边六分田子格 -->
+      <div class="grid-container">
+        <!-- 左列 -->
+        <div class="left-column">
+          <!-- 生成整套考题 -->
+          <div class="grid-item1">
+            <!-- <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">生成整套考题</h3>
+            <input type="text" id="question-search" placeholder="请输入关键字" style="width: 80%;height: 40px;border: 1px solid #ccc;border-radius: 5px;padding: 0 10px;">
+            <button id="refresh-question" onclick="generateQuestion()" style="width: 80px;margin-top: 2%;margin-left: 1%;">生成考题</button>
+            <div id="question-section-all" class="question-container" style="display: flex; flex-direction: column;height: 88%;overflow-y: auto;">
+            </div> -->
+            <h3 style="font-size: 18px;" id="show-questions" class="btn btn-primary1 mr-2">选择相关投诉工单</h3>
+
+             <!-- 上层：两个选择器，一行两列 -->
+             <div class="selector-row">
+              <div class="selector">
+                  <label for="date-selector" style="font-size: 18px;font-weight: 400;">开始日期:</label>
+                  <input type="date" id="date-picker" name="date" style="font-size: 16px;width: 65%; height: 26px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;" onchange="handletimeChange()">
+              </div>
+              <div class="selector">
+                <label for="date-selector" style="font-size: 18px;font-weight: 400;">结束日期:</label>
+                <input type="date" id="date-picker-stop" name="date" style="font-size: 16px;width: 65%; height: 26px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;" onchange="handlestoptimeChange()">
+            </div>
+          </div>
+            <!-- 下层：姓名标签选择器 -->
+            <div class="selector-row" style="margin-top: 10px;">
+              <div class="selector">
+                  <label style="font-size: 18px;font-weight: 400;">选择类型:</label>
+                  <div class="name-selector" style="font-size: 16px;">
+                      <span class="name-tag" data-id="12345投诉" onclick="selectName(this)">12345投诉</span>
+                      <span class="name-tag" data-id="电话投诉" onclick="selectName(this)">电话投诉</span>
+                      <span class="name-tag" data-id="现场投诉" onclick="selectName(this)">现场投诉</span>
+                      <span class="name-tag" data-id="“办不成事”反映" onclick="selectName(this)">“办不成事”反映</span>
+                  </div>
+              </div>
+            </div>
+            <!-- 工单标签 -->
+            <div class="tabs-wrapper" style="display: flex; align-items: stretch;margin-top: 40px;" id="tab-wrapper">
+              <button type="button" class="tab-scroll-left" onclick="scrollTabs('left')" style="margin-right: 5px;">‹</button>
+              <div class="tab-container" id="order-selector" style="overflow-x: auto; white-space: nowrap; flex-grow: 1;">
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+                <div class="tab-button"></div>
+              </div>
+              <button type="button" class="tab-scroll-right" onclick="scrollTabs('right')" style="margin-left: 5px;">›</button>
+            </div>
+          </div>
+          <!-- 投诉内容 -->
+          <div class="grid-item2">
+            <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
+            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">投诉内容</h3>
+              <div class="question-header" style="width: 100%;">
+                  <div id="question-title" class="question-title">
+                    下午16：11分，一楼25号商事登记咨询窗口有1位群众情绪激动。群众于2024年12月份申请营业执照地址变更业务，后来被驳回要求进行商事登记审查，因无法提供驳回意见里面的纳税证明和原经营场所的水电费发票，在窗口咨询时情绪激动。
+                  </div>
+                  <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
+                      <i class="fa fa-refresh"></i> 刷新
+                  </button> -->
+              </div>
+              <div id="question" class="options-list" style="width: 100%;">
+              </div>
+            </div>
+          </div>
+          <!-- 解决方案 -->
+          <div class="grid-item2">
+            <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
+            <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">解决方案</h3>
+              <div class="question-header" style="width: 100%;">
+                  <div id="question-title" class="question-title">
+                    值班长将群众引导至市监局值班科长室，群众无法提供原经营场所的水电费发票或者合同，可以写一份无法提供的情况说明和录制现经营场所视频进行佐证。群众以为之前并未招聘员工经营，所以无法提供纳税证明。科长告知群众营业执照办下来之后是一定要报税的，可以零申报，所以一定要提供纳税证明。群众对需要提供的材料已无其他问题，值班长告知群众商事登记审查预约流程后，群众已离开大厅。
+                  </div>
+                  <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
+                      <i class="fa fa-refresh"></i> 刷新
+                  </button> -->
+              </div>
+              <div id="question" class="options-list" style="width: 100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 右列 -->
+        <div class="right-column">
+          <!-- AI分析 -->
+          <div class="grid-item4">
+            <h3 style="font-size: 18px;" id="show-text" class="btn btn-primary1 mr-2">AI分析</h3>
+            <div id="text-display" class="text-container"></div>
+          </div>
+          <!-- 定向分析 -->
+          <div class="grid-item6">
+            <div>
+              <div data-wow-delay="0.35s" style="display: flex;justify-content: space-between;">
+                <h3 style="font-size: 18px;" id="show-analysis" class="btn btn-primary1 mr-2">定向分析内容</h3>
+                <!-- <button style="font-size: 16px;margin-left: 10%;" id="answer_question" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">AI答题➡</button>
+                <button style="font-size: 16px;margin-left: 10%;" id="Generate_questions" class="btn btn-primary mr-2" onclick="handleButtonClick(this)">生成考题➡</button> -->
+              </div>
+              <div data-wow-delay="0.35s" style="margin-top: 10px;">
+                <div id="analysis-container" style="font-size: 15px;text-indent: 2em;font-weight: bold;line-height: 30px;">右上 及时协助  输入投诉内容给出点击给出方案建议  中部定向分析暂时去掉    给出工单评分示例  （参考维度： 时间 完整度 详细解释+说明   群众是否接受  ）</div>
+              </div>
+            </div>
+          </div>
+           <!-- 雷达图 -->
+           <div class="grid-item3">
+            <h3 style="font-size: 18px;" id="show-questions" class="btn btn-primary1 mr-2">雷达图</h3>
+            <div id="question-display" class="question-container"></div>
+          </div>
+        </div>
+      </div>
+      <div class="right-column">
+      <!-- 右边聊天对话框 -->
+      <div class="grid-item5">
+        <h3 style="font-size: 18px;" id="show-text" class="btn btn-primary1 mr-2">及时协助</h3>
+        <div></div>
+      </div>
+      <div class="chat-container">
+          <!-- 双区域布局 -->
+        <div class="dual-panel" style="position: relative;">
+            <!-- QA 问答区域 -->
+            <div id="qa-panel" class="panel active" onclick="switchPanel('qa')" style="font-size: 18px;">
+                自由问答
+            </div>
+            <!-- <image id="history" src="../images/shouye1.png" style="width: 24px;height: 24px;position: absolute;top: 29%;left: 35%;cursor: pointer;" title="历史记录" onclick="loadHistory()"></image> -->
+            <!-- 数据看板区域 -->
+            <div id="data-panel" class="panel" onclick="switchPanel('data')" style="font-size: 18px;">
+                生成考题
+            </div>
+        </div>
+        <div id="chat-box" class="chat-container1">
+          <div id="question-section-lt" class="question-container" style="display: none; flex-direction: column;height: 88%;overflow-y: auto;">
+          </div>
+          <!-- 聊天消息区域 -->
+          <div id="chat-messages" class="chat-messages1">
+            <!-- 机器人消息 -->
+            <div class="message bot-message">
+              <!-- <img src="images/robot.png" alt="User Avatar" class="avatar" /> -->
+            </div>
+            <!-- 用户消息 -->
+            <div class="message1 user-message1"></div>
+          </div>
+          <!-- 是否开启知识库 -->
+          <!-- <div class="knowledge-switch" id="knowledge-switch">
+            <label class="switch">
+              <input type="checkbox" id="knowledge-checkbox" onchange="toggleKnowledgeR1(this)" checked>
+              <span class="slider round"></span>
+            </label>
+            <span style="font-size: 16px;">深度思考(R1)</span>
+            <label class="switch">
+              <input type="checkbox" id="knowledge-bash" onchange="toggleKnowledgebash(this)">
+              <span class="slider round"></span>
+            </label>
+            <span style="font-size: 16px;">知识库</span>
+          </div> -->
+          <!-- 聊天输入区域 -->
+          <div class="chat-input">
+            <!-- 输入框和按钮 -->
+            <div class="input-button-container">
+              <button id="qa-button" style="background-color: #1FDE82;">Q</button>
+              <button id="data-button" style="display: none;">Q</button>
+              <div
+                id="chat-input"
+                contenteditable="true"
+                placeholder="输入消息..."
+                style="
+                  width: 200px;
+                  border: 1px solid #ccc;
+                  padding: 5px;
+                  white-space: pre-wrap;
+                  overflow-wrap: break-word;
+                  cursor: text;
+                "
+              ></div>
+              <button id="record_button" style="background-color: #1FDE82;">录</button>
+              <button id="send-button" onclick="generateQuestion1()">发送</button>
+              <button id="send-button_QA" onclick="freesendMessage()">发送QA</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <!-- 历史记录弹框 -->
+      <div id="historyModal" class="history-modal">
+        <div class="modal-header">
+          <span style="font-weight: bold;font-size: 16px;">QA问答 历史记录</span>
+          <image id="closeModal" src="../images/guanbi.png" style="width: 18px;height: 18px;cursor: pointer;"></image>
+        </div>
+        <!-- 历史记录内容 -->
+        <div class="modal-body">
+          <ul id="historyList">
+          </ul>
+        </div>
+      </div>
+
+      <!-- QA 问答  下拉框默认题目 -->
+      <div class="message-content" id="qa_messages">
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('在深圳市退休人员通过转诊到市外医疗机构，发生的医疗费用可以通过哪些方式进行报销申请？')"
+        >
+        在深圳市退休人员通过转诊到市外医疗机构，发生的医疗费用可以通过哪些方式进行报销申请？
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('当参保少儿成功申办并激活金融社保卡后，系统将自动使用哪个账户作为缴费账户？')"
+        >
+        当参保少儿成功申办并激活金融社保卡后，系统将自动使用哪个账户作为缴费账户？
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('对于参加了少儿医保的孩子，扣费账号是如何确定的？')"
+        >
+        对于参加了少儿医保的孩子，扣费账号是如何确定的？
+        </div>
+      </div>
+      <!-- 数据问答 下拉框默认题目 -->
+      <div class="message-content" id="data_messages" style="display: none;">
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('3799这道题的答对人数和答错人数。')"
+        >
+          3799这道题的答对人数和答错人数
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('3779这道题的总分、考试次数、平均得分。')"
+        >
+          3779这道题的总分、考试次数、平均得分
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('第一章到第十章法条的相关题目各有多少道?')"
+        >
+          第一章到第十章法条的相关题目各有多少道?
+        </div>
+        <div
+          class="message-text1 mes"
+          onclick="selectMessage_test('得分前五的考试是哪几个?')"
+        >
+          得分前五的考试是哪几个？
+        </div>
+    
+      </div>
+
+    </div>
+    <script src="js/core.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/LG_ts.js"></script>
+    <script src="js/record.js"></script>
+    <!-- <script src="js/marked.js"></script> -->
+    <script src="js/markdown-it.js"></script>
+    <script src="js/markdown-it-task-lists.min.js"></script>
+    <script src="js/echarts.js"></script>
+    <script src="js/LG_sj_question.js"></script>
+    <!-- 雷达图假数据 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.0/echarts.min.js"></script>
+    <script>
+      // 初始化图表
+      var myChart_ts = echarts.init(document.getElementById('question-display'));
+  
+      // 准备雷达图的数据
+      var option = {
+          title: {
+              text: '雷达图示例'
+          },
+          tooltip: {},
+          legend: {
+              data: []
+          },
+          radar: {
+              // 雷达图的指标
+              indicator: [
+                  { name: '回复态度', max: 6500 },
+                  { name: '处理方式', max: 16000 },
+                  { name: '耗费时间', max: 30000 },
+                  { name: '客服', max: 38000 },
+                  { name: '牵扯机构', max: 52000 }
+              ]
+          },
+          series: [{
+              name: '预算分配',
+              type: 'radar',
+              data: [
+                  {
+                      value: [4300, 10000, 28000, 35000, 50000],
+                      name: '预算分配'
+                  }
+              ]
+          }]
+      };
+  
+      // 使用指定的配置项和数据显示图表
+      myChart_ts.setOption(option);
+  </script>
+  </body>
+</html>
