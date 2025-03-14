@@ -1,5 +1,7 @@
 const BASE_URL = 'https://nlp-demo.szmckj.cn';
 const wzyc = 'https://wzyc-demo.szmckj.cn'
+const BASE_URL_TS = 'http://172.16.99.32:1033';
+const Authorization = 'Bearer lg-evduwtdszwhdqzgqkwvdtmjgpmffipkwoogudnnqemjtvgcv';
 
 
 const id = null;
@@ -40,162 +42,8 @@ function toggleKnowledgebash(checkbox_ai) {
         // console.log('关闭知识库', this.if_user_kb)
     }
 }
-// 获取随机题目接口
-// function fetchRandomQuestion() {
-//     axios.get(`${BASE_URL}/api/randomquestion`)
-//         .then((response) => {
-//             // 设置题目
-//             document.getElementById('questionB').innerText = response.data.q_stem;
-//             this.id = response.data.id;
-
-//             // 调用更新函数
-//             // fetchWrongQuestions();
-//             // fetchTextContent();
-//             // fetchLegalAnalysis();
-
-//             // 清空选项区域
-//             const optionsContainer = document.getElementById('optionsB');
-//             optionsContainer.innerHTML = ''; // 清空现有选项
-
-//             const options = response.data.options;
-//             const splitData = options.split('|');
-
-//             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-//                 // 如果选项是"正确|错误"格式
-//                 createOption(optionsContainer, "A", "正确");
-//                 createOption(optionsContainer, "B", "错误");
-//             } else {
-//                 // 创建一个对象来存储切分后的数据
-//                 const alloptions = {};
-//                 splitData.forEach(item => {
-//                     const [key, value] = item.split("、"); // 根据冒号切分键值对
-//                     alloptions[key] = value; // 将数据存储到对象中
-//                 });
-
-//                 // 动态生成选项
-//                 createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-//                 createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-//                 createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-//                 createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-//             }
-//         })
-//         .catch(function (err) {
-//             console.log(err);
-//         });
-// }
-
-// 获取随机题目接口 test.html2
-// function TestfetchRandomQuestion() {
-//     // console.log("fetchRandomQuestion");
-//     axios.get(`${BASE_URL}/api/randomquestion`)
-//         .then(function (response) {
-//             // 设置题目
-//             document.getElementById('question').innerText = response.data.q_stem;
-//             this.question_title = response.data.q_stem;
-//             this.id = response.data.id;
-//             this.question_id = response.data.id;
-//             // console.log('随机题目',this.question_id);
-//             // 清空选项区域
-//             const optionsContainer = document.getElementById('options');
-//             optionsContainer.innerHTML = ''; // 清空现有选项
-
-//             const options = response.data.options;
-//             const splitData = options.split('|');
-
-//             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-//                 // 如果选项是"正确|错误"格式
-//                 createOption(optionsContainer, "A", "正确");
-//                 createOption(optionsContainer, "B", "错误");
-//             } else {
-//                 // 创建一个对象来存储切分后的数据
-//                 const alloptions = {};
-//                 splitData.forEach(item => {
-//                     const [key, value] = item.split("、"); // 根据冒号切分键值对
-//                     alloptions[key] = value; // 将数据存储到对象中
-//                 });
-
-//                 // 动态生成选项
-//                 createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-//                 createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-//                 createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-//                 createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-//             }
-//         })
-//         .catch(function (err) {
-//             console.log(err);
-//         });
-// }
-
-
-// 记录上一次随机获取的ID
-// let lastRandomId = null;
-
-// // 随机获取数组中的题目id
-// function getRandomId() {
-//     const ids = [121, 131, 49, 53, 82, 106, 105, 51, 4, 128, 119, 2, 129, 126, 68, 92, 94, 66, 10, 32, 78, 80, 86, 22, 88, 91, 124, 18, 115, 96, 24, 113, 111, 112, 83, 11, 99, 118, 123, 127, 39, 40, 7, 62, 9, 42, 6, 100, 28, 14, 47, 81, 98, 59, 61, 21, 45, 54, 57, 95, 29, 26, 15, 74, 30, 5, 63, 130, 84, 23, 12, 27, 52, 19, 33, 37, 25, 20, 44, 16, 65, 48, 50, 77, 114, 60, 72, 41, 70, 93, 64, 67, 73, 75, 79, 85, 87, 89, 90, 103, 97, 104, 58, 102, 109, 110, 71, 116, 117, 122, 125, 1, 34, 108, 101, 3];
-//     let randomId;
-    
-//     // 确保新的随机ID与上一次不同
-//     do {
-//         randomId = ids[Math.floor(Math.random() * ids.length)];
-//     } while (randomId === lastRandomId && ids.length > 1);
-    
-//     // 更新lastRandomId
-//     lastRandomId = randomId;
-//     return randomId;
-// }
-
 // 全局变量
 let globalQuestionId = null;
-
-// 获取随机题目，法理分析，法理推荐，法条分析
-function TestfetchRandomQuestion() {
-    const currentId = selectedOrderTitle;
-    return new Promise((resolve, reject) => {
-        axios.get(`${BASE_URL}/dev/getQues?q_id=${currentId}`)
-            .then((response) => {
-                console.log('response', response.data.data);
-
-                document.getElementById('analysis-container').innerText = response.data.data.analysis_qwen32;
-                document.getElementById('question-display').innerText = response.data.data.aimi_quse_5;
-                document.getElementById('text-display').innerText = response.data.data.law_content;
-                document.getElementById('question-title').innerText = response.data.data.q_stem;
-                document.getElementById('question').innerText = response.data.data.options;
-                console.log('response.data.data.options', response.data.data.q_stem);
-                // 更新全局变量
-                globalQuestionId = response.data.data.q_id;
-                console.log('题目id', globalQuestionId);
-                
-                // // 清空选项区域
-                // const optionsContainer = document.getElementById('options');
-                // optionsContainer.innerHTML = '';
-
-                // const options = response.data.options;
-                // const splitData = options.split('|');
-
-                // if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-                //     createOption(optionsContainer, "A", "正确");
-                //     createOption(optionsContainer, "B", "错误");
-                // } else {
-                //     const alloptions = {};
-                //     splitData.forEach(item => {
-                //         const [key, value] = item.split("、");
-                //         alloptions[key] = value;
-                //     });
-
-                //     createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-                //     createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-                //     createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-                //     createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-                // }
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
-}
 
 // 动态创建选项的函数
 function createOption(container, optionKey, optionValue) {
@@ -244,51 +92,6 @@ function fetchRandomQuestionA() {
         });
 }
 
-
-// // 获取相似题目的函数
-// function fetchWrongQuestions() {
-//     console.log('this.id',this.id);
-//     const questionDisplay = document.getElementById('question-display');
-//     axios.get(`${wzyc}/api/question/${this.id}/similar`)
-//         .then((response) => {
-//             console.log(response.data);
-//             // 清空问题容器
-//             questionDisplay.innerHTML = '';
-//             // 遍历返回的数据并渲染到页面
-//             response.data.forEach(item => {
-//                 const questionDiv = document.createElement('div');
-//                 questionDiv.className = 'question-container';
-//                 // 添加问题文本
-//                 const questionText = document.createElement('div');
-//                 questionText.className = 'question';
-//                 questionText.textContent = item.question;
-//                 questionDiv.appendChild(questionText);
-
-//                 // 添加选项（如果有）
-//                 if (item.options) {
-//                     const optionsDiv = document.createElement('div');
-//                     optionsDiv.className = 'options';
-//                     optionsDiv.style.display = 'block';
-//                     const options = item.options.split('|');
-//                     options.forEach(option => {
-//                         const optionText = document.createElement('div');
-//                         optionText.textContent = option;
-//                         optionsDiv.appendChild(optionText);
-//                     });
-//                     questionDiv.appendChild(optionsDiv);
-//                 }
-
-//                 // 将问题添加到页面
-//                 questionDisplay.appendChild(questionDiv);
-//             });
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//             // 如果请求失败，显示错误信息
-//             questionDisplay.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//         });
-// }
-
 // 实现按钮被点击后保持黑色
 // 获取所有具有 'btn-primary' 类的按钮
 document.querySelectorAll('.btn-primary').forEach(button => {
@@ -298,74 +101,6 @@ document.querySelectorAll('.btn-primary').forEach(button => {
         this.classList.toggle('clicked');
     });
 });
-
-
-// // 获取法条推荐的函数
-// function fetchTextContent() {
-//     const textDisplay = document.getElementById('text-display');
-//     console.log('当前题目ID:', this.id); // 添加调试信息
-    
-//     // 发送Axios请求获取法条分析内容
-//     axios.get(`${BASE_URL}/api/lows?questionid=${this.id}`)
-//         .then((response) => {
-//             console.log('法条API返回数据:', response.data); // 添加调试信息
-            
-//             // 清空法条容器
-//             textDisplay.innerHTML = '';
-            
-//             // 检查返回的数据是否为空
-//             if (!response.data || response.data.length === 0) {
-//                 textDisplay.innerHTML = '<div class="error">暂无相关法条</div>';
-//                 return;
-//             }
-            
-//             // 遍历返回的数据并渲染到页面
-//             response.data.forEach(item => {
-//                 const textDiv = document.createElement('div');
-//                 textDiv.className = 'text-container';
-                
-//                 // 添加法条文本
-//                 const textText = document.createElement('div');
-//                 textText.className = 'text';
-                
-//                 // 确保所有必要的字段都存在
-//                 const lawName = item.law_name || '未知法律';
-//                 const chapter = item.chapter || '未知章节';
-//                 const content = item.article_content || '暂无内容';
-                
-//                 textText.innerHTML = `
-//                     <div class="law-name">${lawName}</div>
-//                     <div class="chapter">${chapter}</div>
-//                     <div class="content">${content}</div>
-//                 `;
-                
-//                 textDiv.appendChild(textText);
-//                 // 将法条添加到页面
-//                 textDisplay.appendChild(textDiv);
-//             });
-//         }).catch((err) => {
-//             console.log('法条API错误:', err);
-//             textDisplay.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//         });
-// }
-
-
-// // 获取法理分析的函数
-// function fetchLegalAnalysis() {
-//     const analysisContainer = document.getElementById('analysis-container');
-//     // 发送Axios请求获取法理分析内容
-//     if (this.id != null) {
-//         axios.get(`${BASE_URL}/api/analysis?questionid=${this.id}`)
-//             .then((response) => {
-//                 const analysisData = JSON.parse(response.data.analysis);
-//                 const analysisText = analysisData.Analysis || analysisData.Answer;
-//                 displayTypingEffect(analysisText);
-//             }).catch((err) => {
-//                 console.log(err);
-//                 analysisContainer.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//             });
-//     }
-// }
 
 // 打字机效果函数
 function displayTypingEffect(text) {
@@ -1578,76 +1313,127 @@ function scrollTabs(direction) {
 
 // 获取工单标签
 function getOrderTag() {
-    // 用假数据
-        const order_caseid = [
-            { q_id: 'Q1001' },
-            { q_id: 'Q1002' },
-            { q_id: 'Q1003' },
-            { q_id: 'Q1004' },
-            { q_id: 'Q1005' },
-            { q_id: 'Q1006' },
-            { q_id: 'Q1007' },
-            { q_id: 'Q1008' },
-            { q_id: 'Q1009' },
-            { q_id: 'Q10010' }
-        ]; // 示例静态数据
-    
-        const orderSelector = document.getElementById('order-selector');
-        orderSelector.innerHTML = ''; // 清空之前的选项
-    
-        order_caseid.forEach(cid => {
-            const option = document.createElement('div');
-            option.className = 'tab-button';
-            option.textContent = cid.q_id;  // 设置显示的文本内容
-            option.value = cid.q_id;  // 添加value属性
-            option.setAttribute('data-id', cid.q_id);  // 添加data-id属性，方便通过dataset访问
-            
-            option.addEventListener('click', function() {
-                // 先移除所有按钮的激活状态
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
-                // 为当前按钮添加激活状态
-                this.classList.add('active-tab');
-                // 获取按钮的值
-                const selectedValue = this.value || this.getAttribute('data-id');
-                console.log('选中的值:', selectedValue);
-                // 更新全局变量
-                window.selectedOrderTitle = selectedValue;
-                TestfetchRandomQuestion();
-            });
-    
-            orderSelector.appendChild(option);
-        });
     // 使用axios调用接口获取工单标签
-    // axios.get(`${BASE_URL}/dev/getQuesid?q_cate=${this.selectedId}`)
-    //     .then(function (response) {
-    //         const orderSelector = document.getElementById('order-selector');
-    //         orderSelector.innerHTML = ''; // 清空之前的选项
-    //         const order_caseid = response.data.data;
-    //         order_caseid.forEach(cid => {
-    //             // console.log('cid', cid.q_id)
-    //             const option = document.createElement('div');
-    //             option.className = 'tab-button';
-    //             option.textContent = cid.q_id;  // 设置显示的文本内容
-    //             option.value = cid.q_id;  // 添加value属性
-    //             option.setAttribute('data-id', cid.q_id);  // 添加data-id属性，方便通过dataset访问
-    //             option.addEventListener('click', function() {
-    //                 // 先移除所有按钮的激活状态
-    //                 document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
-    //                 // 为当前按钮添加激活状态
-    //                 this.classList.add('active-tab');
-    //                 // 获取按钮的值
-    //                 const selectedValue = this.value || this.getAttribute('data-id');
-    //                 console.log('选中的值:', selectedValue);
-    //                 // 更新全局变量
-    //                 window.selectedOrderTitle = selectedValue;
-    //                 TestfetchRandomQuestion()
-    //             });
-    //             orderSelector.appendChild(option);
-    //         });
-    //     })
-    //     .catch(function (error) {
-    //         console.error('获取工单标签失败:', error);
-    //     });
+    axios.post(`${BASE_URL_TS}/api/getcomplaintid?cate=${this.selectedId}`, {}, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': Authorization
+        }
+    })
+        .then(function (response) {
+            // console.log('response', response.data.complaintid_info)
+            const orderSelector = document.getElementById('order-selector');
+            orderSelector.innerHTML = ''; // 清空之前的选项
+            
+            // 检查返回数据格式
+            if (response.data.complaintid_info && response.data.complaintid_info.length > 0) {
+                // 获取json_agg数组
+                const jsonAggArray = response.data.complaintid_info[0].json_agg;
+                
+                // 检查json_agg是否为数组
+                if (Array.isArray(jsonAggArray)) {
+                    // 遍历数组中的每个ID值
+                    jsonAggArray.forEach(id => {
+                        const option = document.createElement('div');
+                        option.className = 'tab-button';
+                        option.textContent = id;  // 设置显示的文本内容
+                        option.value = id;  // 添加value属性
+                        option.setAttribute('data-id', id);  // 添加data-id属性，方便通过dataset访问
+                        option.addEventListener('click', function() {
+                            // 先移除所有按钮的激活状态
+                            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                            // 为当前按钮添加激活状态
+                            this.classList.add('active-tab');
+                            // 获取按钮的值
+                            const selectedValue = this.value || this.getAttribute('data-id');
+                            console.log('选中的值:', selectedValue);
+                            // 更新全局变量
+                            window.selectedOrderTitle = selectedValue;
+                            getComplaintContent()
+                        });
+                        orderSelector.appendChild(option);
+                    });
+                } else {
+                    // 如果json_agg不是数组，按原来的方式处理
+                    const order_caseid = response.data.complaintid_info;
+                    order_caseid.forEach(cid => {
+                        const option = document.createElement('div');
+                        option.className = 'tab-button';
+                        option.textContent = cid.json_agg;  // 设置显示的文本内容
+                        option.value = cid.json_agg;  // 添加value属性
+                        option.setAttribute('data-id', cid.json_agg);  // 添加data-id属性，方便通过dataset访问
+                        option.addEventListener('click', function() {
+                            // 先移除所有按钮的激活状态
+                            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                            // 为当前按钮添加激活状态
+                            this.classList.add('active-tab');
+                            // 获取按钮的值
+                            const selectedValue = this.value || this.getAttribute('data-id');
+                            console.log('选中的值:', selectedValue);
+                            // 更新全局变量
+                            window.selectedOrderTitle = selectedValue;
+                            getComplaintContent()
+                        });
+                        orderSelector.appendChild(option);
+                    });
+                }
+            } else {
+                console.error('获取工单标签失败: 返回数据格式不正确');
+            }
+        })
+        .catch(function (error) {
+            console.error('获取工单标签失败:', error);
+        });
+}
+
+// 获取投诉内容
+// 获取随机题目，法理分析，法理推荐，法条分析
+function getComplaintContent() {
+    const currentId = selectedOrderTitle;
+    return new Promise((resolve, reject) => {
+        axios.post(`${BASE_URL_TS}/api/getcomplaintbyid?lc_id=${currentId}`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': Authorization
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data);
+
+                // 检查返回数据格式
+                if (response.data.complaint_info && response.data.complaint_info.length > 0) {
+                    const complaintData = response.data.complaint_info[0];
+                    
+                    // 获取投诉内容和处理状态
+                    const complaintContent = complaintData.complaint_content || '无投诉内容';
+                    const handlingStatus = complaintData.handling_status || '无处理方案';
+                    
+                    // 将投诉内容显示在id为question的元素中
+                    const questionElement = document.getElementById('question');
+                    if (questionElement) {
+                        questionElement.innerText = complaintContent;
+                    } else {
+                        console.error('未找到id为question的元素');
+                    }
+                    
+                    // 将处理状态显示在id为question_solution的元素中
+                    const solutionElement = document.getElementById('question_solution');
+                    if (solutionElement) {
+                        solutionElement.innerText = handlingStatus;
+                    } else {
+                        console.error('未找到id为question_solution的元素');
+                    }
+                } else {
+                    console.error('获取投诉内容失败: 返回数据格式不正确');
+                }
+                
+                resolve();
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(err);
+            });
+    });
 }
 
 // 需要初始化的api
@@ -1665,25 +1451,6 @@ window.onload = function () {
         });
     setRandomIdInCookie();
     getChatId();
-    
-    // // 添加关闭历史记录模态框按钮的事件监听
-    // document.getElementById("closeModal").addEventListener("click", function(event) {
-    //     console.log('关闭历史记录');
-    //     event.stopPropagation();
-    //     document.getElementById("historyModal").classList.remove("active");
-    // });
-    
-    // // 阻止点击历史记录弹框内部时关闭弹框
-    // document.getElementById("historyModal").addEventListener("click", function(event) {
-    //     event.stopPropagation();
-    // });
-    
-    // // 添加历史记录按钮的事件监听
-    // document.getElementById("history").addEventListener("click", function(event) {
-    //     console.log('点击历史记录按钮');
-    //     event.stopPropagation();
-    //     loadHistory();
-    // });
     
     // 强制重置并添加Q按钮事件监听
     const qaButton = document.getElementById("qa-button");

@@ -13,7 +13,7 @@
         max-width: 100%; /* 设置最大宽度 */
         margin: 10px auto; /* 居中对齐 */
     }
-    .question-container {
+    .question-container-ts {
         width: 100%;
         height: 300px; /* 设置图表容器高度 */
     }
@@ -57,7 +57,7 @@
               </div>
             </div>
             <!-- 工单标签 -->
-            <div class="tabs-wrapper" style="display: flex; align-items: stretch;margin-top: 40px;" id="tab-wrapper">
+            <div class="tabs-wrapper" style="display: flex; align-items: stretch;" id="tab-wrapper">
               <button type="button" class="tab-scroll-left" onclick="scrollTabs('left')" style="margin-right: 5px;">‹</button>
               <div class="tab-container" id="order-selector" style="overflow-x: auto; white-space: nowrap; flex-grow: 1;">
                 <div class="tab-button"></div>
@@ -79,15 +79,16 @@
           <div class="grid-item2">
             <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
             <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">投诉内容</h3>
-              <div class="question-header" style="width: 100%;">
-                  <div id="question-title" class="question-title">
+              <!-- <div class="question-header" style="width: 100%;"> -->
+                  <!-- <div id="question-title" class="question-title">
                     下午16：11分，一楼25号商事登记咨询窗口有1位群众情绪激动。群众于2024年12月份申请营业执照地址变更业务，后来被驳回要求进行商事登记审查，因无法提供驳回意见里面的纳税证明和原经营场所的水电费发票，在窗口咨询时情绪激动。
-                  </div>
+                  </div> -->
                   <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
                       <i class="fa fa-refresh"></i> 刷新
                   </button> -->
-              </div>
-              <div id="question" class="options-list" style="width: 100%;">
+                
+              <!-- </div> -->
+              <div id="question" class="options-list" style="width: 100%;margin-top: 20px;">
               </div>
             </div>
           </div>
@@ -95,15 +96,16 @@
           <div class="grid-item2">
             <div id="question-section" class="question-container" style="display: flex; flex-direction: column;">
             <h3 style="font-size: 18px;" class="btn btn-primary1 mr-2">解决方案</h3>
-              <div class="question-header" style="width: 100%;">
+              <!-- <div class="question-header" style="width: 100%;">
                   <div id="question-title" class="question-title">
                     值班长将群众引导至市监局值班科长室，群众无法提供原经营场所的水电费发票或者合同，可以写一份无法提供的情况说明和录制现经营场所视频进行佐证。群众以为之前并未招聘员工经营，所以无法提供纳税证明。科长告知群众营业执照办下来之后是一定要报税的，可以零申报，所以一定要提供纳税证明。群众对需要提供的材料已无其他问题，值班长告知群众商事登记审查预约流程后，群众已离开大厅。
                   </div>
-                  <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
+                
+              </div> -->
+                <!-- <button id="refresh-question" onclick="TestfetchRandomQuestion()" style="width: 80px;">
                       <i class="fa fa-refresh"></i> 刷新
                   </button> -->
-              </div>
-              <div id="question" class="options-list" style="width: 100%;">
+              <div id="question_solution" class="options-list" style="width: 100%;margin-top: 20px;">
               </div>
             </div>
           </div>
@@ -132,7 +134,7 @@
            <!-- 雷达图 -->
            <div class="grid-item3">
             <h3 style="font-size: 18px;" id="show-questions" class="btn btn-primary1 mr-2">雷达图</h3>
-            <div id="question-display" class="question-container"></div>
+            <div id="question-display" class="question-container-ts"></div>
           </div>
         </div>
       </div>
