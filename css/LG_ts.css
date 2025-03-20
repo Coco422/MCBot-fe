@@ -75,7 +75,7 @@ body {
 }
 
 .grid-item3 {
-  flex: 1;
+  flex: 1.5;
 }
 
 .grid-item4 {
@@ -283,7 +283,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 85vh; /* 设置为视口高度 */
+  height: 100vh; /* 设置为视口高度 */
   overflow: hidden;
   background-color: #fff;
   border-left: 1px solid #ccc;
@@ -689,7 +689,7 @@ body {
 }
 
 .name-tag {
-  padding: 8px 12px;
+  padding: 8px 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
@@ -778,4 +778,36 @@ body {
   flex: 1;
   /* 如有需要，可清除现有右边距 */
   margin-right: 0 !important;
+}
+
+.message {
+    margin: 10px 0;
+    display: flex;
+    align-items: flex-start;
+    max-width: 80%;
+}
+
+.user-message {
+    margin-left: auto;
+    background-color: #1FDE82;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0 15px;
+}
+
+.bot-message {
+    margin-right: auto;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 15px 15px 15px 0;
+}
+
+.chat-messages1 {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

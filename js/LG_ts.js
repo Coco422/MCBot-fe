@@ -1,6 +1,7 @@
 const BASE_URL = 'https://nlp-demo.szmckj.cn';
 const wzyc = 'https://wzyc-demo.szmckj.cn'
-const BASE_URL_TS = 'http://172.16.99.32:1033';
+// const BASE_URL_TS = 'http://172.16.99.32:1033';
+const BASE_URL_TS = 'https://aiapi.szmckj.cn/';
 const Authorization = 'Bearer lg-evduwtdszwhdqzgqkwvdtmjgpmffipkwoogudnnqemjtvgcv';
 
 
@@ -477,8 +478,8 @@ async function QAsendMessage(q_id,ifkb) {
         const userMessage = document.createElement('div');
         userMessage.className = 'message user-message';
         userMessage.innerHTML = `
-            <div class="message-content">
-                <div class="message-text" style="color:white">${messageText}</div>
+            <div class="message-content" style="background-color: transparent;">
+                <div class="message-text" style="color:black">${messageText}</div>
             </div>
             <img src="images/user.png" alt="User Avatar" class="avatar">
         `;
@@ -521,7 +522,7 @@ async function QAsendMessage(q_id,ifkb) {
             
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
+                <div class="message-content" style="background-color: transparent;">
                     <div class="message-text"></div>
                     <div class="rag-documents" style="display:none; margin-top: 10px;"></div>
                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '')"></i>
@@ -682,14 +683,13 @@ async function QAsendMessage(q_id,ifkb) {
 async function freesendMessage() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
-    localStorage.setItem('hasSentMessage', 'true');
     if (messageText) {
         // 添加用户消息
         const userMessage = document.createElement('div');
         userMessage.className = 'message user-message';
         userMessage.innerHTML = `
-            <div class="message-content">
-                <div class="message-text" style="color:white">${messageText}</div>
+            <div class="message-content" style="background-color: transparent;">
+                <div class="message-text" style="color:black">${messageText}</div>
             </div>
             <img src="images/user.png" alt="User Avatar" class="avatar">
         `;
@@ -698,18 +698,6 @@ async function freesendMessage() {
         input.innerHTML = '';
 
         try {
-            // 发送GET请求
-            const response = await fetch(`${BASE_URL}/dev/chatQusetion?user_question=${encodeURIComponent(messageText)}`, {
-                method: 'GET'
-            });
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            
-            // 处理返回的JSON数据
-            const data = await response.json();
-            
             // 创建唯一的消息ID
             const messageId = Date.now();
             const uniqueId = `audio-${messageId}`;
@@ -717,44 +705,87 @@ async function freesendMessage() {
             // 创建机器人消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
-            
-            // 格式化显示title和content
-            let title = '';
-            let content = '';
-            
-            if (data.status === 'success' && data.data) {
-                title = data.data.title || '';
-                content = data.data.content || '';
-            }
+            botMessage.dataset.messageId = messageId;
             
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
-                    <div class="message-text">
-                        ${title ? `<h3 style="margin-top: 0; margin-bottom: 10px; color: #333;">${title}</h3>` : ''}
-                        <div style="line-height: 1.5;">${content}</div>
-                    </div>
+                <div class="message-content" style="background-color: transparent;">
+                    <div class="message-text"></div>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '')"></i>
+                    <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+                    <audio id="${uniqueId}" style="display:none"></audio>
                 </div>
             `;
-            
             document.getElementById('chat-messages').appendChild(botMessage);
             
-            // 滚动到底部
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // 获取消息文本容器
+            const messageTextContainer = botMessage.querySelector('.message-text');
+            const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+            const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
             
+            // 显示加载中的提示
+            messageTextContainer.innerHTML = '<div class="loading-indicator">正在思考...</div>';
+            
+            // 发送POST请求
+            const response = await fetch('http://172.16.99.91:5571/similary_ts_dialog/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: messageText })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedMessage = ''; // 用于存储累积的消息
+            
+            async function read() {
+                const { done, value } = await reader.read();
+                if (done) {
+                    // 显示播放按钮
+                    playButton.style.display = 'block';
+                    // 更新语音播放的文本内容
+                    playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
+                    return;
+                }
+                
+                const responseText = decoder.decode(value);
+                // 解析SSE格式的数据
+                const lines = responseText.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('data:')) {
+                        const data = line.slice(5).trim();
+                        if (data && !data.includes('Access-Control-Allow')) {
+                            // 累积AI消息
+                            accumulatedMessage += data;
+                            // 使用 markdown-it 渲染内容
+                            const htmlContent = this.md.render(accumulatedMessage);
+                            // 更新机器人消息内容
+                            messageTextContainer.innerHTML = htmlContent;
+                            // 滚动到底部
+                            const chatMessages = document.getElementById('chat-messages');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }
+                }
+                await read();
+            }
+            
+            await read();
         } catch (error) {
             console.error('Fetch failed:', error);
-            
             // 显示错误消息
             const errorMessage = document.createElement('div');
             errorMessage.className = 'message bot-message';
             errorMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
-                    <div class="message-text" style="color: red;">
-                        抱歉，查询过程中出现错误，请稍后再试。
-                    </div>
+                <div class="message-content" style="background-color: transparent;">
+                    <div class="message-text" style="color:red">请求失败，请稍后重试</div>
                 </div>
             `;
             document.getElementById('chat-messages').appendChild(errorMessage);
@@ -1221,7 +1252,7 @@ async function generateQuestion1() {
                                 accumulatedMarkdown = jsonData.content;
                                 // 安全地使用md对象
                                 if (md) {
-                                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                                    contentArea.innerHTML = this.md.render(accumulatedMarkdown);
                                 } else {
                                     contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
                                 }
@@ -1261,7 +1292,7 @@ async function generateQuestion1() {
                 accumulatedMarkdown += currentMarkdown;
                 // 安全地使用md对象
                 if (md) {
-                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                    contentArea.innerHTML = this.md.render(accumulatedMarkdown);
                 } else {
                     contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
                 }
@@ -1314,7 +1345,9 @@ function scrollTabs(direction) {
 // 获取工单标签
 function getOrderTag() {
     // 使用axios调用接口获取工单标签
-    axios.post(`${BASE_URL_TS}/api/getcomplaintid?cate=${this.selectedId}`, {}, {
+    axios.post(`${BASE_URL_TS}/api/getcomplaintid`, {
+        cate: this.selectedId
+    }, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': Authorization
@@ -1387,11 +1420,12 @@ function getOrderTag() {
 }
 
 // 获取投诉内容
-// 获取随机题目，法理分析，法理推荐，法条分析
 function getComplaintContent() {
     const currentId = selectedOrderTitle;
     return new Promise((resolve, reject) => {
-        axios.post(`${BASE_URL_TS}/api/getcomplaintbyid?lc_id=${currentId}`, {}, {
+        axios.post(`${BASE_URL_TS}/api/getcomplaintbyid`, {
+            lc_id: currentId
+        }, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': Authorization
@@ -1407,6 +1441,7 @@ function getComplaintContent() {
                     // 获取投诉内容和处理状态
                     const complaintContent = complaintData.complaint_content || '无投诉内容';
                     const handlingStatus = complaintData.handling_status || '无处理方案';
+                    const AI_analysis = complaintData.ai_analysis || '无AI分析';
                     
                     // 将投诉内容显示在id为question的元素中
                     const questionElement = document.getElementById('question');
@@ -1423,6 +1458,118 @@ function getComplaintContent() {
                     } else {
                         console.error('未找到id为question_solution的元素');
                     }
+                    
+                    const questionDisplay = document.getElementById('text-display');
+                    if (questionDisplay) {
+                        questionDisplay.innerText = AI_analysis;
+                    } else {
+                        console.error('未找到id为question_display的元素');
+                    }
+
+                    // 处理雷达图数据
+                    // 创建指标数据对象数组，包含名称、值和是否有效
+                    const indicatorData = [
+                        { name: '完整性', value: complaintData.integrity_score, valid: complaintData.integrity_score !== null && complaintData.integrity_score !== undefined },
+                        { name: '准确性', value: complaintData.accuracy_score, valid: complaintData.accuracy_score !== null && complaintData.accuracy_score !== undefined },
+                        { name: '投诉处理', value: complaintData.complaint_handling_score, valid: complaintData.complaint_handling_score !== null && complaintData.complaint_handling_score !== undefined },
+                        { name: '及时性', value: complaintData.timeliness_scoring, valid: complaintData.timeliness_scoring !== null && complaintData.timeliness_scoring !== undefined },
+                        { name: '登记质量', value: complaintData.register_score, valid: complaintData.register_score !== null && complaintData.register_score !== undefined }
+                    ];
+                    
+                    // 过滤出有效的指标
+                    const validIndicators = indicatorData.filter(item => item.valid);
+                    
+                    // 如果没有有效指标，则不显示雷达图
+                    if (validIndicators.length === 0) {
+                        // 清空雷达图容器
+                        const chartContainer = document.getElementById('question-display');
+                        if (chartContainer) {
+                            chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">暂无评分数据</div>';
+                        }
+                        resolve();
+                        return;
+                    }
+                    
+                    // 创建雷达图所需的指标配置
+                    const indicators = validIndicators.map(item => ({
+                        name: item.name,
+                        max: 10 // 假设最大值为10
+                    }));
+                    
+                    // 创建雷达图所需的数据值
+                    const radarData = validIndicators.map(item => parseFloat(item.value) || 0);
+                    
+                    // 获取或初始化雷达图实例
+                    let myChart_ts = echarts.getInstanceByDom(document.getElementById('question-display'));
+                    if (!myChart_ts) {
+                        myChart_ts = echarts.init(document.getElementById('question-display'));
+                    }
+                    
+                    // 更新雷达图配置
+                    const option = {
+                        title: {
+                            text: '投诉处理评分',
+                            left: 'center',
+                            top: 10,
+                            padding: [0, 0, 20, 0], // 上、右、下、左的内边距，增加底部内边距
+                            textStyle: {
+                                fontSize: 16,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['评分'],
+                            // 将图例放在底部，与雷达图保持距离
+                            bottom: 5,
+                            left: 'center',
+                            padding: [35, 0, 0, 0], // 上、右、下、左的内边距
+                            itemGap: 20 // 增加图例项之间的间距
+                        },
+                        grid: {
+                            top: 80, // 增加顶部空间，为标题留出更多位置
+                            bottom: 80 // 进一步增加底部空间，为图例留出更多位置
+                        },
+                        radar: {
+                            // 雷达图的指标，只包含有效的指标
+                            indicator: indicators,
+                            center: ['50%', '50%'], // 调整雷达图的中心位置
+                            radius: '60%', // 减小雷达图的半径，使其与图例距离更远
+                            splitNumber: 5, // 分割的圈数
+                            shape: 'circle', // 雷达图绘制类型，支持 'polygon' 和 'circle'
+                            name: {
+                                textStyle: {
+                                    color: '#333',
+                                    fontSize: 14
+                                }
+                            },
+                            splitArea: {
+                                show: true,
+                                areaStyle: {
+                                    color: ['rgba(250,250,250,0.3)', 'rgba(200,200,200,0.3)']
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '评分',
+                            type: 'radar',
+                            data: [
+                                {
+                                    value: radarData,
+                                    name: '评分',
+                                    lineStyle: {
+                                        width: 2
+                                    },
+                                    areaStyle: {
+                                        opacity: 0.5
+                                    }
+                                }
+                            ]
+                        }]
+                    };
+                    
+                    // 应用配置
+                    myChart_ts.setOption(option, true); // 使用true参数完全重置配置
                 } else {
                     console.error('获取投诉内容失败: 返回数据格式不正确');
                 }

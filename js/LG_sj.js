@@ -964,8 +964,12 @@ async function freesendMessage() {
 
         try {
             // 发送GET请求
-            const response = await fetch(`${BASE_URL}/dev/chatQusetion?user_question=${encodeURIComponent(messageText)}`, {
-                method: 'GET'
+            const response = await fetch(`http://172.16.99.91:5571/similary_ts_dialog/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
             });
             
             if (!response.ok) {
