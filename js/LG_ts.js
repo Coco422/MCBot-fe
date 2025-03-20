@@ -1,5 +1,8 @@
 const BASE_URL = 'https://nlp-demo.szmckj.cn';
 const wzyc = 'https://wzyc-demo.szmckj.cn'
+// const BASE_URL_TS = 'http://172.16.99.32:1033';
+const BASE_URL_TS = 'https://aiapi.szmckj.cn/';
+const Authorization = 'Bearer lg-evduwtdszwhdqzgqkwvdtmjgpmffipkwoogudnnqemjtvgcv';
 
 
 const id = null;
@@ -40,162 +43,8 @@ function toggleKnowledgebash(checkbox_ai) {
         // console.log('关闭知识库', this.if_user_kb)
     }
 }
-// 获取随机题目接口
-// function fetchRandomQuestion() {
-//     axios.get(`${BASE_URL}/api/randomquestion`)
-//         .then((response) => {
-//             // 设置题目
-//             document.getElementById('questionB').innerText = response.data.q_stem;
-//             this.id = response.data.id;
-
-//             // 调用更新函数
-//             // fetchWrongQuestions();
-//             // fetchTextContent();
-//             // fetchLegalAnalysis();
-
-//             // 清空选项区域
-//             const optionsContainer = document.getElementById('optionsB');
-//             optionsContainer.innerHTML = ''; // 清空现有选项
-
-//             const options = response.data.options;
-//             const splitData = options.split('|');
-
-//             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-//                 // 如果选项是"正确|错误"格式
-//                 createOption(optionsContainer, "A", "正确");
-//                 createOption(optionsContainer, "B", "错误");
-//             } else {
-//                 // 创建一个对象来存储切分后的数据
-//                 const alloptions = {};
-//                 splitData.forEach(item => {
-//                     const [key, value] = item.split("、"); // 根据冒号切分键值对
-//                     alloptions[key] = value; // 将数据存储到对象中
-//                 });
-
-//                 // 动态生成选项
-//                 createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-//                 createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-//                 createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-//                 createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-//             }
-//         })
-//         .catch(function (err) {
-//             console.log(err);
-//         });
-// }
-
-// 获取随机题目接口 test.html2
-// function TestfetchRandomQuestion() {
-//     // console.log("fetchRandomQuestion");
-//     axios.get(`${BASE_URL}/api/randomquestion`)
-//         .then(function (response) {
-//             // 设置题目
-//             document.getElementById('question').innerText = response.data.q_stem;
-//             this.question_title = response.data.q_stem;
-//             this.id = response.data.id;
-//             this.question_id = response.data.id;
-//             // console.log('随机题目',this.question_id);
-//             // 清空选项区域
-//             const optionsContainer = document.getElementById('options');
-//             optionsContainer.innerHTML = ''; // 清空现有选项
-
-//             const options = response.data.options;
-//             const splitData = options.split('|');
-
-//             if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-//                 // 如果选项是"正确|错误"格式
-//                 createOption(optionsContainer, "A", "正确");
-//                 createOption(optionsContainer, "B", "错误");
-//             } else {
-//                 // 创建一个对象来存储切分后的数据
-//                 const alloptions = {};
-//                 splitData.forEach(item => {
-//                     const [key, value] = item.split("、"); // 根据冒号切分键值对
-//                     alloptions[key] = value; // 将数据存储到对象中
-//                 });
-
-//                 // 动态生成选项
-//                 createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-//                 createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-//                 createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-//                 createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-//             }
-//         })
-//         .catch(function (err) {
-//             console.log(err);
-//         });
-// }
-
-
-// 记录上一次随机获取的ID
-// let lastRandomId = null;
-
-// // 随机获取数组中的题目id
-// function getRandomId() {
-//     const ids = [121, 131, 49, 53, 82, 106, 105, 51, 4, 128, 119, 2, 129, 126, 68, 92, 94, 66, 10, 32, 78, 80, 86, 22, 88, 91, 124, 18, 115, 96, 24, 113, 111, 112, 83, 11, 99, 118, 123, 127, 39, 40, 7, 62, 9, 42, 6, 100, 28, 14, 47, 81, 98, 59, 61, 21, 45, 54, 57, 95, 29, 26, 15, 74, 30, 5, 63, 130, 84, 23, 12, 27, 52, 19, 33, 37, 25, 20, 44, 16, 65, 48, 50, 77, 114, 60, 72, 41, 70, 93, 64, 67, 73, 75, 79, 85, 87, 89, 90, 103, 97, 104, 58, 102, 109, 110, 71, 116, 117, 122, 125, 1, 34, 108, 101, 3];
-//     let randomId;
-    
-//     // 确保新的随机ID与上一次不同
-//     do {
-//         randomId = ids[Math.floor(Math.random() * ids.length)];
-//     } while (randomId === lastRandomId && ids.length > 1);
-    
-//     // 更新lastRandomId
-//     lastRandomId = randomId;
-//     return randomId;
-// }
-
 // 全局变量
 let globalQuestionId = null;
-
-// 获取随机题目，法理分析，法理推荐，法条分析
-function TestfetchRandomQuestion() {
-    const currentId = selectedOrderTitle;
-    return new Promise((resolve, reject) => {
-        axios.get(`${BASE_URL}/dev/getQues?q_id=${currentId}`)
-            .then((response) => {
-                console.log('response', response.data.data);
-
-                document.getElementById('analysis-container').innerText = response.data.data.analysis_qwen32;
-                document.getElementById('question-display').innerText = response.data.data.aimi_quse_5;
-                document.getElementById('text-display').innerText = response.data.data.law_content;
-                document.getElementById('question-title').innerText = response.data.data.q_stem;
-                document.getElementById('question').innerText = response.data.data.options;
-                console.log('response.data.data.options', response.data.data.q_stem);
-                // 更新全局变量
-                globalQuestionId = response.data.data.q_id;
-                console.log('题目id', globalQuestionId);
-                
-                // // 清空选项区域
-                // const optionsContainer = document.getElementById('options');
-                // optionsContainer.innerHTML = '';
-
-                // const options = response.data.options;
-                // const splitData = options.split('|');
-
-                // if (splitData.length === 2 && splitData.includes("正确") && splitData.includes("错误")) {
-                //     createOption(optionsContainer, "A", "正确");
-                //     createOption(optionsContainer, "B", "错误");
-                // } else {
-                //     const alloptions = {};
-                //     splitData.forEach(item => {
-                //         const [key, value] = item.split("、");
-                //         alloptions[key] = value;
-                //     });
-
-                //     createOption(optionsContainer, "A", alloptions["A"] || "无数据");
-                //     createOption(optionsContainer, "B", alloptions["B"] || "无数据");
-                //     createOption(optionsContainer, "C", alloptions["C"] || "无数据");
-                //     createOption(optionsContainer, "D", alloptions["D"] || "无数据");
-                // }
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
-}
 
 // 动态创建选项的函数
 function createOption(container, optionKey, optionValue) {
@@ -244,51 +93,6 @@ function fetchRandomQuestionA() {
         });
 }
 
-
-// // 获取相似题目的函数
-// function fetchWrongQuestions() {
-//     console.log('this.id',this.id);
-//     const questionDisplay = document.getElementById('question-display');
-//     axios.get(`${wzyc}/api/question/${this.id}/similar`)
-//         .then((response) => {
-//             console.log(response.data);
-//             // 清空问题容器
-//             questionDisplay.innerHTML = '';
-//             // 遍历返回的数据并渲染到页面
-//             response.data.forEach(item => {
-//                 const questionDiv = document.createElement('div');
-//                 questionDiv.className = 'question-container';
-//                 // 添加问题文本
-//                 const questionText = document.createElement('div');
-//                 questionText.className = 'question';
-//                 questionText.textContent = item.question;
-//                 questionDiv.appendChild(questionText);
-
-//                 // 添加选项（如果有）
-//                 if (item.options) {
-//                     const optionsDiv = document.createElement('div');
-//                     optionsDiv.className = 'options';
-//                     optionsDiv.style.display = 'block';
-//                     const options = item.options.split('|');
-//                     options.forEach(option => {
-//                         const optionText = document.createElement('div');
-//                         optionText.textContent = option;
-//                         optionsDiv.appendChild(optionText);
-//                     });
-//                     questionDiv.appendChild(optionsDiv);
-//                 }
-
-//                 // 将问题添加到页面
-//                 questionDisplay.appendChild(questionDiv);
-//             });
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//             // 如果请求失败，显示错误信息
-//             questionDisplay.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//         });
-// }
-
 // 实现按钮被点击后保持黑色
 // 获取所有具有 'btn-primary' 类的按钮
 document.querySelectorAll('.btn-primary').forEach(button => {
@@ -298,74 +102,6 @@ document.querySelectorAll('.btn-primary').forEach(button => {
         this.classList.toggle('clicked');
     });
 });
-
-
-// // 获取法条推荐的函数
-// function fetchTextContent() {
-//     const textDisplay = document.getElementById('text-display');
-//     console.log('当前题目ID:', this.id); // 添加调试信息
-    
-//     // 发送Axios请求获取法条分析内容
-//     axios.get(`${BASE_URL}/api/lows?questionid=${this.id}`)
-//         .then((response) => {
-//             console.log('法条API返回数据:', response.data); // 添加调试信息
-            
-//             // 清空法条容器
-//             textDisplay.innerHTML = '';
-            
-//             // 检查返回的数据是否为空
-//             if (!response.data || response.data.length === 0) {
-//                 textDisplay.innerHTML = '<div class="error">暂无相关法条</div>';
-//                 return;
-//             }
-            
-//             // 遍历返回的数据并渲染到页面
-//             response.data.forEach(item => {
-//                 const textDiv = document.createElement('div');
-//                 textDiv.className = 'text-container';
-                
-//                 // 添加法条文本
-//                 const textText = document.createElement('div');
-//                 textText.className = 'text';
-                
-//                 // 确保所有必要的字段都存在
-//                 const lawName = item.law_name || '未知法律';
-//                 const chapter = item.chapter || '未知章节';
-//                 const content = item.article_content || '暂无内容';
-                
-//                 textText.innerHTML = `
-//                     <div class="law-name">${lawName}</div>
-//                     <div class="chapter">${chapter}</div>
-//                     <div class="content">${content}</div>
-//                 `;
-                
-//                 textDiv.appendChild(textText);
-//                 // 将法条添加到页面
-//                 textDisplay.appendChild(textDiv);
-//             });
-//         }).catch((err) => {
-//             console.log('法条API错误:', err);
-//             textDisplay.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//         });
-// }
-
-
-// // 获取法理分析的函数
-// function fetchLegalAnalysis() {
-//     const analysisContainer = document.getElementById('analysis-container');
-//     // 发送Axios请求获取法理分析内容
-//     if (this.id != null) {
-//         axios.get(`${BASE_URL}/api/analysis?questionid=${this.id}`)
-//             .then((response) => {
-//                 const analysisData = JSON.parse(response.data.analysis);
-//                 const analysisText = analysisData.Analysis || analysisData.Answer;
-//                 displayTypingEffect(analysisText);
-//             }).catch((err) => {
-//                 console.log(err);
-//                 analysisContainer.innerHTML = '<div class="error">加载失败，请稍后重试。</div>';
-//             });
-//     }
-// }
 
 // 打字机效果函数
 function displayTypingEffect(text) {
@@ -742,8 +478,8 @@ async function QAsendMessage(q_id,ifkb) {
         const userMessage = document.createElement('div');
         userMessage.className = 'message user-message';
         userMessage.innerHTML = `
-            <div class="message-content">
-                <div class="message-text" style="color:white">${messageText}</div>
+            <div class="message-content" style="background-color: transparent;">
+                <div class="message-text" style="color:black">${messageText}</div>
             </div>
             <img src="images/user.png" alt="User Avatar" class="avatar">
         `;
@@ -786,7 +522,7 @@ async function QAsendMessage(q_id,ifkb) {
             
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
+                <div class="message-content" style="background-color: transparent;">
                     <div class="message-text"></div>
                     <div class="rag-documents" style="display:none; margin-top: 10px;"></div>
                     <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '')"></i>
@@ -947,14 +683,13 @@ async function QAsendMessage(q_id,ifkb) {
 async function freesendMessage() {
     const input = document.getElementById('chat-input');
     const messageText = input.innerHTML;
-    localStorage.setItem('hasSentMessage', 'true');
     if (messageText) {
         // 添加用户消息
         const userMessage = document.createElement('div');
         userMessage.className = 'message user-message';
         userMessage.innerHTML = `
-            <div class="message-content">
-                <div class="message-text" style="color:white">${messageText}</div>
+            <div class="message-content" style="background-color: transparent;">
+                <div class="message-text" style="color:black">${messageText}</div>
             </div>
             <img src="images/user.png" alt="User Avatar" class="avatar">
         `;
@@ -963,22 +698,6 @@ async function freesendMessage() {
         input.innerHTML = '';
 
         try {
-            // 发送GET请求
-            const response = await fetch(`http://172.16.99.91:5571/similary_ts_dialog/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ user_input: input })
-            });
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            
-            // 处理返回的JSON数据
-            const data = await response.json();
-            
             // 创建唯一的消息ID
             const messageId = Date.now();
             const uniqueId = `audio-${messageId}`;
@@ -986,44 +705,88 @@ async function freesendMessage() {
             // 创建机器人消息容器
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
-            
-            // 格式化显示title和content
-            let title = '';
-            let content = '';
-            
-            if (data.status === 'success' && data.data) {
-                title = data.data.title || '';
-                content = data.data.content || '';
-            }
+            botMessage.dataset.messageId = messageId;
             
             botMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
-                    <div class="message-text">
-                        ${title ? `<h3 style="margin-top: 0; margin-bottom: 10px; color: #333;">${title}</h3>` : ''}
-                        <div style="line-height: 1.5;">${content}</div>
-                    </div>
+                <div class="message-content" style="background-color: transparent;">
+                    <div class="message-text"></div>
+                    <i class="fa-regular fa-circle-play" id="play_${uniqueId}" style="display:none;" onclick="bf_vedio('${uniqueId}', '')"></i>
+                    <i class="fa-regular fa-circle-pause" style="display:none" id="pause_${uniqueId}" onclick="zt_vedio('${uniqueId}')"></i>
+                    <audio id="${uniqueId}" style="display:none"></audio>
                 </div>
             `;
-            
             document.getElementById('chat-messages').appendChild(botMessage);
             
-            // 滚动到底部
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // 获取消息文本容器
+            const messageTextContainer = botMessage.querySelector('.message-text');
+            const playButton = botMessage.querySelector(`#play_${uniqueId}`);
+            const pauseButton = botMessage.querySelector(`#pause_${uniqueId}`);
             
+            // 显示加载中的提示
+            messageTextContainer.innerHTML = '<div class="loading-indicator">正在思考...</div>';
+            
+            // 发送POST请求
+            // 本地请求 const response = await fetch('http://172.16.99.91:5571/similary_ts_dialog/', {
+            const response = await fetch('https://vs.szmckj.cn/similary_ts_dialog/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: messageText })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedMessage = ''; // 用于存储累积的消息
+            
+            async function read() {
+                const { done, value } = await reader.read();
+                if (done) {
+                    // 显示播放按钮
+                    playButton.style.display = 'block';
+                    // 更新语音播放的文本内容
+                    playButton.setAttribute('onclick', `bf_vedio('${uniqueId}', '${accumulatedMessage}')`);
+                    return;
+                }
+                
+                const responseText = decoder.decode(value);
+                // 解析SSE格式的数据
+                const lines = responseText.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('data:')) {
+                        const data = line.slice(5).trim();
+                        if (data && !data.includes('Access-Control-Allow')) {
+                            // 累积AI消息
+                            accumulatedMessage += data;
+                            // 使用 markdown-it 渲染内容
+                            const htmlContent = this.md.render(accumulatedMessage);
+                            // 更新机器人消息内容
+                            messageTextContainer.innerHTML = htmlContent;
+                            // 滚动到底部
+                            const chatMessages = document.getElementById('chat-messages');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }
+                }
+                await read();
+            }
+            
+            await read();
         } catch (error) {
             console.error('Fetch failed:', error);
-            
             // 显示错误消息
             const errorMessage = document.createElement('div');
             errorMessage.className = 'message bot-message';
             errorMessage.innerHTML = `
                 <img src="images/robot.png" alt="Bot Avatar" class="avatar">
-                <div class="message-content">
-                    <div class="message-text" style="color: red;">
-                        抱歉，查询过程中出现错误，请稍后再试。
-                    </div>
+                <div class="message-content" style="background-color: transparent;">
+                    <div class="message-text" style="color:red">请求失败，请稍后重试</div>
                 </div>
             `;
             document.getElementById('chat-messages').appendChild(errorMessage);
@@ -1490,7 +1253,7 @@ async function generateQuestion1() {
                                 accumulatedMarkdown = jsonData.content;
                                 // 安全地使用md对象
                                 if (md) {
-                                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                                    contentArea.innerHTML = this.md.render(accumulatedMarkdown);
                                 } else {
                                     contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
                                 }
@@ -1530,7 +1293,7 @@ async function generateQuestion1() {
                 accumulatedMarkdown += currentMarkdown;
                 // 安全地使用md对象
                 if (md) {
-                    contentArea.innerHTML = md.render(accumulatedMarkdown);
+                    contentArea.innerHTML = this.md.render(accumulatedMarkdown);
                 } else {
                     contentArea.innerHTML = `<pre>${accumulatedMarkdown}</pre>`;
                 }
@@ -1583,36 +1346,242 @@ function scrollTabs(direction) {
 // 获取工单标签
 function getOrderTag() {
     // 使用axios调用接口获取工单标签
-    axios.get(`${BASE_URL}/dev/getQuesid?q_cate=${this.selectedId}`)
+    axios.post(`${BASE_URL_TS}/api/getcomplaintid`, {
+        cate: this.selectedId
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': Authorization
+        }
+    })
         .then(function (response) {
+            // console.log('response', response.data.complaintid_info)
             const orderSelector = document.getElementById('order-selector');
             orderSelector.innerHTML = ''; // 清空之前的选项
-            const order_caseid = response.data.data;
-            order_caseid.forEach(cid => {
-                // console.log('cid', cid.q_id)
-                const option = document.createElement('div');
-                option.className = 'tab-button';
-                option.textContent = cid.q_id;  // 设置显示的文本内容
-                option.value = cid.q_id;  // 添加value属性
-                option.setAttribute('data-id', cid.q_id);  // 添加data-id属性，方便通过dataset访问
-                option.addEventListener('click', function() {
-                    // 先移除所有按钮的激活状态
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
-                    // 为当前按钮添加激活状态
-                    this.classList.add('active-tab');
-                    // 获取按钮的值
-                    const selectedValue = this.value || this.getAttribute('data-id');
-                    console.log('选中的值:', selectedValue);
-                    // 更新全局变量
-                    window.selectedOrderTitle = selectedValue;
-                    TestfetchRandomQuestion()
-                });
-                orderSelector.appendChild(option);
-            });
+            
+            // 检查返回数据格式
+            if (response.data.complaintid_info && response.data.complaintid_info.length > 0) {
+                // 获取json_agg数组
+                const jsonAggArray = response.data.complaintid_info[0].json_agg;
+                
+                // 检查json_agg是否为数组
+                if (Array.isArray(jsonAggArray)) {
+                    // 遍历数组中的每个ID值
+                    jsonAggArray.forEach(id => {
+                        const option = document.createElement('div');
+                        option.className = 'tab-button';
+                        option.textContent = id;  // 设置显示的文本内容
+                        option.value = id;  // 添加value属性
+                        option.setAttribute('data-id', id);  // 添加data-id属性，方便通过dataset访问
+                        option.addEventListener('click', function() {
+                            // 先移除所有按钮的激活状态
+                            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                            // 为当前按钮添加激活状态
+                            this.classList.add('active-tab');
+                            // 获取按钮的值
+                            const selectedValue = this.value || this.getAttribute('data-id');
+                            console.log('选中的值:', selectedValue);
+                            // 更新全局变量
+                            window.selectedOrderTitle = selectedValue;
+                            getComplaintContent()
+                        });
+                        orderSelector.appendChild(option);
+                    });
+                } else {
+                    // 如果json_agg不是数组，按原来的方式处理
+                    const order_caseid = response.data.complaintid_info;
+                    order_caseid.forEach(cid => {
+                        const option = document.createElement('div');
+                        option.className = 'tab-button';
+                        option.textContent = cid.json_agg;  // 设置显示的文本内容
+                        option.value = cid.json_agg;  // 添加value属性
+                        option.setAttribute('data-id', cid.json_agg);  // 添加data-id属性，方便通过dataset访问
+                        option.addEventListener('click', function() {
+                            // 先移除所有按钮的激活状态
+                            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                            // 为当前按钮添加激活状态
+                            this.classList.add('active-tab');
+                            // 获取按钮的值
+                            const selectedValue = this.value || this.getAttribute('data-id');
+                            console.log('选中的值:', selectedValue);
+                            // 更新全局变量
+                            window.selectedOrderTitle = selectedValue;
+                            getComplaintContent()
+                        });
+                        orderSelector.appendChild(option);
+                    });
+                }
+            } else {
+                console.error('获取工单标签失败: 返回数据格式不正确');
+            }
         })
         .catch(function (error) {
             console.error('获取工单标签失败:', error);
         });
+}
+
+// 获取投诉内容
+function getComplaintContent() {
+    const currentId = selectedOrderTitle;
+    return new Promise((resolve, reject) => {
+        axios.post(`${BASE_URL_TS}/api/getcomplaintbyid`, {
+            lc_id: currentId
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': Authorization
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data);
+
+                // 检查返回数据格式
+                if (response.data.complaint_info && response.data.complaint_info.length > 0) {
+                    const complaintData = response.data.complaint_info[0];
+                    
+                    // 获取投诉内容和处理状态
+                    const complaintContent = complaintData.complaint_content || '无投诉内容';
+                    const handlingStatus = complaintData.handling_status || '无处理方案';
+                    const AI_analysis = complaintData.ai_analysis || '无AI分析';
+                    
+                    // 将投诉内容显示在id为question的元素中
+                    const questionElement = document.getElementById('question');
+                    if (questionElement) {
+                        questionElement.innerText = complaintContent;
+                    } else {
+                        console.error('未找到id为question的元素');
+                    }
+                    
+                    // 将处理状态显示在id为question_solution的元素中
+                    const solutionElement = document.getElementById('question_solution');
+                    if (solutionElement) {
+                        solutionElement.innerText = handlingStatus;
+                    } else {
+                        console.error('未找到id为question_solution的元素');
+                    }
+                    
+                    const questionDisplay = document.getElementById('text-display');
+                    if (questionDisplay) {
+                        questionDisplay.innerText = AI_analysis;
+                    } else {
+                        console.error('未找到id为question_display的元素');
+                    }
+
+                    // 处理雷达图数据
+                    // 创建指标数据对象数组，包含名称、值和是否有效
+                    const indicatorData = [
+                        { name: '完整性', value: complaintData.integrity_score, valid: complaintData.integrity_score !== null && complaintData.integrity_score !== undefined },
+                        { name: '准确性', value: complaintData.accuracy_score, valid: complaintData.accuracy_score !== null && complaintData.accuracy_score !== undefined },
+                        { name: '投诉处理', value: complaintData.complaint_handling_score, valid: complaintData.complaint_handling_score !== null && complaintData.complaint_handling_score !== undefined },
+                        { name: '及时性', value: complaintData.timeliness_scoring, valid: complaintData.timeliness_scoring !== null && complaintData.timeliness_scoring !== undefined },
+                        { name: '登记质量', value: complaintData.register_score, valid: complaintData.register_score !== null && complaintData.register_score !== undefined }
+                    ];
+                    
+                    // 过滤出有效的指标
+                    const validIndicators = indicatorData.filter(item => item.valid);
+                    
+                    // 如果没有有效指标，则不显示雷达图
+                    if (validIndicators.length === 0) {
+                        // 清空雷达图容器
+                        const chartContainer = document.getElementById('question-display');
+                        if (chartContainer) {
+                            chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">暂无评分数据</div>';
+                        }
+                        resolve();
+                        return;
+                    }
+                    
+                    // 创建雷达图所需的指标配置
+                    const indicators = validIndicators.map(item => ({
+                        name: item.name,
+                        max: 10 // 假设最大值为10
+                    }));
+                    
+                    // 创建雷达图所需的数据值
+                    const radarData = validIndicators.map(item => parseFloat(item.value) || 0);
+                    
+                    // 获取或初始化雷达图实例
+                    let myChart_ts = echarts.getInstanceByDom(document.getElementById('question-display'));
+                    if (!myChart_ts) {
+                        myChart_ts = echarts.init(document.getElementById('question-display'));
+                    }
+                    
+                    // 更新雷达图配置
+                    const option = {
+                        title: {
+                            text: '投诉处理评分',
+                            left: 'center',
+                            top: 10,
+                            padding: [0, 0, 20, 0], // 上、右、下、左的内边距，增加底部内边距
+                            textStyle: {
+                                fontSize: 16,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['评分'],
+                            // 将图例放在底部，与雷达图保持距离
+                            bottom: 5,
+                            left: 'center',
+                            padding: [35, 0, 0, 0], // 上、右、下、左的内边距
+                            itemGap: 20 // 增加图例项之间的间距
+                        },
+                        grid: {
+                            top: 80, // 增加顶部空间，为标题留出更多位置
+                            bottom: 80 // 进一步增加底部空间，为图例留出更多位置
+                        },
+                        radar: {
+                            // 雷达图的指标，只包含有效的指标
+                            indicator: indicators,
+                            center: ['50%', '50%'], // 调整雷达图的中心位置
+                            radius: '60%', // 减小雷达图的半径，使其与图例距离更远
+                            splitNumber: 5, // 分割的圈数
+                            shape: 'circle', // 雷达图绘制类型，支持 'polygon' 和 'circle'
+                            name: {
+                                textStyle: {
+                                    color: '#333',
+                                    fontSize: 14
+                                }
+                            },
+                            splitArea: {
+                                show: true,
+                                areaStyle: {
+                                    color: ['rgba(250,250,250,0.3)', 'rgba(200,200,200,0.3)']
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '评分',
+                            type: 'radar',
+                            data: [
+                                {
+                                    value: radarData,
+                                    name: '评分',
+                                    lineStyle: {
+                                        width: 2
+                                    },
+                                    areaStyle: {
+                                        opacity: 0.5
+                                    }
+                                }
+                            ]
+                        }]
+                    };
+                    
+                    // 应用配置
+                    myChart_ts.setOption(option, true); // 使用true参数完全重置配置
+                } else {
+                    console.error('获取投诉内容失败: 返回数据格式不正确');
+                }
+                
+                resolve();
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(err);
+            });
+    });
 }
 
 // 需要初始化的api
@@ -1630,25 +1599,6 @@ window.onload = function () {
         });
     setRandomIdInCookie();
     getChatId();
-    
-    // // 添加关闭历史记录模态框按钮的事件监听
-    // document.getElementById("closeModal").addEventListener("click", function(event) {
-    //     console.log('关闭历史记录');
-    //     event.stopPropagation();
-    //     document.getElementById("historyModal").classList.remove("active");
-    // });
-    
-    // // 阻止点击历史记录弹框内部时关闭弹框
-    // document.getElementById("historyModal").addEventListener("click", function(event) {
-    //     event.stopPropagation();
-    // });
-    
-    // // 添加历史记录按钮的事件监听
-    // document.getElementById("history").addEventListener("click", function(event) {
-    //     console.log('点击历史记录按钮');
-    //     event.stopPropagation();
-    //     loadHistory();
-    // });
     
     // 强制重置并添加Q按钮事件监听
     const qaButton = document.getElementById("qa-button");
