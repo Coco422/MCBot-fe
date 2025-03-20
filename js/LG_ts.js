@@ -727,7 +727,8 @@ async function freesendMessage() {
             messageTextContainer.innerHTML = '<div class="loading-indicator">正在思考...</div>';
             
             // 发送POST请求
-            const response = await fetch('http://172.16.99.91:5571/similary_ts_dialog/', {
+            // 本地请求 const response = await fetch('http://172.16.99.91:5571/similary_ts_dialog/', {
+            const response = await fetch('https://vs.szmckj.cn/similary_ts_dialog/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
